@@ -1,0 +1,110 @@
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const axios = require('axios');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" }
+});
+
+const PORT = process.env.PORT || 3000;
+const LIDOM_LEAGUE_ID = 132;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+const TEAM_MAP = {
+  'Tigres del Licey': 'L',
+  'Leones del Escogido': 'E',
+  'Aguilas Cibaenas': 'AC',
+  'Águilas Cibaeñas': 'AC',
+  'Gigantes del Cibao': 'GC',
+  'Toros del Este': 'TE',
+  'Estrellas Orientales': 'EO'
+};
+
+let liveGamesCache = [];
+
+async function fetchLidomGames() {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=11&leagueId=${LIDOM_LEAGUE_ID}&startDate=${today}&endDate=${today}&hydrate=linescore,probablePitcher,team`;
+    
+    const response = await axios.get(url);
+    const dates = response.data.dates || [];
+
+    if (dates.length === 0) {
+      return [];
+    }
+
+    const games = dates[0].games.map(g => {
+      const awayName = g.teams.away.team.name;
+      const homeName = g.teams.home.team.name;
+
+      const awayCode = TEAM_MAP[awayName] || awayName.substring(0,2).toUpperCase();
+      const homeCode = TEAM_MAP[homeName] || homeName.substring(0,2).toUpperCase();
+
+      let status = 'SCHEDULED';
+      if (g.status.abstractGameState === 'Live') status = 'LIVE';
+      else if (g.status.abstractGameState === 'Final') status = 'FINAL';
+
+      const linescore = g.linescore || {};
+      const inningState = linescore.inningState || '';
+      const currentInning = linescore.currentInningOrdinal || '';
+      
+      let inningDisplay = g.status.detailedState || 'Programado';
+      if (status === 'LIVE') {
+        inningDisplay = `${inningState === 'Top' ? '▲' : '▼'} ${currentInning}`;
+      } else if (status === 'FINAL') {
+        inningDisplay = 'Final';
+      }
+
+      return {
+        id: g.gamePk,
+        date: today,
+        time: new Date(g.gameDate).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', hour12: true }),
+        stadium: g.venue ? g.venue.name : 'Estadio LIDOM',
+        away: awayCode,
+        home: homeCode,
+        awayName: awayName,
+        homeName: homeName,
+        awayRuns: linescore.teams?.away?.runs ?? 0,
+        homeRuns: linescore.teams?.home?.runs ?? 0,
+        status: status,
+        inning: inningDisplay,
+        awayPitcher: g.teams.away.probablePitcher ? g.teams.away.probablePitcher.fullName : 'Por definir',
+        homePitcher: g.teams.home.probablePitcher ? g.teams.home.probablePitcher.fullName : 'Por definir',
+        awayMl: 1.85, homeMl: 1.95
+      };
+    });
+
+    liveGamesCache = games;
+    return games;
+
+  } catch (error) {
+    return liveGamesCache;
+  }
+}
+
+setInterval(async () => {
+  const updatedGames = await fetchLidomGames();
+  io.emit('lidom_update', updatedGames);
+}, 30000);
+
+io.on('connection', async (socket) => {
+  if (liveGamesCache.length === 0) {
+    liveGamesCache = await fetchLidomGames();
+  }
+  socket.emit('lidom_update', liveGamesCache);
+
+  socket.on('manual_sync_request', async () => {
+    const games = await fetchLidomGames();
+    socket.emit('lidom_update', games);
+  });
+});
+
+server.listen(PORT, () => {
+  fetchLidomGames();
+});
