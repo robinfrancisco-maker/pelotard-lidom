@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PELOTARD - Sistema Recreativo de Apuestas de Béisbol (En Vivo)</title>
+    <!-- Librería Socket.IO y html2canvas -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary: #0a192f;
+            --secondary: #1e3a8a;
+            --accent: #d97706;
+            --accent-hover: #b45309;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --green-win: #10b981;
+            --red-loss: #ef4444;
+            --gold: #fbbf24;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+
+        header {
+            background: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
+            border-bottom: 2px solid var(--accent);
+            padding: 0.8rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 15px;
+        }
+        .brand-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .brand-logo .ball-icon { font-size: 2rem; }
+        .brand-logo h1 {
+            font-size: 1.8rem; font-weight: 900; letter-spacing: 1.5px;
+            background: linear-gradient(to right, #f59e0b, #ef4444);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;
+        }
+        .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+        .live-ticker-banner {
+            flex: 1; display: flex; align-items: center; gap: 12px;
+            background: rgba(15, 23, 42, 0.85); border: 1px solid var(--card-border);
+            border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 650px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-item {
+            display: flex; align-items: center; gap: 8px; background: #1e293b;
+            border: 1px solid #334155; padding: 4px 10px; border-radius: 6px;
+            white-space: nowrap; font-size: 0.78rem;
+        }
+        .ticker-badge-live {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 900;
+            padding: 1px 5px; border-radius: 4px; animation: pulse 1.5s infinite;
+        }
+        .ticker-badge-final { background: #64748b; color: white; font-size: 0.65rem; font-weight: 900; padding: 1px 5px; border-radius: 4px; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        .ticker-teams { font-weight: bold; color: var(--text-main); }
+        .ticker-score { color: var(--gold); font-weight: 900; }
+        .ticker-inning { color: #38bdf8; font-weight: bold; font-size: 0.72rem; }
+
+        .header-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+        .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+        .player-input-box { display: flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; border-radius: 8px; }
+        .player-input-box label { font-size: 0.8rem; color: var(--gold); font-weight: bold; }
+        .player-input-box input { background: transparent; border: none; color: white; font-weight: bold; font-size: 0.95rem; outline: none; width: 140px; }
+        .user-balance-card { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--gold); padding: 0.4rem 1rem; border-radius: 50px; display: flex; align-items: center; gap: 10px; }
+        .balance-label { font-size: 0.7rem; color: var(--text-muted); }
+        .balance-amount { font-size: 1rem; font-weight: 800; color: var(--gold); }
+
+        .main-container { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; padding: 1.5rem 2rem; flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
+        @media (max-width: 1024px) { .main-container { grid-template-columns: 1fr; } }
+
+        .nav-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; border-bottom: 2px solid var(--card-border); padding-bottom: 0.6rem; overflow-x: auto; }
+        .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; border-radius: 8px; }
+        .tab-btn.active { color: #fff; background: var(--accent); border-color: var(--gold); }
+
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.2rem; }
+        .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; }
+        .game-card.live-card { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        .game-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
+        .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
+        .team-info { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; }
+        .team-score { font-size: 1.2rem; font-weight: 900; color: var(--gold); background: #0f172a; padding: 2px 10px; border-radius: 6px; }
+        .team-badge { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; color: white; }
+
+        .bg-L { background-color: #002d62; }
+        .bg-E { background-color: #ce1126; }
+        .bg-AC { background-color: #fdb827; color: #000 !important; }
+        .bg-GC { background-color: #4b0082; }
+        .bg-TE { background-color: #ff6600; }
+        .bg-EO { background-color: #006a4e; }
+
+        .market-section { margin-top: 10px; border-top: 1px solid var(--card-border); padding-top: 8px; }
+        .market-label { font-size: 0.72rem; color: var(--gold); font-weight: bold; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .odds-grid-3 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+        .odds-btn { background: #0f172a; border: 1px solid #334155; color: var(--text-main); padding: 0.45rem; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .odds-btn.selected { background: var(--accent); border-color: var(--gold); color: white; }
+
+        .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 90px; }
+        .slip-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; margin-bottom: 1rem; }
+        .slip-title { font-weight: 800; font-size: 1.1rem; }
+        .slip-count { background: var(--accent); color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+        .slip-items-list { max-height: 320px; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px; }
+        .slip-item { background: #0f172a; border-left: 4px solid var(--accent); padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; position: relative; }
+        .slip-item-remove { position: absolute; top: 6px; right: 8px; background: transparent; border: none; color: var(--red-loss); cursor: pointer; font-weight: bold; }
+        .stake-input { width: 100%; background: #0f172a; border: 1px solid var(--card-border); color: white; padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 1rem; font-weight: 700; text-align: right; }
+        .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.8rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 10px; }
+        
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+        .modal-overlay.active { opacity: 1; pointer-events: all; }
+        .ticket-receipt { background: #fff; color: #000; width: 340px; padding: 1.5rem; font-family: 'Courier New', Courier, monospace; border-radius: 4px; }
+        .btn-close-ticket { background: #000; color: #fff; border: none; width: 100%; padding: 0.6rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        .status-online-tag { background: #10b981; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-logo">
+            <span class="ball-icon">⚾</span>
+            <div>
+                <h1>PELOTARD <span class="status-online-tag" id="statusOnlineTag">EN VIVO</span></h1>
+                <div class="brand-subtitle">LIDOM AUTOMÁTICO</div>
+            </div>
+        </div>
+
+        <div class="live-ticker-banner" id="liveTickerBanner">
+            <span style="font-size:0.75rem; color:var(--text-muted);">Sincronizando con LIDOM...</span>
+        </div>
+
+        <div class="header-controls">
+            <button class="btn-sync" id="btnSyncLidom">🔄 Sincronizar Ahora</button>
+            <div class="player-input-box">
+                <label for="playerNameInput">👤 Jugador:</label>
+                <input type="text" id="playerNameInput" value="Robin Francisco">
+            </div>
+            <div class="user-balance-card">
+                <div>
+                    <div class="balance-label">Puntos Recreativos</div>
+                    <div class="balance-amount" id="userBalanceDisplay">5,000 pts</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div>
+            <div class="nav-tabs">
+                <button class="tab-btn active" id="btnTabGames">⚾ Cartelera en Vivo</button>
+                <button class="tab-btn" id="btnTabHistory">📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
+            </div>
+
+            <div id="viewGames">
+                <div class="games-grid" id="gamesContainer"></div>
+            </div>
+
+            <div id="viewHistory" style="display: none;">
+                <table style="width:100%; background:var(--card-bg); border-collapse:collapse; font-size:0.85rem; text-align:center;">
+                    <thead><tr style="background:#0f172a; color:var(--text-muted);"><th>ID</th><th>Fecha</th><th>Jugador</th><th>Puntos</th><th>Pago</th><th>Estado</th></tr></thead>
+                    <tbody id="historyTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bet-slip-panel">
+            <div class="slip-header">
+                <div class="slip-title">🎟️ Boleta <span class="slip-count" id="slipCountBadge">0</span></div>
+                <button style="background:transparent; border:none; color:var(--red-loss); cursor:pointer;" id="btnClearSlip">Limpiar</button>
+            </div>
+            <div class="slip-items-list" id="slipItemsList"></div>
+            <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>Multiplicador:</span><strong id="slipOddsDisplay">1.00x</strong></div>
+                <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10">
+                <div style="display:flex; justify-content:space-between; margin-top:8px; font-weight:bold; color:var(--green-win);"><span>Pago:</span><span id="slipPayoutDisplay">0 pts</span></div>
+                <button class="btn-submit-bet" id="btnSubmitBet" disabled>GENERAR BOLETO</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TICKET -->
+    <div class="modal-overlay" id="ticketModal">
+        <div class="ticket-receipt" id="printableTicket">
+            <h2 style="text-align:center;">⚾ PELOTARD ⚾</h2>
+            <hr>
+            <div><strong>TICKET:</strong> <span id="mTicketId">#PT-0000</span></div>
+            <div><strong>JUGADOR:</strong> <span id="mTicketPlayer">--</span></div>
+            <div id="mTicketLegs" style="margin:10px 0; border-top:1px solid #000; border-bottom:1px solid #000; padding:5px 0;"></div>
+            <div><strong>MONTO:</strong> <span id="mTicketStake">0 pts</span></div>
+            <div><strong>PAGO POTENCIAL:</strong> <span id="mTicketPayout">0 pts</span></div>
+            <button class="btn-close-ticket" id="btnCloseTicketModal">CERRAR</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let currentGames = [];
+        let currentSlip = [];
+        let currentPlayerName = 'Robin Francisco';
+        const INITIAL_BALANCE = 5000;
+
+        function getPlayersData() {
+            return JSON.parse(localStorage.getItem('pelotard_players_v2') || '{}');
+        }
+        function savePlayersData(data) {
+            localStorage.setItem('pelotard_players_v2', JSON.stringify(data));
+        }
+
+        function getPlayerData(name) {
+            const data = getPlayersData();
+            if (!data[name]) {
+                data[name] = { balance: INITIAL_BALANCE, tickets: [] };
+                savePlayersData(data);
+            }
+            return data[name];
+        }
+
+        // CONEXIÓN EN TIEMPO REAL VÍA SOCKET.IO
+        socket.on('connect', () => {
+            document.getElementById('statusOnlineTag').textContent = 'EN VIVO';
+            document.getElementById('statusOnlineTag').style.background = '#10b981';
+        });
+
+        socket.on('disconnect', () => {
+            document.getElementById('statusOnlineTag').textContent = 'DESCONECTADO';
+            document.getElementById('statusOnlineTag').style.background = '#ef4444';
+        });
+
+        socket.on('lidom_update', (games) => {
+            currentGames = games;
+            renderLiveBanner(games);
+            renderGamesGrid(games);
+            updateBalanceUI();
+            updateHistoryUI();
+        });
+
+        document.getElementById('btnSyncLidom').onclick = () => {
+            socket.emit('manual_sync_request');
+        };
+
+        document.getElementById('playerNameInput').oninput = (e) => {
+            currentPlayerName = e.target.value.trim() || 'Robin Francisco';
+            updateBalanceUI();
+            updateHistoryUI();
+            updateSlipUI();
+        };
+
+        function updateBalanceUI() {
+            const player = getPlayerData(currentPlayerName);
+            document.getElementById('userBalanceDisplay').textContent = player.balance.toLocaleString() + ' pts';
+        }
+
+        function renderLiveBanner(games) {
+            const banner = document.getElementById('liveTickerBanner');
+            banner.innerHTML = '';
+            if (!games || games.length === 0) {
+                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">No hay juegos programados hoy en LIDOM.</span>';
+                return;
+            }
+
+            games.forEach(g => {
+                const item = document.createElement('div');
+                item.className = 'ticker-item';
+                let badge = g.status === 'LIVE' ? '<span class="ticker-badge-live">LIVE</span>' : (g.status === 'FINAL' ? '<span class="ticker-badge-final">FINAL</span>' : '<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span>');
+                item.innerHTML = `${badge} <span class="ticker-teams">${g.away} vs ${g.home}</span> <span class="ticker-score">${g.awayRuns} - ${g.homeRuns}</span> <span class="ticker-inning">${g.inning}</span>`;
+                banner.appendChild(item);
+            });
+        }
+
+        function renderGamesGrid(games) {
+            const container = document.getElementById('gamesContainer');
+            container.innerHTML = '';
+
+            if (!games || games.length === 0) {
+                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos disponibles para la jornada.</div>';
+                return;
+            }
+
+            games.forEach(g => {
+                const card = document.createElement('div');
+                card.className = `game-card ${g.status === 'LIVE' ? 'live-card' : ''}`;
+                card.innerHTML = `
+                    <div class="game-header"><span>📅 ${g.time} - ${g.stadium}</span><strong>${g.inning}</strong></div>
+                    <div class="team-row"><div class="team-info"><div class="team-badge bg-${g.away}">${g.away}</div><span>${g.awayName}</span></div><div class="team-score">${g.awayRuns}</div></div>
+                    <div class="team-row"><div class="team-info"><div class="team-badge bg-${g.home}">${g.home}</div><span>${g.homeName}</span></div><div class="team-score">${g.homeRuns}</div></div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">⚾ Abridores: ${g.awayPitcher} vs ${g.homePitcher}</div>
+                    
+                    ${g.status !== 'FINAL' ? `
+                        <div class="market-section">
+                            <span class="market-label">QUIÉN GANA</span>
+                            <div class="odds-grid-3">
+                                <button class="odds-btn" onclick="togglePick(${g.id}, '${g.away}',${g.awayMl})"><span>${g.away} ML</span><strong>${g.awayMl}</strong></button>
+                                <button class="odds-btn" onclick="togglePick(${g.id}, '${g.home}',${g.homeMl})"><span>${g.home} ML</span><strong>${g.homeMl}</strong></button>
+                            </div>
+                        </div>
+                    ` : '<div style="text-align:center; color:var(--green-win); font-weight:bold; font-size:0.8rem; margin-top:8px;">PARTIDO FINALIZADO</div>'}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function togglePick(gameId, pick, odd) {
+            const game = currentGames.find(g => g.id === gameId);
+            const idx = currentSlip.findIndex(s => s.gameId === gameId);
+            if (idx > -1) currentSlip.splice(idx, 1);
+            else currentSlip.push({ gameId, gameTitle: `${game.away} @ ${game.home}`, pick, odd });
+            updateSlipUI();
+        }
+
+        function updateSlipUI() {
+            const list = document.getElementById('slipItemsList');
+            document.getElementById('slipCountBadge').textContent = currentSlip.length;
+            
+            if (currentSlip.length === 0) {
+                list.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center; padding:1rem;">Selecciona jugadas.</p>';
+                document.getElementById('slipOddsDisplay').textContent = '1.00x';
+                document.getElementById('slipPayoutDisplay').textContent = '0 pts';
+                document.getElementById('btnSubmitBet').disabled = true;
+                return;
+            }
+
+            list.innerHTML = '';
+            let totalOdds = 1.0;
+            currentSlip.forEach((s, idx) => {
+                totalOdds *= s.odd;
+                list.innerHTML += `<div class="slip-item"><button class="slip-item-remove" onclick="currentSlip.splice(${idx},1);updateSlipUI();">✕</button><div>${s.gameTitle}</div><strong style="color:var(--gold);">${s.pick} @ ${s.odd}</strong></div>`;
+            });
+
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const player = getPlayerData(currentPlayerName);
+
+            document.getElementById('slipOddsDisplay').textContent = totalOdds.toFixed(2) + 'x';
+            document.getElementById('slipPayoutDisplay').textContent = Math.round(stake * totalOdds).toLocaleString() + ' pts';
+            document.getElementById('btnSubmitBet').disabled = stake <= 0 || stake > player.balance;
+        }
+
+        document.getElementById('slipStakeInput').oninput = updateSlipUI;
+        document.getElementById('btnClearSlip').onclick = () => { currentSlip = []; updateSlipUI(); };
+
+        document.getElementById('btnSubmitBet').onclick = () => {
+            const player = getPlayerData(currentPlayerName);
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            if (stake > player.balance) return;
+
+            let odds = currentSlip.reduce((a, b) => a * b.odd, 1.0);
+            let payout = Math.round(stake * odds);
+            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
+
+            const ticket = { id: ticketId, date: new Date().toLocaleTimeString(), player: currentPlayerName, stake, payout, legs: [...currentSlip], status: 'PENDIENTE' };
+            
+            player.balance -= stake;
+            player.tickets.unshift(ticket);
+            
+            const data = getPlayersData();
+            data[currentPlayerName] = player;
+            savePlayersData(data);
+
+            updateBalanceUI();
+            updateHistoryUI();
+
+            document.getElementById('mTicketId').textContent = ticket.id;
+            document.getElementById('mTicketPlayer').textContent = ticket.player;
+            document.getElementById('mTicketStake').textContent = stake + ' pts';
+            document.getElementById('mTicketPayout').textContent = payout.toLocaleString() + ' pts';
+            document.getElementById('mTicketLegs').innerHTML = currentSlip.map(s => `<div>${s.gameTitle}: <strong>${s.pick}</strong></div>`).join('');
+            document.getElementById('ticketModal').classList.add('active');
+
+            currentSlip = [];
+            updateSlipUI();
+        };
+
+        document.getElementById('btnCloseTicketModal').onclick = () => document.getElementById('ticketModal').classList.remove('active');
+
+        function updateHistoryUI() {
+            const player = getPlayerData(currentPlayerName);
+            document.getElementById('ticketCountHeader').textContent = player.tickets.length;
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            if (player.tickets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding:1rem;">Sin boletos jugados.</td></tr>';
+                return;
+            }
+
+            player.tickets.forEach(t => {
+                tbody.innerHTML += `<tr><td>${t.id}</td><td>${t.date}</td><td>${t.player}</td><td>${t.stake} pts</td><td>${t.payout.toLocaleString()} pts</td><td>${t.status}</td></tr>`;
+            });
+        }
+
+        document.getElementById('btnTabGames').onclick = () => {
+            document.getElementById('viewGames').style.display = 'block';
+            document.getElementById('viewHistory').style.display = 'none';
+            document.getElementById('btnTabGames').classList.add('active');
+            document.getElementById('btnTabHistory').classList.remove('active');
+        };
+        document.getElementById('btnTabHistory').onclick = () => {
+            document.getElementById('viewGames').style.display = 'none';
+            document.getElementById('viewHistory').style.display = 'block';
+            document.getElementById('btnTabHistory').classList.add('active');
+            document.getElementById('btnTabGames').classList.remove('active');
+        };
+    </script>
+</body>
+</html>
