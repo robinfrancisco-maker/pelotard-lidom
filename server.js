@@ -29,7 +29,9 @@ let liveGamesCache = [];
 
 async function fetchLidomGames() {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const options = { timeZone: 'America/Santo_Domingo', year: 'numeric', month: '2-digit', day: '2-digit' };
+const [month, day, year] = new Date().toLocaleDateString('en-US', options).split('/');
+const today = `${year}-${month}-${day}`;  
     const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=11&leagueId=${LIDOM_LEAGUE_ID}&startDate=${today}&endDate=${today}&hydrate=linescore,probablePitcher,team`;
     
     const response = await axios.get(url);
