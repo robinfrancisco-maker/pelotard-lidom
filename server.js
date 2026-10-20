@@ -24,24 +24,24 @@ const TEAM_MAP = {
   'Estrellas Orientales': 'EO'
 };
 
-// CARTELERA OFICIAL DE HOY (20 DE OCTUBRE DE 2026) Y RESULTADOS PASADOS
+// BASE DE DATOS AJUSTADA AL STANDING OFICIAL DE LA LIDOM (3 JJ POR EQUIPO)
 const OFFICIAL_GAMES_DATABASE = [
-  // JORNADA 1 (PASADOS)
+  // JORNADA 1 (16 OCT)
   { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
   { id: 2, date: '2026-10-16', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'L', home: 'E', awayRuns: 12, homeRuns: 2, status: 'FINAL', inning: 'Final' },
   { id: 3, date: '2026-10-16', stadium: 'Tetelo Vargas (SPM)', time: '07:30 PM', away: 'TE', home: 'EO', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
 
-  // JORNADA 2 (PASADOS)
+  // JORNADA 2 (17 OCT)
   { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final' },
   { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 2, status: 'FINAL', inning: 'Final' },
   { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
 
-  // JORNADA 3 (PASADOS) - COMPLETANDO LOS 3 JUEGOS POR EQUIPO
-  { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
-  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 8, homeRuns: 3, status: 'FINAL', inning: 'Final' },
-  { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 3, homeRuns: 6, status: 'FINAL', inning: 'Final' },
+  // JORNADA 3 (18 OCT) - MARCADORES AJUSTADOS AL STANDING OFICIAL
+  { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
+  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
+  { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 0, homeRuns: 8, status: 'FINAL', inning: 'Final' },
 
-  // CARTELERA OFICIAL HOY (20 DE OCTUBRE)
+  // CARTELERA OFICIAL DE HOY (20 OCT)
   {
     id: 101, date: '2026-10-20', time: '07:00 PM', stadium: 'Estadio Julián Javier (SFM)',
     away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
@@ -80,7 +80,6 @@ async function fetchLidomGames() {
       return OFFICIAL_GAMES_DATABASE;
     }
 
-    // Si la API responde con datos válidos los fusiona con la base de datos
     const apiGames = dates[0].games.map(g => {
       const awayName = g.teams.away.team.name;
       const homeName = g.teams.home.team.name;
@@ -145,6 +144,6 @@ io.on('connection', async (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`Servidor escuchando en puerto ${PORT}`);
   fetchLidomGames();
 });
