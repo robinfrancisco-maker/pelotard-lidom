@@ -21,7 +21,7 @@ const TEAM_MAP = {
   'Estrellas Orientales': 'EO'
 };
 
-// JORNADAS EXACTAS PARA CUMPLIR EL STANDING OFICIAL (2-1 GC, EO, TE, L | 1-2 AC | 0-3 E)
+// BASE DE DATOS REVISADA CON RESULTADOS Y ROTACIÓN CORREGIDA
 const OFFICIAL_GAMES_DATABASE = [
   // JORNADA 1 (16 OCT)
   { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
@@ -33,29 +33,55 @@ const OFFICIAL_GAMES_DATABASE = [
   { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
   { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
 
-  // JORNADA 3 (18 OCT)
-  { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
-  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 2, status: 'FINAL', inning: 'Final' },
-  { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 14, homeRuns: 8, status: 'FINAL', inning: 'Final' },
+  // JORNADA 3 (18 OCT - MARCADORES REALES DE LIDOM)
+  { id: 7, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'TE', home: 'EO', awayRuns: 6, homeRuns: 4, status: 'FINAL', inning: 'Final' },
+  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Extra Inning (10)' },
+  { id: 9, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 5, status: 'FINAL', inning: 'Final' },
 
-  // CARTELERA HOY (20 OCT)
+  // JORNADA 4 (20 OCT - HOY CON PITCHERS CONFIRMADOS)
   {
     id: 101, date: '2026-10-20', time: '07:00 PM', stadium: 'Estadio Julián Javier (SFM)',
     away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
     awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM',
-    awayPitcher: 'Por definir', homePitcher: 'Por definir', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90
+    awayPitcher: 'Daniel Martínez (RHP)', homePitcher: 'Jackson Goddard (RHP)',
+    awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90
   },
   {
     id: 102, date: '2026-10-20', time: '07:15 PM', stadium: 'Estadio Quisqueya Juan Marichal',
     away: 'EO', home: 'E', awayName: 'Estrellas Orientales (2-1)', homeName: 'Leones del Escogido (0-3)',
     awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM',
-    awayPitcher: 'Por definir', homePitcher: 'Por definir', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95
+    awayPitcher: 'Spencer Bivens (RHP)', homePitcher: 'Ángel Sánchez (RHP)',
+    awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95
   },
   {
     id: 103, date: '2026-10-20', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)',
     away: 'AC', home: 'TE', awayName: 'Águilas Cibaeñas (1-2)', homeName: 'Toros del Este (2-1)',
     awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM',
-    awayPitcher: 'Por definir', homePitcher: 'Por definir', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90
+    awayPitcher: 'Luis Peña (RHP)', homePitcher: 'Noah Skirrow (RHP)',
+    awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90
+  },
+
+  // JORNADA 5 (21 OCT - PRÓXIMOS PARTIDOS)
+  {
+    id: 201, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Quisqueya Juan Marichal',
+    away: 'GC', home: 'L', awayName: 'Gigantes del Cibao', homeName: 'Tigres del Licey',
+    awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM',
+    awayPitcher: 'Por definir', homePitcher: 'Por definir',
+    awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
+  },
+  {
+    id: 202, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Tetelo Vargas (SPM)',
+    away: 'E', home: 'EO', awayName: 'Leones del Escogido', homeName: 'Estrellas Orientales',
+    awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM',
+    awayPitcher: 'Por definir', homePitcher: 'Por definir',
+    awayMl: 2.00, homeMl: 1.80, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95
+  },
+  {
+    id: 203, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Cibao (STI)',
+    away: 'TE', home: 'AC', awayName: 'Toros del Este', homeName: 'Águilas Cibaeñas',
+    awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM',
+    awayPitcher: 'Por definir', homePitcher: 'Por definir',
+    awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.0, over: 1.90, under: 1.90
   }
 ];
 
@@ -76,7 +102,8 @@ async function fetchLidomGames() {
       return OFFICIAL_GAMES_DATABASE;
     }
 
-    const apiGames = dates[0].games.map(g => {
+    const apiGames = dates[0].games.map((g, index) => {
+      const defaultGame = OFFICIAL_GAMES_DATABASE.find(og => og.id === g.gamePk) || OFFICIAL_GAMES_DATABASE[9 + index] || {};
       const awayName = g.teams.away.team.name;
       const homeName = g.teams.home.team.name;
       const awayCode = TEAM_MAP[awayName] || awayName.substring(0,2).toUpperCase();
@@ -94,24 +121,28 @@ async function fetchLidomGames() {
       if (status === 'LIVE') inningDisplay = `${inningState === 'Top' ? '▲' : '▼'} ${currentInning}`;
       else if (status === 'FINAL') inningDisplay = 'Final';
 
+      const apiAwayPitcher = g.teams.away.probablePitcher ? g.teams.away.probablePitcher.fullName : null;
+      const apiHomePitcher = g.teams.home.probablePitcher ? g.teams.home.probablePitcher.fullName : null;
+
       return {
         id: g.gamePk,
         date: today,
         time: new Date(g.gameDate).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', hour12: true }),
-        stadium: g.venue ? g.venue.name : 'Estadio LIDOM',
+        stadium: g.venue ? g.venue.name : (defaultGame.stadium || 'Estadio LIDOM'),
         away: awayCode, home: homeCode,
         awayName: awayName, homeName: homeName,
         awayRuns: linescore.teams?.away?.runs ?? 0,
         homeRuns: linescore.teams?.home?.runs ?? 0,
         status: status, inning: inningDisplay,
-        awayPitcher: g.teams.away.probablePitcher ? g.teams.away.probablePitcher.fullName : 'Por definir',
-        homePitcher: g.teams.home.probablePitcher ? g.teams.home.probablePitcher.fullName : 'Por definir',
+        awayPitcher: apiAwayPitcher || defaultGame.awayPitcher || 'Por definir',
+        homePitcher: apiHomePitcher || defaultGame.homePitcher || 'Por definir',
         awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
       };
     });
 
-    liveGamesCache = apiGames;
-    return apiGames;
+    const otherGames = OFFICIAL_GAMES_DATABASE.filter(og => og.date !== today);
+    liveGamesCache = [...otherGames, ...apiGames];
+    return liveGamesCache;
 
   } catch (error) {
     liveGamesCache = OFFICIAL_GAMES_DATABASE;
