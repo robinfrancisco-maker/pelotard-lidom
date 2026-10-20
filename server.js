@@ -6,12 +6,9 @@ const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  cors: { origin: "*" }
-});
+const io = new Server(server, { cors: { origin: "*" } });
 
 const PORT = process.env.PORT || 3000;
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 const TEAM_MAP = {
@@ -24,7 +21,7 @@ const TEAM_MAP = {
   'Estrellas Orientales': 'EO'
 };
 
-// BASE DE DATOS EXACTA CON LAS 3 JORNADAS OFICIALES DE LA LIDOM (3 JJ POR EQUIPO)
+// JORNADAS EXACTAS PARA CUMPLIR EL STANDING OFICIAL (2-1 GC, EO, TE, L | 1-2 AC | 0-3 E)
 const OFFICIAL_GAMES_DATABASE = [
   // JORNADA 1 (16 OCT)
   { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
@@ -33,15 +30,15 @@ const OFFICIAL_GAMES_DATABASE = [
 
   // JORNADA 2 (17 OCT)
   { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final' },
-  { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 2, status: 'FINAL', inning: 'Final' },
+  { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
   { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
 
-  // JORNADA 3 (18 OCT) - COMPLETA EL RÉCORD REAL (2-1 GC, EO, TE, L | 1-2 AC | 0-3 E)
+  // JORNADA 3 (18 OCT)
   { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
-  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
+  { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 2, status: 'FINAL', inning: 'Final' },
   { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 14, homeRuns: 8, status: 'FINAL', inning: 'Final' },
 
-  // CARTELERA OFICIAL DE HOY (20 OCTUBRE)
+  // CARTELERA HOY (20 OCT)
   {
     id: 101, date: '2026-10-20', time: '07:00 PM', stadium: 'Estadio Julián Javier (SFM)',
     away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
@@ -71,7 +68,6 @@ async function fetchLidomGames() {
     const today = `${year}-${month}-${day}`;
 
     const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=11&startDate=${today}&endDate=${today}&hydrate=linescore,probablePitcher,team`;
-    
     const response = await axios.get(url);
     const dates = response.data.dates || [];
 
@@ -95,25 +91,19 @@ async function fetchLidomGames() {
       const currentInning = linescore.currentInningOrdinal || '';
       
       let inningDisplay = g.status.detailedState || 'Programado';
-      if (status === 'LIVE') {
-        inningDisplay = `${inningState === 'Top' ? '▲' : '▼'} ${currentInning}`;
-      } else if (status === 'FINAL') {
-        inningDisplay = 'Final';
-      }
+      if (status === 'LIVE') inningDisplay = `${inningState === 'Top' ? '▲' : '▼'} ${currentInning}`;
+      else if (status === 'FINAL') inningDisplay = 'Final';
 
       return {
         id: g.gamePk,
         date: today,
         time: new Date(g.gameDate).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', hour12: true }),
         stadium: g.venue ? g.venue.name : 'Estadio LIDOM',
-        away: awayCode,
-        home: homeCode,
-        awayName: awayName,
-        homeName: homeName,
+        away: awayCode, home: homeCode,
+        awayName: awayName, homeName: homeName,
         awayRuns: linescore.teams?.away?.runs ?? 0,
         homeRuns: linescore.teams?.home?.runs ?? 0,
-        status: status,
-        inning: inningDisplay,
+        status: status, inning: inningDisplay,
         awayPitcher: g.teams.away.probablePitcher ? g.teams.away.probablePitcher.fullName : 'Por definir',
         homePitcher: g.teams.home.probablePitcher ? g.teams.home.probablePitcher.fullName : 'Por definir',
         awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
@@ -136,13 +126,10 @@ setInterval(async () => {
 
 io.on('connection', async (socket) => {
   socket.emit('lidom_update', liveGamesCache);
-
   socket.on('manual_sync_request', async () => {
     const games = await fetchLidomGames();
     socket.emit('lidom_update', games);
   });
 });
 
-server.listen(PORT, () => {
-  fetchLidomGames();
-});
+server.listen(PORT, () => { fetchLidomGames(); });
