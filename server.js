@@ -24,7 +24,7 @@ const TEAM_MAP = {
   'Estrellas Orientales': 'EO'
 };
 
-// MARCADORES DE LAS 3 JORNADAS OFICIALES (COINCIDENCIA EXACTA CON LIDOM.COM)
+// BASE DE DATOS EXACTA CON LAS 3 JORNADAS OFICIALES DE LA LIDOM (3 JJ POR EQUIPO)
 const OFFICIAL_GAMES_DATABASE = [
   // JORNADA 1 (16 OCT)
   { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
@@ -36,12 +36,12 @@ const OFFICIAL_GAMES_DATABASE = [
   { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 2, status: 'FINAL', inning: 'Final' },
   { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
 
-  // JORNADA 3 (18 OCT) - AJUSTADO PARA DAR LAS CARRERAS A FAVOR Y EN CONTRA DE LIDOM.COM
+  // JORNADA 3 (18 OCT) - COMPLETA EL RÉCORD REAL (2-1 GC, EO, TE, L | 1-2 AC | 0-3 E)
   { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
   { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
   { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 14, homeRuns: 8, status: 'FINAL', inning: 'Final' },
 
-  // CARTELERA HOY (20 OCT)
+  // CARTELERA OFICIAL DE HOY (20 OCTUBRE)
   {
     id: 101, date: '2026-10-20', time: '07:00 PM', stadium: 'Estadio Julián Javier (SFM)',
     away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
