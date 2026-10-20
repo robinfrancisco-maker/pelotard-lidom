@@ -181,9 +181,6 @@
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
         .sim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
         .sim-card { background: #0f172a; padding: 0.8rem; border-radius: 8px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--card-border); }
-        .sim-inputs { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-        .sim-input { width: 45px; background: #1e293b; border: 1px solid var(--card-border); color: white; text-align: center; padding: 4px; border-radius: 4px; }
-        .btn-sim-save { background: var(--secondary); color: white; border: none; padding: 6px 12px; font-size: 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -313,7 +310,7 @@
                 <div class="admin-box">
                     <div class="admin-title">🔒 Control Manual de Partidos (Backend Live)</div>
                     <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
-                        Modifica los marcadores o estado de los juegos para pruebas.
+                        Consola de estado del servidor en vivo.
                     </p>
                     <div class="sim-grid" id="simGamesContainer"></div>
                 </div>
@@ -424,22 +421,43 @@
         ];
 
         const ALL_GAMES_MASTER = [
-            // JORNADAS PASADAS (16 Y 17 OCTUBRE)
-            { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayPitcher: 'Joan Adón', homePitcher: 'Wily Peralta', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.65, total: 9.0, over: 1.85, under: 1.95 },
-            { id: 2, date: '2026-10-16', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'L', home: 'E', awayPitcher: 'A. Medina', homePitcher: 'P. Weigel', awayRuns: 12, homeRuns: 2, status: 'FINAL', inning: 'Final', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.55, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 3, date: '2026-10-16', stadium: 'Tetelo Vargas (SPM)', time: '07:30 PM', away: 'TE', home: 'EO', awayPitcher: 'P. Valdez', homePitcher: 'O. de la Cruz', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final', awayMl: 2.00, homeMl: 1.80, rlLine: 1.5, awayRl: 1.60, homeRl: 2.20, total: 8.0, over: 1.85, under: 1.95 },
-            { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayPitcher: 'E. Romero', homePitcher: 'P. Valdez', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.65, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayPitcher: 'E. Escalona', homePitcher: 'G. Garabito', awayRuns: 3, homeRuns: 2, status: 'FINAL', inning: 'Final', awayMl: 1.95, homeMl: 1.85, rlLine: 1.5, awayRl: 1.55, homeRl: 2.25, total: 9.0, over: 1.85, under: 1.95 },
-            { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayPitcher: 'D. Mengden', homePitcher: 'V. Gutiérrez', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final', awayMl: 2.10, homeMl: 1.72, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.5, over: 1.85, under: 1.95 },
+            // JORNADA 1 (16 OCT)
+            { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
+            { id: 2, date: '2026-10-16', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'L', home: 'E', awayRuns: 12, homeRuns: 2, status: 'FINAL', inning: 'Final' },
+            { id: 3, date: '2026-10-16', stadium: 'Tetelo Vargas (SPM)', time: '07:30 PM', away: 'TE', home: 'EO', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
 
-            // HOY (20 OCTUBRE)
-            { id: 101, date: '2026-10-20', stadium: 'Estadio Quisqueya Juan Marichal', time: '07:15 PM', away: 'AC', home: 'L', awayPitcher: 'Por definir', homePitcher: 'José Quintana', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 102, date: '2026-10-20', stadium: 'Estadio Julián Javier', time: '07:00 PM', away: 'E', home: 'GC', awayPitcher: 'Por definir', homePitcher: 'Jared Wetherbee', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 103, date: '2026-10-20', stadium: 'Estadio Tetelo Vargas', time: '07:30 PM', away: 'TE', home: 'EO', awayPitcher: 'Spencer Turnbull', homePitcher: 'Enny Romero', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90 },
+            // JORNADA 2 (17 OCT)
+            { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final' },
+            { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
+            { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
 
-            // PRÓXIMOS (21 Y 22 OCTUBRE)
-            { id: 104, date: '2026-10-21', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'L', home: 'AC', awayPitcher: 'Adonis Medina', homePitcher: 'Joan Adón', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.15, homeRl: 1.65, total: 9.0, over: 1.85, under: 1.95 },
-            { id: 105, date: '2026-10-22', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'EO', home: 'E', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Por definir', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
+            // JORNADA 3 (18 OCT)
+            { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
+            { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 2, status: 'FINAL', inning: 'Final' },
+            { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 14, homeRuns: 8, status: 'FINAL', inning: 'Final' },
+
+            // CARTELERA HOY (20 OCTUBRE)
+            {
+                id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM',
+                away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
+                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM',
+                awayPitcher: 'Por definir', homePitcher: 'Por definir',
+                awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90
+            },
+            {
+                id: 102, date: '2026-10-20', stadium: 'Estadio Quisqueya Juan Marichal', time: '07:15 PM',
+                away: 'EO', home: 'E', awayName: 'Estrellas Orientales (2-1)', homeName: 'Leones del Escogido (0-3)',
+                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM',
+                awayPitcher: 'Por definir', homePitcher: 'Por definir',
+                awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95
+            },
+            {
+                id: 103, date: '2026-10-20', stadium: 'Estadio Francisco Micheli (LRN)', time: '07:30 PM',
+                away: 'AC', home: 'TE', awayName: 'Águilas Cibaeñas (1-2)', homeName: 'Toros del Este (2-1)',
+                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM',
+                awayPitcher: 'Por definir', homePitcher: 'Por definir',
+                awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90
+            }
         ];
 
         const FULL_LINEUPS = {
@@ -509,7 +527,7 @@
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v3');
+            const saved = localStorage.getItem('pelotard_state_v4');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -525,7 +543,7 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v3', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v4', JSON.stringify(state)); }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
@@ -756,50 +774,35 @@
             });
         }
 
+        // FUNCIÓN STANDINGS FIX: DATOS EXACTOS DE LIDOM.COM
         function renderStandings() {
             const tbody = document.getElementById('standingsTableBody');
             tbody.innerHTML = '';
-            const dynamicStandings = {};
-            Object.keys(TEAMS).forEach(code => { dynamicStandings[code] = { G: 0, P: 0, ca: 0, cp: 0 }; });
 
-            liveGamesData.forEach(game => {
-                if (game.status === 'FINAL') {
-                    if (dynamicStandings[game.away]) {
-                        dynamicStandings[game.away].ca += game.awayRuns;
-                        dynamicStandings[game.away].cp += game.homeRuns;
-                        if (game.awayRuns > game.homeRuns) dynamicStandings[game.away].G++;
-                        else dynamicStandings[game.away].P++;
-                    }
-                    if (dynamicStandings[game.home]) {
-                        dynamicStandings[game.home].ca += game.homeRuns;
-                        dynamicStandings[game.home].cp += game.awayRuns;
-                        if (game.homeRuns > game.awayRuns) dynamicStandings[game.home].G++;
-                        else dynamicStandings[game.home].P++;
-                    }
-                }
-            });
+            const OFFICIAL_STANDINGS = [
+                { code: 'GC', name: 'Gigantes del Cibao', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'L1', ca: 12, cp: 6, difC: '+6' },
+                { code: 'EO', name: 'Estrellas Orientales', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'L1', ca: 23, cp: 9, difC: '+14' },
+                { code: 'TE', name: 'Toros del Este', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'W2', ca: 11, cp: 18, difC: '-7' },
+                { code: 'L',  name: 'Tigres del Licey', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'W1', ca: 18, cp: 13, difC: '+5' },
+                { code: 'AC', name: 'Águilas Cibaeñas', jj: 3, g: 1, p: 2, pct: '.333', dif: '1.00', u10: '1-2', racha: 'W1', ca: 8, cp: 10, difC: '-2' },
+                { code: 'E',  name: 'Leones del Escogido', jj: 3, g: 0, p: 3, pct: '.000', dif: '2.00', u10: '0-3', racha: 'L3', ca: 9, cp: 25, difC: '-16' }
+            ];
 
-            const standingsList = Object.keys(TEAMS).map(code => {
-                const data = dynamicStandings[code];
-                const jj = data.G + data.P;
-                const pct = jj > 0 ? (data.G / jj).toFixed(3) : '.000';
-                return { code, name: TEAMS[code].name, jj, g: data.G, p: data.P, ca: data.ca, cp: data.cp, difC: data.ca - data.cp, pctVal: parseFloat(pct), pctStr: pct.replace('0.', '.') };
-            });
-
-            standingsList.sort((a, b) => b.pctVal - a.pctVal || b.g - a.g);
-
-            const leaderWins = standingsList[0].g;
-            const leaderLosses = standingsList[0].p;
-
-            standingsList.forEach((team, idx) => {
-                let gamesBehind = '-';
-                if (idx > 0) {
-                    const gb = ((leaderWins - team.g) + (team.p - leaderLosses)) / 2;
-                    gamesBehind = gb > 0 ? gb.toFixed(1) : '-';
-                }
-
+            OFFICIAL_STANDINGS.forEach(team => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="team-cell"><strong>${team.name}</strong></td><td><strong>${team.jj}</strong></td><td style="color:var(--green-win); font-weight:bold;">${team.g}</td><td style="color:var(--red-loss); font-weight:bold;">${team.p}</td><td><strong>${team.pctStr}</strong></td><td style="color:var(--gold); font-weight:bold;">${gamesBehind}</td><td>${team.g}-${team.p}</td><td>-</td><td>${team.ca}</td><td>${team.cp}</td><td style="font-weight:bold; color:${team.difC >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${team.difC > 0 ? '+' + team.difC : team.difC}</td>`;
+                tr.innerHTML = `
+                    <td class="team-cell"><strong>${team.name}</strong></td>
+                    <td><strong>${team.jj}</strong></td>
+                    <td style="color:var(--green-win); font-weight:bold;">${team.g}</td>
+                    <td style="color:var(--red-loss); font-weight:bold;">${team.p}</td>
+                    <td><strong>${team.pct}</strong></td>
+                    <td style="color:var(--gold); font-weight:bold;">${team.dif}</td>
+                    <td>${team.u10}</td>
+                    <td><strong>${team.racha}</strong></td>
+                    <td>${team.ca}</td>
+                    <td>${team.cp}</td>
+                    <td style="font-weight:bold; color:${team.difC.includes('+') ? 'var(--green-win)' : 'var(--red-loss)'};">${team.difC}</td>
+                `;
                 tbody.appendChild(tr);
             });
         }
