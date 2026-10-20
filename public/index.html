@@ -313,7 +313,7 @@
                 <div class="admin-box">
                     <div class="admin-title">🔒 Control Manual de Partidos (Backend Live)</div>
                     <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
-                        Los datos se sincronizan automáticamente con la API de MLB/LIDOM.
+                        Modifica los marcadores o estado de los juegos para pruebas.
                     </p>
                     <div class="sim-grid" id="simGamesContainer"></div>
                 </div>
@@ -386,6 +386,8 @@
     </div>
 
     <script>
+        const CURRENT_DATE = '2026-10-20';
+
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
             'E': { code: 'E', name: 'Leones del Escogido', class: 'bg-E' },
@@ -400,30 +402,114 @@
             { pos: 2, name: 'Marco Luciano', team: 'EO', avg: '.600', ops: '2.067', h: 3, hr: 1, ci: 2, ca: 2 },
             { pos: 3, name: 'Francisco Mejía', team: 'L', avg: '.600', ops: '1.314', h: 3, hr: 0, ci: 2, ca: 1 },
             { pos: 4, name: 'Jefferson Rojas', team: 'GC', avg: '.571', ops: '2.054', h: 4, hr: 2, ci: 3, ca: 4 },
-            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 }
+            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 },
+            { pos: 6, name: 'Leo Bernal', team: 'EO', avg: '.500', ops: '1.500', h: 2, hr: 1, ci: 2, ca: 2 },
+            { pos: 7, name: 'Raimel Tapia', team: 'EO', avg: '.429', ops: '1.000', h: 3, hr: 0, ci: 1, ca: 1 },
+            { pos: 8, name: 'Harold Ramírez', team: 'EO', avg: '.400', ops: '1.100', h: 2, hr: 0, ci: 2, ca: 1 },
+            { pos: 9, name: 'Mel Rojas Jr.', team: 'L', avg: '.375', ops: '1.025', h: 3, hr: 0, ci: 3, ca: 2 },
+            { pos: 10, name: 'Cristhian Adames', team: 'TE', avg: '.333', ops: '.933', h: 2, hr: 0, ci: 1, ca: 1 }
         ];
 
         const PITCHING_LEADERS = [
             { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 5, whip: '0.60' },
             { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 9, whip: '0.60' },
             { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 1, il: '4.0', k: 4, whip: '0.33' },
-            { pos: 4, name: 'Phillips Valdez', team: 'TE', era: '0.00', gp: '1-0', js: 1, il: '4.0', k: 3, whip: '0.50' }
+            { pos: 4, name: 'Phillips Valdez', team: 'TE', era: '0.00', gp: '1-0', js: 1, il: '4.0', k: 3, whip: '0.50' },
+            { pos: 5, name: 'Wily Peralta', team: 'GC', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 6, whip: '0.80' },
+            { pos: 6, name: 'Jimmy Cordero', team: 'GC', era: '0.00', gp: '0-0', js: 2, il: '2.0', k: 3, whip: '0.50' },
+            { pos: 7, name: 'Vladimir Gutiérrez', team: 'L', era: '2.08', gp: '0-0', js: 1, il: '4.1', k: 8, whip: '0.92' },
+            { pos: 8, name: 'Joan Adón', team: 'AC', era: '2.25', gp: '0-1', js: 1, il: '4.0', k: 6, whip: '1.00' },
+            { pos: 9, name: 'Enny Romero', team: 'EO', era: '2.45', gp: '0-0', js: 1, il: '3.2', k: 4, whip: '1.09' },
+            { pos: 10, name: 'Cristopher Molina', team: 'GC', era: '3.00', gp: '1-0', js: 1, il: '3.0', k: 3, whip: '1.00' }
         ];
 
-        const DEFAULT_LINEUPS = {
-            'L': { pitcher: 'José Quintana (LHP)', bullpen: 'M. Castro, J. Asencio', batters: [{ order: 1, name: 'Emilio Bonifacio', pos: 'CF' }, { order: 2, name: 'Gustavo Núñez', pos: '2B' }] },
-            'E': { pitcher: 'Por definir (RHP)', bullpen: 'J. Rhoades, D. Cordero', batters: [{ order: 1, name: 'Carlos Jiménez', pos: 'CF' }, { order: 2, name: 'Erik González', pos: 'SS' }] },
-            'GC': { pitcher: 'Jared Wetherbee (LHP)', bullpen: 'A. Pilar, R. Gudino', batters: [{ order: 1, name: 'Carlos Jorge', pos: 'CF' }, { order: 2, name: 'Noelvi Marte', pos: 'RF' }] },
-            'AC': { pitcher: 'Gerson Garabito (RHP)', bullpen: 'R. Osuna, J. Adón', batters: [{ order: 1, name: 'Leodalis de Vries', pos: 'SS' }, { order: 2, name: 'Adael Amador', pos: '2B' }] },
-            'EO': { pitcher: 'Enny Romero (LHP)', bullpen: 'J. Barría, R. Blanco', batters: [{ order: 1, name: 'Ismael Munguía', pos: 'RF' }, { order: 2, name: 'Harold Ramírez', pos: 'DH' }] },
-            'TE': { pitcher: 'Spencer Turnbull (RHP)', bullpen: 'A. Brooks, P. Valdez', batters: [{ order: 1, name: 'Gilberto Celestino', pos: 'CF' }, { order: 2, name: 'George Valera', pos: 'LF' }] }
+        const ALL_GAMES_MASTER = [
+            // JORNADAS PASADAS (16 Y 17 OCTUBRE)
+            { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayPitcher: 'Joan Adón', homePitcher: 'Wily Peralta', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.65, total: 9.0, over: 1.85, under: 1.95 },
+            { id: 2, date: '2026-10-16', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'L', home: 'E', awayPitcher: 'A. Medina', homePitcher: 'P. Weigel', awayRuns: 12, homeRuns: 2, status: 'FINAL', inning: 'Final', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.55, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 3, date: '2026-10-16', stadium: 'Tetelo Vargas (SPM)', time: '07:30 PM', away: 'TE', home: 'EO', awayPitcher: 'P. Valdez', homePitcher: 'O. de la Cruz', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final', awayMl: 2.00, homeMl: 1.80, rlLine: 1.5, awayRl: 1.60, homeRl: 2.20, total: 8.0, over: 1.85, under: 1.95 },
+            { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayPitcher: 'E. Romero', homePitcher: 'P. Valdez', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.65, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayPitcher: 'E. Escalona', homePitcher: 'G. Garabito', awayRuns: 3, homeRuns: 2, status: 'FINAL', inning: 'Final', awayMl: 1.95, homeMl: 1.85, rlLine: 1.5, awayRl: 1.55, homeRl: 2.25, total: 9.0, over: 1.85, under: 1.95 },
+            { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayPitcher: 'D. Mengden', homePitcher: 'V. Gutiérrez', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final', awayMl: 2.10, homeMl: 1.72, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.5, over: 1.85, under: 1.95 },
+
+            // HOY (20 OCTUBRE)
+            { id: 101, date: '2026-10-20', stadium: 'Estadio Quisqueya Juan Marichal', time: '07:15 PM', away: 'AC', home: 'L', awayPitcher: 'Por definir', homePitcher: 'José Quintana', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 102, date: '2026-10-20', stadium: 'Estadio Julián Javier', time: '07:00 PM', away: 'E', home: 'GC', awayPitcher: 'Por definir', homePitcher: 'Jared Wetherbee', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 103, date: '2026-10-20', stadium: 'Estadio Tetelo Vargas', time: '07:30 PM', away: 'TE', home: 'EO', awayPitcher: 'Spencer Turnbull', homePitcher: 'Enny Romero', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90 },
+
+            // PRÓXIMOS (21 Y 22 OCTUBRE)
+            { id: 104, date: '2026-10-21', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'L', home: 'AC', awayPitcher: 'Adonis Medina', homePitcher: 'Joan Adón', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.15, homeRl: 1.65, total: 9.0, over: 1.85, under: 1.95 },
+            { id: 105, date: '2026-10-22', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'EO', home: 'E', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Por definir', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
+        ];
+
+        const FULL_LINEUPS = {
+            'L': {
+                pitcher: 'José Quintana (LHP)', bullpen: 'M. Castro, J. Asencio, J. Aro',
+                batters: [
+                    { order: 1, name: 'Emilio Bonifacio', pos: 'CF' }, { order: 2, name: 'Gustavo Núñez', pos: '2B' },
+                    { order: 3, name: 'Mel Rojas Jr.', pos: 'LF' }, { order: 4, name: 'Francisco Mejía', pos: 'C' },
+                    { order: 5, name: 'Dawel Lugo', pos: '3B' }, { order: 6, name: 'Liover Peguero', pos: 'SS' },
+                    { order: 7, name: 'Aristides Aquino', pos: 'RF' }, { order: 8, name: 'Michael De La Cruz', pos: 'DH' },
+                    { order: 9, name: 'Triston Casas', pos: '1B' }
+                ]
+            },
+            'E': {
+                pitcher: 'P. Weigel (RHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte',
+                batters: [
+                    { order: 1, name: 'Carlos Jiménez', pos: 'CF' }, { order: 2, name: 'Erik González', pos: 'SS' },
+                    { order: 3, name: 'Junior Lake', pos: 'LF' }, { order: 4, name: 'Franmil Reyes', pos: 'DH' },
+                    { order: 5, name: 'Yairo Muñoz', pos: '3B' }, { order: 6, name: 'Socrates Brito', pos: 'RF' },
+                    { order: 7, name: 'Aneurys Zabala', pos: '1B' }, { order: 8, name: 'Pedro Severino', pos: 'C' },
+                    { order: 9, name: 'Jonathan Araúz', pos: '2B' }
+                ]
+            },
+            'GC': {
+                pitcher: 'Jared Wetherbee (LHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero',
+                batters: [
+                    { order: 1, name: 'Carlos Jorge', pos: 'CF' }, { order: 2, name: 'Noelvi Marte', pos: 'RF' },
+                    { order: 3, name: 'Kelvin Gutiérrez', pos: '3B' }, { order: 4, name: 'Henry Urrutia', pos: 'DH' },
+                    { order: 5, name: 'Jefferson Rojas', pos: 'SS' }, { order: 6, name: 'Leury García', pos: 'LF' },
+                    { order: 7, name: 'Carlos Peguero', pos: '1B' }, { order: 8, name: 'Ronaldo Hernández', pos: 'C' },
+                    { order: 9, name: 'Yoyner Fajardo', pos: '2B' }
+                ]
+            },
+            'AC': {
+                pitcher: 'Gerson Garabito (RHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala',
+                batters: [
+                    { order: 1, name: 'Leodalis de Vries', pos: 'SS' }, { order: 2, name: 'Adael Amador', pos: '2B' },
+                    { order: 3, name: 'Yairo Muñoz', pos: '3B' }, { order: 4, name: 'Eddys Leonard', pos: 'DH' },
+                    { order: 5, name: 'Jerar Encarnación', pos: 'RF' }, { order: 6, name: 'Alexander Canario', pos: 'CF' },
+                    { order: 7, name: 'Starlin Castro', pos: '1B' }, { order: 8, name: 'Francisco Peña', pos: 'C' },
+                    { order: 9, name: 'Gilberto Celestino', pos: 'LF' }
+                ]
+            },
+            'EO': {
+                pitcher: 'Enny Romero (LHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren',
+                batters: [
+                    { order: 1, name: 'Ismael Munguía', pos: 'RF' }, { order: 2, name: 'Harold Ramírez', pos: 'DH' },
+                    { order: 3, name: 'Marco Luciano', pos: 'SS' }, { order: 4, name: 'Raimel Tapia', pos: 'LF' },
+                    { order: 5, name: 'Leo Bernal', pos: 'C' }, { order: 6, name: 'Eguy Rosario', pos: '3B' },
+                    { order: 7, name: 'Miguel Sanó', pos: '1B' }, { order: 8, name: 'JP Martínez', pos: 'CF' },
+                    { order: 9, name: 'Wilin Rosario', pos: '2B' }
+                ]
+            },
+            'TE': {
+                pitcher: 'Spencer Turnbull (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad',
+                batters: [
+                    { order: 1, name: 'Gilberto Celestino', pos: 'CF' }, { order: 2, name: 'George Valera', pos: 'LF' },
+                    { order: 3, name: 'Cristhian Adames', pos: '3B' }, { order: 4, name: 'Yairo Muñoz', pos: 'DH' },
+                    { order: 5, name: 'Troy Johnston', pos: '1B' }, { order: 6, name: 'Sandro Fabian', pos: 'RF' },
+                    { order: 7, name: 'Ronny Simón', pos: '2B' }, { order: 8, name: 'Webster Rivas', pos: 'C' },
+                    { order: 9, name: 'Engel Beltré', pos: 'SS' }
+                ]
+            }
         };
 
-        let liveGamesData = [];
+        let liveGamesData = ALL_GAMES_MASTER;
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v2');
+            const saved = localStorage.getItem('pelotard_state_v3');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -439,7 +525,7 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v2', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v3', JSON.stringify(state)); }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
@@ -448,6 +534,9 @@
             renderBattingLeaders();
             renderPitchingLeaders();
             renderLineups();
+            renderGames();
+            renderStandings();
+            renderAdminGames();
             updateBalanceDisplay();
             updateHistoryTable();
             updateSlipUI();
@@ -466,8 +555,17 @@
                 document.getElementById('btnSyncText').textContent = 'Reconectando...';
             });
 
-            socket.on('lidom_update', (games) => {
-                liveGamesData = games;
+            socket.on('lidom_update', (serverGames) => {
+                if (serverGames && serverGames.length > 0) {
+                    serverGames.forEach(sg => {
+                        const idx = liveGamesData.findIndex(g => g.id === sg.id);
+                        if (idx > -1) {
+                            liveGamesData[idx] = { ...liveGamesData[idx], ...sg };
+                        } else {
+                            liveGamesData.push(sg);
+                        }
+                    });
+                }
                 renderLiveTicker();
                 renderGames();
                 renderStandings();
@@ -479,12 +577,14 @@
             const banner = document.getElementById('liveTickerBanner');
             banner.innerHTML = '';
 
-            if (!liveGamesData || liveGamesData.length === 0) {
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE || g.status === 'LIVE');
+
+            if (todayGames.length === 0) {
                 banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Sin partidos en vivo.</span>';
                 return;
             }
 
-            liveGamesData.forEach(game => {
+            todayGames.forEach(game => {
                 const item = document.createElement('div');
                 item.className = 'ticker-item';
 
@@ -502,18 +602,35 @@
             });
         }
 
+        function setFilter(filterType, btnId) {
+            state.activeFilter = filterType;
+            document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+            saveState();
+            renderGames();
+        }
+
         function renderGames() {
             const container = document.getElementById('gamesContainer');
             container.innerHTML = '';
 
-            if (!liveGamesData || liveGamesData.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos disponibles para la jornada.</div>';
+            let filteredGames = liveGamesData;
+            if (state.activeFilter === 'TODAY') {
+                filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
+            } else if (state.activeFilter === 'UPCOMING') {
+                filteredGames = liveGamesData.filter(g => g.date > CURRENT_DATE);
+            } else if (state.activeFilter === 'PASSED') {
+                filteredGames = liveGamesData.filter(g => g.date < CURRENT_DATE || g.status === 'FINAL');
+            }
+
+            if (filteredGames.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos disponibles para esta sección.</div>';
                 return;
             }
 
-            liveGamesData.forEach(game => {
-                const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName, class: 'bg-L' };
-                const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName, class: 'bg-E' };
+            filteredGames.forEach(game => {
+                const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName || game.away, class: 'bg-L' };
+                const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home, class: 'bg-E' };
                 const isPassed = game.status === 'FINAL';
                 const isLive = game.status === 'LIVE';
 
@@ -524,24 +641,45 @@
                 if (isLive) headerStatus = `<span class="ticker-badge-live">EN VIVO - ${game.inning}</span>`;
                 else if (isPassed) headerStatus = '<span class="status-badge status-GANADOR">FINAL</span>';
 
+                const rlLine = game.rlLine || 1.5;
+                const awayMl = (game.awayMl || 1.85).toFixed(2);
+                const homeMl = (game.homeMl || 1.95).toFixed(2);
+                const awayRl = (game.awayRl || 1.60).toFixed(2);
+                const homeRl = (game.homeRl || 2.25).toFixed(2);
+                const total = game.total || 8.5;
+                const over = (game.over || 1.90).toFixed(2);
+                const under = (game.under || 1.90).toFixed(2);
+
                 card.innerHTML = `
                     <div class="game-header"><span>📅 ${game.date} - ${game.time}</span>${headerStatus}</div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div><span>${awayTeam.name}</span></div><div class="team-score">${game.awayRuns}</div></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div><span>${homeTeam.name}</span></div><div class="team-score">${game.homeRuns}</div></div>
-                    <div class="pitchers-box"><span>⚾ <strong>Abridores:</strong> ${game.awayPitcher} vs ${game.homePitcher}</span></div>
+                    <div class="pitchers-box"><span>⚾ <strong>Abridores:</strong> ${game.awayPitcher || 'Por definir'} vs ${game.homePitcher || 'Por definir'}</span></div>
                     
                     ${!isPassed ? `
                         <div class="market-section">
                             <span class="market-label">🎯 QUIÉN GANA (MONEYLINE)</span>
                             <div class="odds-grid-3">
-                                <button class="odds-btn" data-game="${game.id}" data-market="ML" data-pick="${game.away}" data-odd="${game.awayMl}"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${game.awayMl.toFixed(2)}</span></button>
-                                <button class="odds-btn" data-game="${game.id}" data-market="ML" data-pick="${game.home}" data-odd="${game.homeMl}"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${game.homeMl.toFixed(2)}</span></button>
+                                <button class="odds-btn" data-game="${game.id}" data-market="ML" data-pick="${game.away}" data-odd="${awayMl}"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></button>
+                                <button class="odds-btn" data-game="${game.id}" data-market="ML" data-pick="${game.home}" data-odd="${homeMl}"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></button>
+                            </div>
+
+                            <span class="market-label">⚾ LÍNEA DE CARRERAS (RUN LINE)</span>
+                            <div class="odds-grid-3">
+                                <button class="odds-btn" data-game="${game.id}" data-market="RL" data-pick="${game.away} +${rlLine}" data-odd="${awayRl}"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></button>
+                                <button class="odds-btn" data-game="${game.id}" data-market="RL" data-pick="${game.home} -${rlLine}" data-odd="${homeRl}"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></button>
+                            </div>
+
+                            <span class="market-label">📊 TOTAL DE CARRERAS (ALTAS / BAJAS)</span>
+                            <div class="odds-grid-3">
+                                <button class="odds-btn" data-game="${game.id}" data-market="OU" data-pick="MÁS DE ${total}" data-odd="${over}"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></button>
+                                <button class="odds-btn" data-game="${game.id}" data-market="OU" data-pick="MENOS DE ${total}" data-odd="${under}"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></button>
                             </div>
                         </div>
                     ` : `
                         <div class="final-result-box">
                             <div class="final-result-title">🏆 GANADOR: ${game.awayRuns > game.homeRuns ? awayTeam.name : homeTeam.name}</div>
-                            <div style="font-size:0.85rem; color:var(--text-muted);">Marcador Final: ${game.awayRuns} -${game.homeRuns}</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted);">Marcador Final: ${game.awayRuns} - ${game.homeRuns}</div>
                         </div>
                     `}
                 `;
@@ -703,7 +841,7 @@
             });
 
             const teamCode = state.selectedLineupTeam;
-            const lineupData = DEFAULT_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
+            const lineupData = FULL_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
 
             const card = document.getElementById('lineupDisplayCard');
             card.innerHTML = `
@@ -712,14 +850,14 @@
                         <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
                         <div>
                             <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación (1 al 9 Titular)</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pitching-staff-box">
                     <div>⚾ <strong>Abridor Anunciado:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
-                    <div style="margin-top:4px;">🔥 <strong>Bullpen:</strong> ${lineupData.bullpen}</div>
+                    <div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${lineupData.bullpen}</div>
                 </div>
 
                 <table class="lineup-table">
@@ -793,7 +931,7 @@
                 div.className = 'sim-card';
                 div.innerHTML = `
                     <div><strong>#${game.id} ${game.away} vs ${game.home} (${game.date})</strong></div>
-                    <div style="font-size:0.8rem; color:var(--text-muted);">Estado actual: <strong>${game.status}</strong> (${game.inning})</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted);">Estado: <strong>${game.status}</strong> (${game.inning}) - Marcador: ${game.awayRuns} - ${game.homeRuns}</div>
                 `;
                 container.appendChild(div);
             });
@@ -815,6 +953,11 @@
             document.getElementById('btnTabTopLeaders').onclick = () => switchTab('viewTopLeaders', 'btnTabTopLeaders');
             document.getElementById('btnTabHistory').onclick = () => switchTab('viewHistory', 'btnTabHistory');
             document.getElementById('btnTabAdmin').onclick = () => switchTab('viewAdmin', 'btnTabAdmin');
+
+            document.getElementById('filterToday').onclick = () => setFilter('TODAY', 'filterToday');
+            document.getElementById('filterUpcoming').onclick = () => setFilter('UPCOMING', 'filterUpcoming');
+            document.getElementById('filterPassed').onclick = () => setFilter('PASSED', 'filterPassed');
+            document.getElementById('filterAll').onclick = () => setFilter('ALL', 'filterAll');
 
             document.getElementById('subBtnBatters').onclick = () => {
                 document.getElementById('subViewBatters').style.display = 'block';
@@ -858,4 +1001,4 @@
         function updateBalanceDisplay() { document.getElementById('userBalanceDisplay').textContent = state.userBalance.toLocaleString() + ' pts'; }
     </script>
 </body>
-</html> 
+</html>
