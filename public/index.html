@@ -199,7 +199,7 @@
         <div class="header-controls">
             <button class="btn-sync" id="btnSyncLidom">
                 <span class="connection-dot" id="connDot"></span>
-                <span id="btnSyncText">Sincronizar Ahora</span>
+                <span id="btnSyncText">Sincronizado</span>
             </button>
 
             <div class="player-input-box">
@@ -383,7 +383,7 @@
     </div>
 
     <script>
-        const CURRENT_DATE = '2026-10-20';
+        const CURRENT_DATE = '2026-10-21';
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
@@ -420,114 +420,11 @@
             { pos: 10, name: 'Cristopher Molina', team: 'GC', era: '3.00', gp: '1-0', js: 1, il: '3.0', k: 3, whip: '1.00' }
         ];
 
-        const ALL_GAMES_MASTER = [
-            // JORNADA 1 (16 OCT)
-            { id: 1, date: '2026-10-16', stadium: 'Julián Javier (SFM)', time: '07:00 PM', away: 'AC', home: 'GC', awayRuns: 1, homeRuns: 4, status: 'FINAL', inning: 'Final' },
-            { id: 2, date: '2026-10-16', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'L', home: 'E', awayRuns: 12, homeRuns: 2, status: 'FINAL', inning: 'Final' },
-            { id: 3, date: '2026-10-16', stadium: 'Tetelo Vargas (SPM)', time: '07:30 PM', away: 'TE', home: 'EO', awayRuns: 2, homeRuns: 5, status: 'FINAL', inning: 'Final' },
-
-            // JORNADA 2 (17 OCT)
-            { id: 4, date: '2026-10-17', stadium: 'Francisco Micheli (LRN)', time: '07:30 PM', away: 'EO', home: 'TE', awayRuns: 4, homeRuns: 1, status: 'FINAL', inning: 'Final' },
-            { id: 5, date: '2026-10-17', stadium: 'Estadio Cibao (STI)', time: '07:00 PM', away: 'E', home: 'AC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
-            { id: 6, date: '2026-10-17', stadium: 'Quisqueya (SDQ)', time: '07:15 PM', away: 'GC', home: 'L', awayRuns: 6, homeRuns: 3, status: 'FINAL', inning: 'Final' },
-
-            // JORNADA 3 (18 OCT)
-            { id: 7, date: '2026-10-18', stadium: 'Quisqueya (SDQ)', time: '05:00 PM', away: 'E', home: 'L', awayRuns: 4, homeRuns: 3, status: 'FINAL', inning: 'Final' },
-            { id: 8, date: '2026-10-18', stadium: 'Estadio Cibao (STI)', time: '05:00 PM', away: 'GC', home: 'AC', awayRuns: 2, homeRuns: 2, status: 'FINAL', inning: 'Final' },
-            { id: 9, date: '2026-10-18', stadium: 'Francisco Micheli (LRN)', time: '05:00 PM', away: 'EO', home: 'TE', awayRuns: 14, homeRuns: 8, status: 'FINAL', inning: 'Final' },
-
-            // CARTELERA HOY (20 OCTUBRE)
-            {
-                id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM',
-                away: 'L', home: 'GC', awayName: 'Tigres del Licey (2-1)', homeName: 'Gigantes del Cibao (2-1)',
-                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:00 PM',
-                awayPitcher: 'Por definir', homePitcher: 'Por definir',
-                awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90
-            },
-            {
-                id: 102, date: '2026-10-20', stadium: 'Estadio Quisqueya Juan Marichal', time: '07:15 PM',
-                away: 'EO', home: 'E', awayName: 'Estrellas Orientales (2-1)', homeName: 'Leones del Escogido (0-3)',
-                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM',
-                awayPitcher: 'Por definir', homePitcher: 'Por definir',
-                awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95
-            },
-            {
-                id: 103, date: '2026-10-20', stadium: 'Estadio Francisco Micheli (LRN)', time: '07:30 PM',
-                away: 'AC', home: 'TE', awayName: 'Águilas Cibaeñas (1-2)', homeName: 'Toros del Este (2-1)',
-                awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM',
-                awayPitcher: 'Por definir', homePitcher: 'Por definir',
-                awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.65, homeRl: 2.15, total: 8.0, over: 1.90, under: 1.90
-            }
-        ];
-
-        const FULL_LINEUPS = {
-            'L': {
-                pitcher: 'José Quintana (LHP)', bullpen: 'M. Castro, J. Asencio, J. Aro',
-                batters: [
-                    { order: 1, name: 'Emilio Bonifacio', pos: 'CF' }, { order: 2, name: 'Gustavo Núñez', pos: '2B' },
-                    { order: 3, name: 'Mel Rojas Jr.', pos: 'LF' }, { order: 4, name: 'Francisco Mejía', pos: 'C' },
-                    { order: 5, name: 'Dawel Lugo', pos: '3B' }, { order: 6, name: 'Liover Peguero', pos: 'SS' },
-                    { order: 7, name: 'Aristides Aquino', pos: 'RF' }, { order: 8, name: 'Michael De La Cruz', pos: 'DH' },
-                    { order: 9, name: 'Triston Casas', pos: '1B' }
-                ]
-            },
-            'E': {
-                pitcher: 'P. Weigel (RHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte',
-                batters: [
-                    { order: 1, name: 'Carlos Jiménez', pos: 'CF' }, { order: 2, name: 'Erik González', pos: 'SS' },
-                    { order: 3, name: 'Junior Lake', pos: 'LF' }, { order: 4, name: 'Franmil Reyes', pos: 'DH' },
-                    { order: 5, name: 'Yairo Muñoz', pos: '3B' }, { order: 6, name: 'Socrates Brito', pos: 'RF' },
-                    { order: 7, name: 'Aneurys Zabala', pos: '1B' }, { order: 8, name: 'Pedro Severino', pos: 'C' },
-                    { order: 9, name: 'Jonathan Araúz', pos: '2B' }
-                ]
-            },
-            'GC': {
-                pitcher: 'Jared Wetherbee (LHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero',
-                batters: [
-                    { order: 1, name: 'Carlos Jorge', pos: 'CF' }, { order: 2, name: 'Noelvi Marte', pos: 'RF' },
-                    { order: 3, name: 'Kelvin Gutiérrez', pos: '3B' }, { order: 4, name: 'Henry Urrutia', pos: 'DH' },
-                    { order: 5, name: 'Jefferson Rojas', pos: 'SS' }, { order: 6, name: 'Leury García', pos: 'LF' },
-                    { order: 7, name: 'Carlos Peguero', pos: '1B' }, { order: 8, name: 'Ronaldo Hernández', pos: 'C' },
-                    { order: 9, name: 'Yoyner Fajardo', pos: '2B' }
-                ]
-            },
-            'AC': {
-                pitcher: 'Gerson Garabito (RHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala',
-                batters: [
-                    { order: 1, name: 'Leodalis de Vries', pos: 'SS' }, { order: 2, name: 'Adael Amador', pos: '2B' },
-                    { order: 3, name: 'Yairo Muñoz', pos: '3B' }, { order: 4, name: 'Eddys Leonard', pos: 'DH' },
-                    { order: 5, name: 'Jerar Encarnación', pos: 'RF' }, { order: 6, name: 'Alexander Canario', pos: 'CF' },
-                    { order: 7, name: 'Starlin Castro', pos: '1B' }, { order: 8, name: 'Francisco Peña', pos: 'C' },
-                    { order: 9, name: 'Gilberto Celestino', pos: 'LF' }
-                ]
-            },
-            'EO': {
-                pitcher: 'Enny Romero (LHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren',
-                batters: [
-                    { order: 1, name: 'Ismael Munguía', pos: 'RF' }, { order: 2, name: 'Harold Ramírez', pos: 'DH' },
-                    { order: 3, name: 'Marco Luciano', pos: 'SS' }, { order: 4, name: 'Raimel Tapia', pos: 'LF' },
-                    { order: 5, name: 'Leo Bernal', pos: 'C' }, { order: 6, name: 'Eguy Rosario', pos: '3B' },
-                    { order: 7, name: 'Miguel Sanó', pos: '1B' }, { order: 8, name: 'JP Martínez', pos: 'CF' },
-                    { order: 9, name: 'Wilin Rosario', pos: '2B' }
-                ]
-            },
-            'TE': {
-                pitcher: 'Spencer Turnbull (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad',
-                batters: [
-                    { order: 1, name: 'Gilberto Celestino', pos: 'CF' }, { order: 2, name: 'George Valera', pos: 'LF' },
-                    { order: 3, name: 'Cristhian Adames', pos: '3B' }, { order: 4, name: 'Yairo Muñoz', pos: 'DH' },
-                    { order: 5, name: 'Troy Johnston', pos: '1B' }, { order: 6, name: 'Sandro Fabian', pos: 'RF' },
-                    { order: 7, name: 'Ronny Simón', pos: '2B' }, { order: 8, name: 'Webster Rivas', pos: 'C' },
-                    { order: 9, name: 'Engel Beltré', pos: 'SS' }
-                ]
-            }
-        };
-
-        let liveGamesData = ALL_GAMES_MASTER;
+        let liveGamesData = [];
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v4');
+            const saved = localStorage.getItem('pelotard_state_v5');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -543,7 +440,7 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v4', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v5', JSON.stringify(state)); }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
@@ -552,16 +449,20 @@
             renderBattingLeaders();
             renderPitchingLeaders();
             renderLineups();
-            renderGames();
             renderStandings();
-            renderAdminGames();
             updateBalanceDisplay();
             updateHistoryTable();
             updateSlipUI();
         });
 
+        // RECONEXIÓN Y TRANSPORTE SEGURO FORZADO A RENDER (WSS)
         function setupWebSockets() {
-            socket = io();
+            socket = io('https://pelotard-lidom.onrender.com', {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: Infinity,
+                reconnectionDelay: 2000
+            });
 
             socket.on('connect', () => {
                 document.getElementById('connDot').classList.remove('offline');
@@ -575,19 +476,12 @@
 
             socket.on('lidom_update', (serverGames) => {
                 if (serverGames && serverGames.length > 0) {
-                    serverGames.forEach(sg => {
-                        const idx = liveGamesData.findIndex(g => g.id === sg.id);
-                        if (idx > -1) {
-                            liveGamesData[idx] = { ...liveGamesData[idx], ...sg };
-                        } else {
-                            liveGamesData.push(sg);
-                        }
-                    });
+                    liveGamesData = serverGames;
+                    renderLiveTicker();
+                    renderGames();
+                    renderStandings();
+                    renderAdminGames();
                 }
-                renderLiveTicker();
-                renderGames();
-                renderStandings();
-                renderAdminGames();
             });
         }
 
@@ -598,7 +492,7 @@
             const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE || g.status === 'LIVE');
 
             if (todayGames.length === 0) {
-                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Sin partidos en vivo.</span>';
+                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando partidos en vivo de la LIDOM...</span>';
                 return;
             }
 
@@ -642,7 +536,7 @@
             }
 
             if (filteredGames.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos disponibles para esta sección.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos registrados en este filtro.</div>';
                 return;
             }
 
@@ -774,7 +668,6 @@
             });
         }
 
-        // FUNCIÓN STANDINGS FIX: DATOS EXACTOS DE LIDOM.COM
         function renderStandings() {
             const tbody = document.getElementById('standingsTableBody');
             tbody.innerHTML = '';
@@ -844,33 +737,34 @@
             });
 
             const teamCode = state.selectedLineupTeam;
-            const lineupData = FULL_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
-
             const card = document.getElementById('lineupDisplayCard');
+            
+            const TODAY_LINEUPS = {
+                'L': { pitcher: 'Daniel Martínez (RHP)', bullpen: 'M. Castro, J. Asencio, J. Aro' },
+                'GC': { pitcher: 'Jackson Goddard (RHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero' },
+                'EO': { pitcher: 'Spencer Bivens (RHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren' },
+                'E': { pitcher: 'Ángel Sánchez (RHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte' },
+                'AC': { pitcher: 'Luis Peña (RHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala' },
+                'TE': { pitcher: 'Noah Skirrow (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad' }
+            };
+
+            const lineupData = TODAY_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir' };
+
             card.innerHTML = `
                 <div class="lineup-card-header">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
                         <div>
                             <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación (1 al 9 Titular)</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pitching-staff-box">
-                    <div>⚾ <strong>Abridor Anunciado:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
+                    <div>⚾ <strong>Abridor Confirmado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
                     <div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${lineupData.bullpen}</div>
                 </div>
-
-                <table class="lineup-table">
-                    <thead><tr><th style="width:50px;">Turno</th><th>Jugador Titular</th><th style="width:80px; text-align:center;">Pos</th></tr></thead>
-                    <tbody>
-                        ${lineupData.batters.map(b => `
-                            <tr><td><strong>${b.order}°</strong></td><td>${b.name}</td><td style="text-align:center;"><span style="background:#0f172a; padding:2px 8px; border-radius:4px; font-weight:bold; color:var(--gold);">${b.pos}</span></td></tr>
-                        `).join('')}
-                    </tbody>
-                </table>
             `;
         }
 
