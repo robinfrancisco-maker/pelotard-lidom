@@ -168,15 +168,10 @@
         .status-PENDIENTE { background: #d97706; color: white; }
         .status-GANADOR { background: #10b981; color: white; }
         .status-PERDEDOR { background: #ef4444; color: white; }
-        .status-SUSPENDIDO { background: #64748b; color: white; }
 
         .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 850px; margin: 0 auto; }
         .lineup-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 0.8rem; margin-bottom: 1rem; }
         .pitching-staff-box { background: #0f172a; border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
-        .lineup-table { width: 100%; border-collapse: collapse; }
-        .lineup-table th, .lineup-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--card-border); font-size: 0.9rem; }
-        .lineup-table th { background: #0f172a; color: var(--text-muted); }
-
         .admin-box { background: var(--card-bg); border: 1px dashed var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
         .sim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
@@ -383,7 +378,7 @@
     </div>
 
     <script>
-        const CURRENT_DATE = '2026-10-21';
+        let CURRENT_DATE = '2026-10-21';
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
@@ -424,7 +419,7 @@
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v5');
+            const saved = localStorage.getItem('pelotard_state_v6');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -440,7 +435,7 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v5', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v6', JSON.stringify(state)); }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
@@ -455,7 +450,6 @@
             updateSlipUI();
         });
 
-        // RECONEXIÓN Y TRANSPORTE SEGURO FORZADO A RENDER (WSS)
         function setupWebSockets() {
             socket = io('https://pelotard-lidom.onrender.com', {
                 transports: ['websocket', 'polling'],
@@ -474,9 +468,14 @@
                 document.getElementById('btnSyncText').textContent = 'Reconectando...';
             });
 
-            socket.on('lidom_update', (serverGames) => {
-                if (serverGames && serverGames.length > 0) {
-                    liveGamesData = serverGames;
+            socket.on('lidom_update', (data) => {
+                if (data) {
+                    if (data.date) CURRENT_DATE = data.date;
+                    if (data.games && data.games.length > 0) {
+                        liveGamesData = data.games;
+                    } else if (Array.isArray(data)) {
+                        liveGamesData = data;
+                    }
                     renderLiveTicker();
                     renderGames();
                     renderStandings();
@@ -536,7 +535,7 @@
             }
 
             if (filteredGames.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos registrados en este filtro.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos registrados para esta sección.</div>';
                 return;
             }
 
@@ -673,12 +672,12 @@
             tbody.innerHTML = '';
 
             const OFFICIAL_STANDINGS = [
-                { code: 'GC', name: 'Gigantes del Cibao', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'L1', ca: 12, cp: 6, difC: '+6' },
-                { code: 'EO', name: 'Estrellas Orientales', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'L1', ca: 23, cp: 9, difC: '+14' },
-                { code: 'TE', name: 'Toros del Este', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'W2', ca: 11, cp: 18, difC: '-7' },
-                { code: 'L',  name: 'Tigres del Licey', jj: 3, g: 2, p: 1, pct: '.667', dif: '0.00', u10: '2-1', racha: 'W1', ca: 18, cp: 13, difC: '+5' },
-                { code: 'AC', name: 'Águilas Cibaeñas', jj: 3, g: 1, p: 2, pct: '.333', dif: '1.00', u10: '1-2', racha: 'W1', ca: 8, cp: 10, difC: '-2' },
-                { code: 'E',  name: 'Leones del Escogido', jj: 3, g: 0, p: 3, pct: '.000', dif: '2.00', u10: '0-3', racha: 'L3', ca: 9, cp: 25, difC: '-16' }
+                { code: 'GC', name: 'Gigantes del Cibao', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W1', ca: 17, cp: 9, difC: '+8' },
+                { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W1', ca: 27, cp: 11, difC: '+16' },
+                { code: 'TE', name: 'Toros del Este', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W3', ca: 17, cp: 20, difC: '-3' },
+                { code: 'L',  name: 'Tigres del Licey', jj: 4, g: 2, p: 2, pct: '.500', dif: '1.00', u10: '2-2', racha: 'L1', ca: 21, cp: 18, difC: '+3' },
+                { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'L1', ca: 10, cp: 16, difC: '-6' },
+                { code: 'E',  name: 'Leones del Escogido', jj: 4, g: 0, p: 4, pct: '.000', dif: '3.00', u10: '0-4', racha: 'L4', ca: 11, cp: 29, difC: '-18' }
             ];
 
             OFFICIAL_STANDINGS.forEach(team => {
@@ -740,12 +739,12 @@
             const card = document.getElementById('lineupDisplayCard');
             
             const TODAY_LINEUPS = {
-                'L': { pitcher: 'Daniel Martínez (RHP)', bullpen: 'M. Castro, J. Asencio, J. Aro' },
-                'GC': { pitcher: 'Jackson Goddard (RHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero' },
-                'EO': { pitcher: 'Spencer Bivens (RHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren' },
-                'E': { pitcher: 'Ángel Sánchez (RHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte' },
-                'AC': { pitcher: 'Luis Peña (RHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala' },
-                'TE': { pitcher: 'Noah Skirrow (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad' }
+                'GC': { pitcher: 'Wily Peralta (RHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero' },
+                'L': { pitcher: 'Nico Tellache (LHP)', bullpen: 'M. Castro, J. Asencio, J. Aro' },
+                'E': { pitcher: 'Ariel Miranda (LHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte' },
+                'EO': { pitcher: 'Óscar de la Cruz (RHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren' },
+                'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad' },
+                'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala' }
             };
 
             const lineupData = TODAY_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir' };
@@ -756,13 +755,13 @@
                         <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
                         <div>
                             <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación (21 Oct)</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pitching-staff-box">
-                    <div>⚾ <strong>Abridor Confirmado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
+                    <div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
                     <div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${lineupData.bullpen}</div>
                 </div>
             `;
