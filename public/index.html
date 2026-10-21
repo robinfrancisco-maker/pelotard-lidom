@@ -389,37 +389,37 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
+        // BASE DE DATOS INICIAL DE EMERGENCIA (CARGA AL INSTANTE)
+        const INITIAL_GAMES = [
+            { id: 201, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Quisqueya Juan Marichal', away: 'GC', home: 'L', awayName: 'Gigantes del Cibao', homeName: 'Tigres del Licey', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayPitcher: 'Wily Peralta (RHP)', homePitcher: 'Nico Tellache (LHP)', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 202, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'E', home: 'EO', awayName: 'Leones del Escogido', homeName: 'Estrellas Orientales', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayPitcher: 'Ariel Miranda (LHP)', homePitcher: 'Óscar de la Cruz (RHP)', awayMl: 2.00, homeMl: 1.80, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 203, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Cibao (STI)', away: 'TE', home: 'AC', awayName: 'Toros del Este', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayPitcher: 'Esmil Rogers (RHP)', homePitcher: 'Tyler Alexander (LHP)', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.0, over: 1.90, under: 1.90 },
+            { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
+            { id: 102, date: '2026-10-20', stadium: 'Estadio Quisqueya (SDQ)', time: '07:15 PM', away: 'EO', home: 'E', awayRuns: 4, homeRuns: 2, status: 'FINAL', inning: 'Final' },
+            { id: 103, date: '2026-10-20', stadium: 'Estadio Francisco Micheli (LRN)', time: '07:30 PM', away: 'AC', home: 'TE', awayRuns: 2, homeRuns: 6, status: 'FINAL', inning: 'Final' }
+        ];
+
         const BATTING_LEADERS = [
             { pos: 1, name: 'Ismael Munguía', team: 'EO', avg: '.750', ops: '1.583', h: 3, hr: 0, ci: 0, ca: 1 },
             { pos: 2, name: 'Marco Luciano', team: 'EO', avg: '.600', ops: '2.067', h: 3, hr: 1, ci: 2, ca: 2 },
             { pos: 3, name: 'Francisco Mejía', team: 'L', avg: '.600', ops: '1.314', h: 3, hr: 0, ci: 2, ca: 1 },
             { pos: 4, name: 'Jefferson Rojas', team: 'GC', avg: '.571', ops: '2.054', h: 4, hr: 2, ci: 3, ca: 4 },
-            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 },
-            { pos: 6, name: 'Leo Bernal', team: 'EO', avg: '.500', ops: '1.500', h: 2, hr: 1, ci: 2, ca: 2 },
-            { pos: 7, name: 'Raimel Tapia', team: 'EO', avg: '.429', ops: '1.000', h: 3, hr: 0, ci: 1, ca: 1 },
-            { pos: 8, name: 'Harold Ramírez', team: 'EO', avg: '.400', ops: '1.100', h: 2, hr: 0, ci: 2, ca: 1 },
-            { pos: 9, name: 'Mel Rojas Jr.', team: 'L', avg: '.375', ops: '1.025', h: 3, hr: 0, ci: 3, ca: 2 },
-            { pos: 10, name: 'Cristhian Adames', team: 'TE', avg: '.333', ops: '.933', h: 2, hr: 0, ci: 1, ca: 1 }
+            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 }
         ];
 
         const PITCHING_LEADERS = [
             { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 5, whip: '0.60' },
             { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 9, whip: '0.60' },
-            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 1, il: '4.0', k: 4, whip: '0.33' },
-            { pos: 4, name: 'Phillips Valdez', team: 'TE', era: '0.00', gp: '1-0', js: 1, il: '4.0', k: 3, whip: '0.50' },
-            { pos: 5, name: 'Wily Peralta', team: 'GC', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 6, whip: '0.80' },
-            { pos: 6, name: 'Jimmy Cordero', team: 'GC', era: '0.00', gp: '0-0', js: 2, il: '2.0', k: 3, whip: '0.50' },
-            { pos: 7, name: 'Vladimir Gutiérrez', team: 'L', era: '2.08', gp: '0-0', js: 1, il: '4.1', k: 8, whip: '0.92' },
-            { pos: 8, name: 'Joan Adón', team: 'AC', era: '2.25', gp: '0-1', js: 1, il: '4.0', k: 6, whip: '1.00' },
-            { pos: 9, name: 'Enny Romero', team: 'EO', era: '2.45', gp: '0-0', js: 1, il: '3.2', k: 4, whip: '1.09' },
-            { pos: 10, name: 'Cristopher Molina', team: 'GC', era: '3.00', gp: '1-0', js: 1, il: '3.0', k: 3, whip: '1.00' }
+            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 1, il: '4.0', k: 4, whip: '0.33' }
         ];
 
-        let liveGamesData = [];
+        let liveGamesData = INITIAL_GAMES;
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v6');
+            localStorage.removeItem('pelotard_state_v4');
+            localStorage.removeItem('pelotard_state_v5');
+            const saved = localStorage.getItem('pelotard_state_v7');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -435,53 +435,56 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v6', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v7', JSON.stringify(state)); }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
-            setupWebSockets();
-            setupEventListeners();
             renderBattingLeaders();
             renderPitchingLeaders();
             renderLineups();
             renderStandings();
+            renderGames();
+            renderLiveTicker();
             updateBalanceDisplay();
             updateHistoryTable();
             updateSlipUI();
+            setupWebSockets();
         });
 
         function setupWebSockets() {
-            socket = io('https://pelotard-lidom.onrender.com', {
-                transports: ['websocket', 'polling'],
-                reconnection: true,
-                reconnectionAttempts: Infinity,
-                reconnectionDelay: 2000
-            });
+            try {
+                socket = io({
+                    transports: ['websocket', 'polling'],
+                    reconnection: true
+                });
 
-            socket.on('connect', () => {
-                document.getElementById('connDot').classList.remove('offline');
-                document.getElementById('btnSyncText').textContent = 'Sincronizado';
-            });
+                socket.on('connect', () => {
+                    document.getElementById('connDot').classList.remove('offline');
+                    document.getElementById('btnSyncText').textContent = 'Sincronizado';
+                });
 
-            socket.on('disconnect', () => {
-                document.getElementById('connDot').classList.add('offline');
-                document.getElementById('btnSyncText').textContent = 'Reconectando...';
-            });
+                socket.on('disconnect', () => {
+                    document.getElementById('connDot').classList.add('offline');
+                    document.getElementById('btnSyncText').textContent = 'Reconectando...';
+                });
 
-            socket.on('lidom_update', (data) => {
-                if (data) {
-                    if (data.date) CURRENT_DATE = data.date;
-                    if (data.games && data.games.length > 0) {
-                        liveGamesData = data.games;
-                    } else if (Array.isArray(data)) {
-                        liveGamesData = data;
+                socket.on('lidom_update', (data) => {
+                    if (data) {
+                        if (data.date) CURRENT_DATE = data.date;
+                        if (data.games && data.games.length > 0) {
+                            liveGamesData = data.games;
+                        } else if (Array.isArray(data) && data.length > 0) {
+                            liveGamesData = data;
+                        }
+                        renderLiveTicker();
+                        renderGames();
+                        renderStandings();
+                        renderAdminGames();
                     }
-                    renderLiveTicker();
-                    renderGames();
-                    renderStandings();
-                    renderAdminGames();
-                }
-            });
+                });
+            } catch(e) {
+                console.log('Modo Local Standalone');
+            }
         }
 
         function renderLiveTicker() {
@@ -491,7 +494,7 @@
             const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE || g.status === 'LIVE');
 
             if (todayGames.length === 0) {
-                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando partidos en vivo de la LIDOM...</span>';
+                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando cartelera de hoy...</span>';
                 return;
             }
 
@@ -535,7 +538,7 @@
             }
 
             if (filteredGames.length === 0) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos registrados para esta sección.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos para esta sección.</div>';
                 return;
             }
 
