@@ -80,13 +80,14 @@
         @media (max-width: 1024px) { .main-container { grid-template-columns: 1fr; } }
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; border-bottom: 2px solid var(--card-border); padding-bottom: 0.6rem; overflow-x: auto; }
-        .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; border-radius: 8px; transition: all 0.2s ease; white-space: nowrap; }
+        .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer !important; border-radius: 8px; transition: all 0.2s ease; white-space: nowrap; user-select: none; }
         .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.08); border-color: var(--gold); }
-        .tab-btn.active { color: #fff; background: var(--accent); border-color: var(--gold); box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4); }
+        .tab-btn.active { color: #fff !important; background: var(--accent) !important; border-color: var(--gold) !important; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4); }
+        
         .filter-pills { display: flex; gap: 8px; margin-bottom: 1.2rem; flex-wrap: wrap; }
-        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer !important; transition: all 0.2s; user-select: none; }
         .filter-pill:hover { color: white; border-color: var(--gold); }
-        .filter-pill.active { background: var(--secondary); color: white; border-color: var(--gold); }
+        .filter-pill.active { background: var(--secondary) !important; color: white !important; border-color: var(--gold) !important; }
 
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.2rem; }
         .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transition: transform 0.2s, border-color 0.2s; }
@@ -95,34 +96,12 @@
         .game-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
         .game-stadium { font-weight: 600; color: var(--gold); }
         
-        /* FRANJA DE ESTADO DE INNING Y MARCADOR */
         .live-status-bar {
-            background: #0f172a;
-            border: 1px solid var(--card-border);
-            border-radius: 6px;
-            padding: 8px 12px;
-            margin: 8px 0 10px 0;
-            font-size: 0.82rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 12px; margin: 8px 0 10px 0; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center;
         }
-        .live-status-bar.is-live {
-            border-color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-        }
-        .live-status-bar .status-text {
-            font-weight: 800;
-            color: #38bdf8;
-        }
-        .live-status-bar .live-score-badge {
-            background: var(--primary);
-            color: var(--gold);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-weight: 900;
-            border: 1px solid var(--card-border);
-        }
+        .live-status-bar.is-live { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .live-status-bar .status-text { font-weight: 800; color: #38bdf8; }
+        .live-status-bar .live-score-badge { background: var(--primary); color: var(--gold); padding: 2px 8px; border-radius: 4px; font-weight: 900; border: 1px solid var(--card-border); }
 
         .pitchers-box { background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; margin: 8px 0; font-size: 0.78rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
         .pitchers-box strong { color: var(--gold); }
@@ -143,26 +122,15 @@
         .odds-grid-3 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
         
         .odds-btn { 
-            background: #0f172a; 
-            border: 1px solid #334155; 
-            color: var(--text-main); 
-            padding: 0.5rem; 
-            border-radius: 6px; 
-            cursor: pointer !important; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            transition: all 0.2s; 
-            user-select: none;
-            position: relative;
-            z-index: 10;
+            background: #0f172a; border: 1px solid #334155; color: var(--text-main); padding: 0.5rem; border-radius: 6px; cursor: pointer !important; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; user-select: none;
         }
+        .odds-btn * { pointer-events: none; }
         .odds-btn:hover { border-color: var(--accent); background: #1e293b; }
-        .odds-btn.selected { background: var(--accent); border-color: var(--gold); color: white; }
-        .odds-type { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; pointer-events: none; }
-        .odds-btn.selected .odds-type { color: #fef08a; }
-        .odds-val { font-size: 0.85rem; font-weight: 800; color: var(--gold); pointer-events: none; }
-        .odds-btn.selected .odds-val { color: white; }
+        .odds-btn.selected { background: var(--accent) !important; border-color: var(--gold) !important; color: white !important; }
+        .odds-type { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .odds-btn.selected .odds-type { color: #fef08a !important; }
+        .odds-val { font-size: 0.85rem; font-weight: 800; color: var(--gold); }
+        .odds-btn.selected .odds-val { color: white !important; }
 
         .final-result-box { background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 0.8rem; margin-top: 0.8rem; text-align: center; }
         .final-result-title { font-size: 0.75rem; color: var(--green-win); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
@@ -258,31 +226,35 @@
     <div class="main-container">
 
         <div>
+            <!-- PESTAÑAS PRINCIPALES CON ONCLICK DIRECTO -->
             <div class="nav-tabs">
-                <button class="tab-btn active" id="btnTabGames">1. ⚾ Cartelera</button>
-                <button class="tab-btn" id="btnTabLineups">2. 🧢 Lineups / Pitcheo</button>
-                <button class="tab-btn" id="btnTabStandings">3. 📊 Standings</button>
-                <button class="tab-btn" id="btnTabTopLeaders">4. ⭐ Top 10 Líderes</button>
-                <button class="tab-btn" id="btnTabHistory">5. 📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
-                <button class="tab-btn" id="btnTabAdmin">6. ⚙️ Administrar</button>
+                <button class="tab-btn active" id="btnTabGames" onclick="switchTab('viewGames', 'btnTabGames')">1. ⚾ Cartelera</button>
+                <button class="tab-btn" id="btnTabLineups" onclick="switchTab('viewLineups', 'btnTabLineups')">2. 🧢 Lineups / Pitcheo</button>
+                <button class="tab-btn" id="btnTabStandings" onclick="switchTab('viewStandings', 'btnTabStandings')">3. 📊 Standings</button>
+                <button class="tab-btn" id="btnTabTopLeaders" onclick="switchTab('viewTopLeaders', 'btnTabTopLeaders')">4. ⭐ Top 10 Líderes</button>
+                <button class="tab-btn" id="btnTabHistory" onclick="switchTab('viewHistory', 'btnTabHistory')">5. 📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
+                <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Administrar</button>
             </div>
 
+            <!-- VISTA 1: CARTELERA Y FILTROS CON ONCLICK DIRECTO -->
             <div id="viewGames">
                 <div class="filter-pills">
-                    <button class="filter-pill active" id="filterToday">Juegos de Hoy</button>
-                    <button class="filter-pill" id="filterUpcoming">Próximos</button>
-                    <button class="filter-pill" id="filterPassed">Resultados / Pasados</button>
-                    <button class="filter-pill" id="filterAll">Todos</button>
+                    <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
+                    <button class="filter-pill" id="filterUpcoming" onclick="setFilter('UPCOMING', 'filterUpcoming')">Próximos</button>
+                    <button class="filter-pill" id="filterPassed" onclick="setFilter('PASSED', 'filterPassed')">Resultados / Pasados</button>
+                    <button class="filter-pill" id="filterAll" onclick="setFilter('ALL', 'filterAll')">Todos</button>
                 </div>
 
                 <div class="games-grid" id="gamesContainer"></div>
             </div>
 
+            <!-- VISTA 2: LINEUPS -->
             <div id="viewLineups" style="display: none;">
                 <div class="filter-pills" id="lineupTeamPills"></div>
                 <div class="lineup-card" id="lineupDisplayCard"></div>
             </div>
 
+            <!-- VISTA 3: STANDINGS -->
             <div id="viewStandings" style="display: none;">
                 <div class="table-responsive">
                     <table class="styled-table">
@@ -297,10 +269,11 @@
                 </div>
             </div>
 
+            <!-- VISTA 4: TOP 10 LÍDERES -->
             <div id="viewTopLeaders" style="display: none;">
                 <div class="filter-pills" style="margin-bottom: 1rem;">
-                    <button class="filter-pill active" id="subBtnBatters">🔥 Top 10 Bateadores</button>
-                    <button class="filter-pill" id="subBtnPitchers">🎯 Top 10 Lanzadores</button>
+                    <button class="filter-pill active" id="subBtnBatters" onclick="switchSubLeaders('batters')">🔥 Top 10 Bateadores</button>
+                    <button class="filter-pill" id="subBtnPitchers" onclick="switchSubLeaders('pitchers')">🎯 Top 10 Lanzadores</button>
                 </div>
 
                 <div id="subViewBatters" class="admin-box">
@@ -332,6 +305,7 @@
                 </div>
             </div>
 
+            <!-- VISTA 5: MIS BOLETOS -->
             <div id="viewHistory" style="display: none;">
                 <div class="table-responsive">
                     <table class="styled-table">
@@ -345,6 +319,7 @@
                 </div>
             </div>
 
+            <!-- VISTA 6: ADMINISTRAR -->
             <div id="viewAdmin" style="display: none;">
                 <div class="admin-box">
                     <div class="admin-title">🔒 Control Manual de Partidos (Backend Live)</div>
@@ -356,18 +331,19 @@
             </div>
         </div>
 
+        <!-- PANEL DE LA BOLETA -->
         <div class="bet-slip-panel">
             <div class="slip-header">
                 <div class="slip-title">
                     🎟️ Boleta
                     <span class="slip-count" id="slipCountBadge">0</span>
                 </div>
-                <button style="background:transparent; border:none; color:var(--red-loss); cursor:pointer; font-size:0.8rem;" id="btnClearSlip">Limpiar</button>
+                <button style="background:transparent; border:none; color:var(--red-loss); cursor:pointer; font-size:0.8rem;" id="btnClearSlip" onclick="clearSlip()">Limpiar</button>
             </div>
 
             <div class="bet-type-selector">
-                <button class="bet-type-btn active" id="btnBetTypeSencilla">Sencilla</button>
-                <button class="bet-type-btn" id="btnBetTypeParlay">Parlay</button>
+                <button class="bet-type-btn active" id="btnBetTypeSencilla" onclick="setBetType('Sencilla')">Sencilla</button>
+                <button class="bet-type-btn" id="btnBetTypeParlay" onclick="setBetType('Parlay')">Parlay</button>
             </div>
 
             <div class="slip-items-list" id="slipItemsList">
@@ -378,15 +354,16 @@
                 <div class="summary-row"><span>Multiplicador:</span><span style="font-weight:bold;" id="slipOddsDisplay">1.00x</span></div>
                 <div class="stake-input-group">
                     <span style="font-size:0.85rem; font-weight:bold;">Puntos:</span>
-                    <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10" step="10">
+                    <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10" step="10" oninput="updateSlipUI()">
                 </div>
                 <div class="summary-row total"><span>Pago:</span><span id="slipPayoutDisplay">0 pts</span></div>
-                <button class="btn-submit-bet" id="btnSubmitBet" disabled>GENERAR BOLETO</button>
+                <button class="btn-submit-bet" id="btnSubmitBet" onclick="generateTicket()" disabled>GENERAR BOLETO</button>
             </div>
         </div>
 
     </div>
 
+    <!-- MODAL DE IMPRESIÓN DE TICKET -->
     <div class="modal-overlay" id="ticketModal">
         <div class="ticket-receipt" id="printableTicket">
             <div class="ticket-header">
@@ -416,7 +393,7 @@
                 <div style="font-size:0.65rem; margin-top:2px;" id="mTicketValidation">VALIDACIÓN: PT-LIVE-ONLINE</div>
             </div>
 
-            <button class="btn-close-ticket" id="btnCloseTicketModal">CERRAR BOLETO</button>
+            <button class="btn-close-ticket" onclick="closeTicketModal()">CERRAR BOLETO</button>
             <button class="btn-close-ticket" style="background:#10b981; margin-top:4px;" id="btnExportPng">📸 DESCARGAR IMAGEN (PNG)</button>
         </div>
     </div>
@@ -460,7 +437,7 @@
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v9');
+            const saved = localStorage.getItem('pelotard_state_v11');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -476,7 +453,44 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v9', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v11', JSON.stringify(state)); }
+
+        // NAVEGACIÓN ENTRE PESTAÑAS Y VISTAS
+        window.switchTab = function(viewId, btnId) {
+            ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { 
+                document.getElementById(v).style.display = 'none'; 
+            });
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => { 
+                b.classList.remove('active'); 
+            });
+            
+            document.getElementById(viewId).style.display = 'block';
+            document.getElementById(btnId).classList.add('active');
+        };
+
+        // FILTROS DE CARTELERA
+        window.setFilter = function(filterType, btnId) {
+            state.activeFilter = filterType;
+            document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+            saveState();
+            renderGames();
+        };
+
+        // SUB-FILTROS DE LÍDERES
+        window.switchSubLeaders = function(type) {
+            if (type === 'batters') {
+                document.getElementById('subViewBatters').style.display = 'block';
+                document.getElementById('subViewPitchers').style.display = 'none';
+                document.getElementById('subBtnBatters').classList.add('active');
+                document.getElementById('subBtnPitchers').classList.remove('active');
+            } else {
+                document.getElementById('subViewBatters').style.display = 'none';
+                document.getElementById('subViewPitchers').style.display = 'block';
+                document.getElementById('subBtnBatters').classList.remove('active');
+                document.getElementById('subBtnPitchers').classList.add('active');
+            }
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerNameInput').value = state.playerName;
@@ -557,14 +571,6 @@
             });
         }
 
-        function setFilter(filterType, btnId) {
-            state.activeFilter = filterType;
-            document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
-            document.getElementById(btnId).classList.add('active');
-            saveState();
-            renderGames();
-        }
-
         function renderGames() {
             const container = document.getElementById('gamesContainer');
             container.innerHTML = '';
@@ -605,7 +611,6 @@
                 const over = (game.over || 1.90).toFixed(2);
                 const under = (game.under || 1.90).toFixed(2);
 
-                // TEXTO DEL ESTADO Y INNING PARA LA FRANJA DIVISORIA
                 let statusLabel = `<span>ENTRADA / ESTADO:</span> <span class="status-text">${game.inning || game.time}</span>`;
                 if (isLive) {
                     statusLabel = `<span style="color:#ef4444; font-weight:900;">🔴 EN VIVO:</span> <span class="status-text" style="color:#f59e0b;">${game.inning}</span>`;
@@ -619,7 +624,6 @@
                     <div class="team-row"><div class="team-info"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div><span>${awayTeam.name}</span></div><div class="team-score">${game.awayRuns}</div></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div><span>${homeTeam.name}</span></div><div class="team-score">${game.homeRuns}</div></div>
                     
-                    <!-- FRANJA DIVISORIA DE ESTADO E INNING -->
                     <div class="live-status-bar ${isLive ? 'is-live' : ''}">
                         <div>${statusLabel}</div>
                         <div class="live-score-badge">${game.awayRuns} - ${game.homeRuns}</div>
@@ -631,20 +635,20 @@
                         <div class="market-section">
                             <span class="market-label">🎯 QUIÉN GANA (MONEYLINE)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'ML', '${game.away}', ${awayMl})"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></div>
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'ML', '${game.home}', ${homeMl})"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.home}', ${homeMl})"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></div>
                             </div>
 
                             <span class="market-label">⚾ LÍNEA DE CARRERAS (RUN LINE)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></div>
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></div>
                             </div>
 
                             <span class="market-label">📊 TOTAL DE CARRERAS (ALTAS / BAJAS)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'OU', 'MÁS DE ${total}', ${over})"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></div>
-                                <div class="odds-btn" onclick="handleOddClick(${game.id}, 'OU', 'MENOS DE ${total}', ${under})"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MENOS DE ${total}', ${under})"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></div>
                             </div>
                         </div>
                     ` : `
@@ -660,12 +664,7 @@
             updateOddsButtonsHighlight();
         }
 
-        // FUNCIÓN GLOBAL DIRECTA PARA GARANTIZAR RESPUESTA AL CLIC
-        window.handleOddClick = function(gameId, market, pick, odd) {
-            toggleSelection(gameId, market, pick, odd);
-        };
-
-        function toggleSelection(gameId, market, pick, odd) {
+        window.toggleSelection = function(gameId, market, pick, odd) {
             const game = liveGamesData.find(g => g.id === gameId);
             if (!game) return;
 
@@ -678,7 +677,7 @@
             saveState(); 
             updateSlipUI(); 
             updateOddsButtonsHighlight();
-        }
+        };
 
         function updateSlipUI() {
             const list = document.getElementById('slipItemsList');
@@ -724,7 +723,25 @@
             }
         }
 
-        function removeSlipItem(index) { state.currentSlip.splice(index, 1); saveState(); updateSlipUI(); updateOddsButtonsHighlight(); }
+        window.removeSlipItem = function(index) { 
+            state.currentSlip.splice(index, 1); 
+            saveState(); 
+            updateSlipUI(); 
+            updateOddsButtonsHighlight(); 
+        };
+
+        window.clearSlip = function() {
+            state.currentSlip = [];
+            saveState();
+            updateSlipUI();
+            updateOddsButtonsHighlight();
+        };
+
+        window.setBetType = function(type) {
+            state.selectedBetType = type;
+            saveState();
+            updateSlipUI();
+        };
 
         function updateOddsButtonsHighlight() {
             document.querySelectorAll('.odds-btn').forEach(btn => {
@@ -834,7 +851,7 @@
             `;
         }
 
-        function generateTicket() {
+        window.generateTicket = function() {
             const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
             if (stake > state.userBalance) { alert('Puntos insuficientes.'); return; }
 
@@ -855,7 +872,7 @@
 
             updateBalanceDisplay(); updateHistoryTable(); showTicketModal(ticket);
             state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight();
-        }
+        };
 
         function showTicketModal(ticket) {
             document.getElementById('mTicketId').textContent = ticket.id;
@@ -874,6 +891,10 @@
 
             document.getElementById('ticketModal').classList.add('active');
         }
+
+        window.closeTicketModal = function() {
+            document.getElementById('ticketModal').classList.remove('active');
+        };
 
         function updateHistoryTable() {
             const tbody = document.getElementById('historyTableBody');
@@ -910,39 +931,6 @@
                 if (socket) socket.emit('manual_sync_request');
             };
 
-            document.getElementById('btnTabGames').onclick = () => switchTab('viewGames', 'btnTabGames');
-            document.getElementById('btnTabLineups').onclick = () => switchTab('viewLineups', 'btnTabLineups');
-            document.getElementById('btnTabStandings').onclick = () => switchTab('viewStandings', 'btnTabStandings');
-            document.getElementById('btnTabTopLeaders').onclick = () => switchTab('viewTopLeaders', 'btnTabTopLeaders');
-            document.getElementById('btnTabHistory').onclick = () => switchTab('viewHistory', 'btnTabHistory');
-            document.getElementById('btnTabAdmin').onclick = () => switchTab('viewAdmin', 'btnTabAdmin');
-
-            document.getElementById('filterToday').onclick = () => setFilter('TODAY', 'filterToday');
-            document.getElementById('filterUpcoming').onclick = () => setFilter('UPCOMING', 'filterUpcoming');
-            document.getElementById('filterPassed').onclick = () => setFilter('PASSED', 'filterPassed');
-            document.getElementById('filterAll').onclick = () => setFilter('ALL', 'filterAll');
-
-            document.getElementById('subBtnBatters').onclick = () => {
-                document.getElementById('subViewBatters').style.display = 'block';
-                document.getElementById('subViewPitchers').style.display = 'none';
-                document.getElementById('subBtnBatters').classList.add('active');
-                document.getElementById('subBtnPitchers').classList.remove('active');
-            };
-            document.getElementById('subBtnPitchers').onclick = () => {
-                document.getElementById('subViewBatters').style.display = 'none';
-                document.getElementById('subViewPitchers').style.display = 'block';
-                document.getElementById('subBtnBatters').classList.remove('active');
-                document.getElementById('subBtnPitchers').classList.add('active');
-            };
-
-            document.getElementById('btnBetTypeSencilla').onclick = () => { state.selectedBetType = 'Sencilla'; saveState(); updateSlipUI(); };
-            document.getElementById('btnBetTypeParlay').onclick = () => { state.selectedBetType = 'Parlay'; saveState(); updateSlipUI(); };
-
-            document.getElementById('btnClearSlip').onclick = () => { state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight(); };
-            document.getElementById('slipStakeInput').oninput = updateSlipUI;
-            document.getElementById('btnSubmitBet').onclick = generateTicket;
-            document.getElementById('btnCloseTicketModal').onclick = () => document.getElementById('ticketModal').classList.remove('active');
-
             document.getElementById('btnExportPng').onclick = () => {
                 const ticketElem = document.getElementById('printableTicket');
                 html2canvas(ticketElem).then(canvas => {
@@ -952,13 +940,6 @@
                     link.click();
                 });
             };
-        }
-
-        function switchTab(viewId, btnId) {
-            ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { document.getElementById(v).style.display = 'none'; });
-            ['btnTabGames', 'btnTabLineups', 'btnTabStandings', 'btnTabTopLeaders', 'btnTabHistory', 'btnTabAdmin'].forEach(b => { document.getElementById(b).classList.remove('active'); });
-            document.getElementById(viewId).style.display = 'block';
-            document.getElementById(btnId).classList.add('active');
         }
 
         function updateBalanceDisplay() { document.getElementById('userBalanceDisplay').textContent = state.userBalance.toLocaleString() + ' pts'; }
