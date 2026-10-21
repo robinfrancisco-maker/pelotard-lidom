@@ -226,17 +226,17 @@
     <div class="main-container">
 
         <div>
-            <!-- PESTAÑAS PRINCIPALES CON ONCLICK DIRECTO -->
+            <!-- PESTAÑAS PRINCIPALES -->
             <div class="nav-tabs">
                 <button class="tab-btn active" id="btnTabGames" onclick="switchTab('viewGames', 'btnTabGames')">1. ⚾ Cartelera</button>
                 <button class="tab-btn" id="btnTabLineups" onclick="switchTab('viewLineups', 'btnTabLineups')">2. 🧢 Lineups / Pitcheo</button>
                 <button class="tab-btn" id="btnTabStandings" onclick="switchTab('viewStandings', 'btnTabStandings')">3. 📊 Standings</button>
                 <button class="tab-btn" id="btnTabTopLeaders" onclick="switchTab('viewTopLeaders', 'btnTabTopLeaders')">4. ⭐ Top 10 Líderes</button>
                 <button class="tab-btn" id="btnTabHistory" onclick="switchTab('viewHistory', 'btnTabHistory')">5. 📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
-                <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Administrar</button>
+                <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Estado de Servidor</button>
             </div>
 
-            <!-- VISTA 1: CARTELERA Y FILTROS CON ONCLICK DIRECTO -->
+            <!-- VISTA 1: CARTELERA -->
             <div id="viewGames">
                 <div class="filter-pills">
                     <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
@@ -319,12 +319,12 @@
                 </div>
             </div>
 
-            <!-- VISTA 6: ADMINISTRAR -->
+            <!-- VISTA 6: ESTADO DEL SERVIDOR -->
             <div id="viewAdmin" style="display: none;">
                 <div class="admin-box">
-                    <div class="admin-title">🔒 Control Manual de Partidos (Backend Live)</div>
+                    <div class="admin-title">⚡ Estado y Sincronización del Servidor en Vivo</div>
                     <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
-                        Consola de estado del servidor en vivo.
+                        Panel de lectura automática y estado de los partidos en backend.
                     </p>
                     <div class="sim-grid" id="simGamesContainer"></div>
                 </div>
@@ -410,34 +410,150 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
+        // BASE DE DATOS DE CARTELERA (HOY, PASADOS CORREGIDOS Y PRÓXIMOS)
         const INITIAL_GAMES = [
+            // JORNADA DE HOY (21 DE OCTUBRE)
             { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'AC', home: 'EO', awayName: 'Águilas Cibaeñas', homeName: 'Estrellas Orientales', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'Por Comenzar (07:15 PM)', awayPitcher: 'Tyler Alexander (LHP)', homePitcher: 'Óscar de la Cruz (RHP)', awayMl: 1.95, homeMl: 1.85, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.90, under: 1.90 },
             { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'Por Comenzar (07:15 PM)', awayPitcher: 'Ariel Miranda (LHP)', homePitcher: 'Wily Peralta (RHP)', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
             { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'Por Comenzar (07:30 PM)', awayPitcher: 'Nico Tellache (LHP)', homePitcher: 'Esmil Rogers (RHP)', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
-            { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayRuns: 3, homeRuns: 5, status: 'FINAL', inning: 'Final' },
-            { id: 102, date: '2026-10-20', stadium: 'Estadio Quisqueya (SDQ)', time: '07:15 PM', away: 'EO', home: 'E', awayRuns: 4, homeRuns: 2, status: 'FINAL', inning: 'Final' },
-            { id: 103, date: '2026-10-20', stadium: 'Estadio Francisco Micheli (LRN)', time: '07:30 PM', away: 'AC', home: 'TE', awayRuns: 2, homeRuns: 6, status: 'FINAL', inning: 'Final' }
+
+            // PRÓXIMOS JUEGOS (22 DE OCTUBRE)
+            { id: 401, date: '2026-10-22', time: '07:15 PM', stadium: 'Estadio Quisqueya Juan Marichal (SDQ)', away: 'L', home: 'E', awayName: 'Tigres del Licey', homeName: 'Leones del Escogido', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:15 PM', awayPitcher: 'Radhamés Liz (RHP)', homePitcher: 'Víctor Santos (RHP)', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 402, date: '2026-10-22', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'GC', home: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayPitcher: 'Nabil Crismatt (RHP)', homePitcher: 'Matt Dermody (LHP)', awayMl: 1.95, homeMl: 1.85, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 403, date: '2026-10-22', time: '07:30 PM', stadium: 'Estadio Cibao (STI)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: '07:30 PM', awayPitcher: 'Enny Romero (LHP)', homePitcher: 'Braulio Torres-Pérez (LHP)', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
+
+            // RESULTADOS PASADOS CORREGIDOS (20 DE OCTUBRE)
+            { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayName: 'Tigres del Licey', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 3, status: 'FINAL', inning: 'Final' },
+            { id: 102, date: '2026-10-20', stadium: 'Estadio Quisqueya (SDQ)', time: '07:15 PM', away: 'EO', home: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayRuns: 2, homeRuns: 4, status: 'FINAL', inning: 'Final' },
+            { id: 103, date: '2026-10-20', stadium: 'Estadio Francisco Micheli (LRN)', time: '07:30 PM', away: 'AC', home: 'TE', awayName: 'Águilas Cibaeñas', homeName: 'Toros del Este', awayRuns: 2, homeRuns: 6, status: 'FINAL', inning: 'Final' }
         ];
 
+        // TOP 10 LÍDERES COMPLETOS (BATEO Y PITCHEO)
         const BATTING_LEADERS = [
             { pos: 1, name: 'Ismael Munguía', team: 'EO', avg: '.750', ops: '1.583', h: 3, hr: 0, ci: 0, ca: 1 },
             { pos: 2, name: 'Marco Luciano', team: 'EO', avg: '.600', ops: '2.067', h: 3, hr: 1, ci: 2, ca: 2 },
             { pos: 3, name: 'Francisco Mejía', team: 'L', avg: '.600', ops: '1.314', h: 3, hr: 0, ci: 2, ca: 1 },
             { pos: 4, name: 'Jefferson Rojas', team: 'GC', avg: '.571', ops: '2.054', h: 4, hr: 2, ci: 3, ca: 4 },
-            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 }
+            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 },
+            { pos: 6, name: 'Sandro Fabián', team: 'TE', avg: '.462', ops: '1.250', h: 6, hr: 1, ci: 4, ca: 3 },
+            { pos: 7, name: 'Emilio Bonifacio', team: 'L', avg: '.429', ops: '1.150', h: 6, hr: 0, ci: 2, ca: 4 },
+            { pos: 8, name: 'Junior Lake', team: 'E', avg: '.417', ops: '1.080', h: 5, hr: 1, ci: 3, ca: 2 },
+            { pos: 9, name: 'Yairo Muñoz', team: 'AC', avg: '.400', ops: '1.010', h: 4, hr: 0, ci: 2, ca: 1 },
+            { pos: 10, name: 'Kelvin Gutiérrez', team: 'GC', avg: '.385', ops: '0.970', h: 5, hr: 0, ci: 3, ca: 2 }
         ];
 
         const PITCHING_LEADERS = [
-            { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 5, whip: '0.60' },
-            { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 1, il: '5.0', k: 9, whip: '0.60' },
-            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 1, il: '4.0', k: 4, whip: '0.33' }
+            { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 5, whip: '0.60' },
+            { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 9, whip: '0.60' },
+            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 0, il: '4.0', k: 4, whip: '0.33' },
+            { pos: 4, name: 'Esmil Rogers', team: 'TE', era: '1.20', gp: '1-0', js: 0, il: '5.0', k: 6, whip: '0.80' },
+            { pos: 5, name: 'Ariel Miranda', team: 'E', era: '1.80', gp: '1-0', js: 0, il: '5.0', k: 7, whip: '0.90' },
+            { pos: 6, name: 'Tyler Alexander', team: 'AC', era: '2.00', gp: '0-1', js: 0, il: '4.2', k: 5, whip: '1.00' },
+            { pos: 7, name: 'Jairo Asencio', team: 'L', era: '0.00', gp: '0-0', js: 2, il: '2.0', k: 3, whip: '0.50' },
+            { pos: 8, name: 'Fernando Abad', team: 'TE', era: '0.00', gp: '0-0', js: 1, il: '2.0', k: 2, whip: '0.50' },
+            { pos: 9, name: 'Wily Peralta', team: 'GC', era: '2.25', gp: '1-0', js: 0, il: '4.0', k: 4, whip: '1.10' },
+            { pos: 10, name: 'Neftalí Feliz', team: 'AC', era: '2.70', gp: '0-0', js: 1, il: '3.1', k: 4, whip: '1.15' }
         ];
+
+        // LINEUPS COMPLETOS CON JUGADORES Y POSICIONES
+        const DETAILED_LINEUPS = {
+            'L': {
+                pitcher: 'Nico Tellache (LHP)',
+                bullpen: 'M. Castro, J. Asencio, J. Aro, U. Joaquín',
+                batters: [
+                    { pos: '1. CF', name: 'Emilio Bonifacio' },
+                    { pos: '2. SS', name: 'Michael De León' },
+                    { pos: '3. 1B', name: 'Ramón Hernández' },
+                    { pos: '4. C',  name: 'Francisco Mejía' },
+                    { pos: '5. LF', name: 'Mel Rojas Jr.' },
+                    { pos: '6. RF', name: 'Aristides Aquino' },
+                    { pos: '7. 3B', name: 'Dawel Lugo' },
+                    { pos: '8. BD', name: 'Liover Peguero' },
+                    { pos: '9. 2B', name: 'Sergio Alcántara' }
+                ]
+            },
+            'TE': {
+                pitcher: 'Esmil Rogers (RHP)',
+                bullpen: 'A. Brooks, P. Valdez, F. Abad, J. Ramírez',
+                batters: [
+                    { pos: '1. CF', name: 'Troy Johnston' },
+                    { pos: '2. SS', name: 'Ronny Simón' },
+                    { pos: '3. LF', name: 'Sandro Fabián' },
+                    { pos: '4. 1B', name: 'Yermín Mercedes' },
+                    { pos: '5. RF', name: 'Luis Liberato' },
+                    { pos: '6. 3B', name: 'Emmanuel Rivera' },
+                    { pos: '7. C',  name: 'Francisco Peña' },
+                    { pos: '8. BD', name: 'Cristhian Adames' },
+                    { pos: '9. 2B', name: 'Gustavo Núñez' }
+                ]
+            },
+            'AC': {
+                pitcher: 'Tyler Alexander (LHP)',
+                bullpen: 'R. Osuna, J. Adón, J. Alcala, N. Feliz',
+                batters: [
+                    { pos: '1. 2B', name: 'Yairo Muñoz' },
+                    { pos: '2. SS', name: 'Geraldo Perdomo' },
+                    { pos: '3. CF', name: 'Jonathan Villar' },
+                    { pos: '4. 1B', name: 'Jerar Encarnación' },
+                    { pos: '5. RF', name: 'Alexander Canario' },
+                    { pos: '6. 3B', name: 'Eddys Leonard' },
+                    { pos: '7. BD', name: 'Starlin Castro' },
+                    { pos: '8. C',  name: 'Julio E. Rodríguez' },
+                    { pos: '9. LF', name: 'Gilberto Celestino' }
+                ]
+            },
+            'EO': {
+                pitcher: 'Óscar de la Cruz (RHP)',
+                bullpen: 'J. Barría, R. Blanco, N. Wittgren, E. Romero',
+                batters: [
+                    { pos: '1. CF', name: 'Ismael Munguía' },
+                    { pos: '2. SS', name: 'Marco Luciano' },
+                    { pos: '3. RF', name: 'Raimel Tapia' },
+                    { pos: '4. 1B', name: 'Miguel Sanó' },
+                    { pos: '5. LF', name: 'Vidal Bruján' },
+                    { pos: '6. 3B', name: 'Eguy Rosario' },
+                    { pos: '7. BD', name: 'Carlos Peguero' },
+                    { pos: '8. C',  name: 'Rodolfo Durán' },
+                    { pos: '9. 2B', name: 'José Barrero' }
+                ]
+            },
+            'E': {
+                pitcher: 'Ariel Miranda (LHP)',
+                bullpen: 'J. Rhoades, D. Cordero, S. Marte, D. Law',
+                batters: [
+                    { pos: '1. LF', name: 'Junior Lake' },
+                    { pos: '2. SS', name: 'Erik González' },
+                    { pos: '3. RF', name: 'Franmil Reyes' },
+                    { pos: '4. 1B', name: 'Yurchak English' },
+                    { pos: '5. 3B', name: 'Kelvin Gutiérrez' },
+                    { pos: '6. CF', name: 'Starling Marte' },
+                    { pos: '7. BD', name: 'Matt Koperniak' },
+                    { pos: '8. C',  name: 'Freylin Cerda' },
+                    { pos: '9. 2B', name: 'Jonathan Araúz' }
+                ]
+            },
+            'GC': {
+                pitcher: 'Wily Peralta (RHP)',
+                bullpen: 'A. Pilar, R. Gudino, J. Cordero, C. Pimentel',
+                batters: [
+                    { pos: '1. SS', name: 'Jefferson Rojas' },
+                    { pos: '2. 2B', name: 'Julio Carreras' },
+                    { pos: '3. 1B', name: 'Deyvison De Los Santos' },
+                    { pos: '4. LF', name: 'Henry Urrutia' },
+                    { pos: '5. RF', name: 'Carlos Peguero' },
+                    { pos: '6. 3B', name: 'Kelvin Gutiérrez' },
+                    { pos: '7. BD', name: 'Melvin Mercedes' },
+                    { pos: '8. C',  name: 'Andrew Knizner' },
+                    { pos: '9. CF', name: 'José Siri' }
+                ]
+            }
+        };
 
         let liveGamesData = INITIAL_GAMES;
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v11');
+            const saved = localStorage.getItem('pelotard_state_v12');
             if (saved) {
                 try { return JSON.parse(saved); } catch(e){}
             }
@@ -453,9 +569,8 @@
         }
 
         let state = loadState();
-        function saveState() { localStorage.setItem('pelotard_state_v11', JSON.stringify(state)); }
+        function saveState() { localStorage.setItem('pelotard_state_v12', JSON.stringify(state)); }
 
-        // NAVEGACIÓN ENTRE PESTAÑAS Y VISTAS
         window.switchTab = function(viewId, btnId) {
             ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { 
                 document.getElementById(v).style.display = 'none'; 
@@ -468,7 +583,6 @@
             document.getElementById(btnId).classList.add('active');
         };
 
-        // FILTROS DE CARTELERA
         window.setFilter = function(filterType, btnId) {
             state.activeFilter = filterType;
             document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
@@ -477,7 +591,6 @@
             renderGames();
         };
 
-        // SUB-FILTROS DE LÍDERES
         window.switchSubLeaders = function(type) {
             if (type === 'batters') {
                 document.getElementById('subViewBatters').style.display = 'block';
@@ -821,17 +934,17 @@
 
             const teamCode = state.selectedLineupTeam;
             const card = document.getElementById('lineupDisplayCard');
-            
-            const TODAY_LINEUPS = {
-                'L': { pitcher: 'Nico Tellache (LHP)', bullpen: 'M. Castro, J. Asencio, J. Aro' },
-                'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, P. Valdez, F. Abad' },
-                'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, J. Adón, J. Alcala' },
-                'EO': { pitcher: 'Óscar de la Cruz (RHP)', bullpen: 'J. Barría, R. Blanco, N. Wittgren' },
-                'E': { pitcher: 'Ariel Miranda (LHP)', bullpen: 'J. Rhoades, D. Cordero, S. Marte' },
-                'GC': { pitcher: 'Wily Peralta (RHP)', bullpen: 'A. Pilar, R. Gudino, J. Cordero' }
-            };
+            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
 
-            const lineupData = TODAY_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir' };
+            let battersRowsHtml = '';
+            data.batters.forEach(b => {
+                battersRowsHtml += `
+                    <tr>
+                        <td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td>
+                        <td style="text-align:left; font-weight:bold; color:white;">${b.name}</td>
+                    </tr>
+                `;
+            });
 
             card.innerHTML = `
                 <div class="lineup-card-header">
@@ -839,14 +952,29 @@
                         <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
                         <div>
                             <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Rotación (21 Oct)</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial & Roster Disponible</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pitching-staff-box">
-                    <div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${lineupData.pitcher}</span></div>
-                    <div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${lineupData.bullpen}</div>
+                    <div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div>
+                    <div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div>
+                </div>
+
+                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Lineup Ofensivo Confirmado (Posiciones 1 al 9)</h3>
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Orden / Posición</th>
+                                <th style="text-align:left;">Jugador</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${battersRowsHtml}
+                        </tbody>
+                    </table>
                 </div>
             `;
         }
@@ -919,27 +1047,6 @@
                 `;
                 container.appendChild(div);
             });
-        }
-
-        function setupEventListeners() {
-            document.getElementById('playerNameInput').addEventListener('input', (e) => { 
-                state.playerName = e.target.value.trim(); 
-                saveState(); 
-            });
-
-            document.getElementById('btnSyncLidom').onclick = () => {
-                if (socket) socket.emit('manual_sync_request');
-            };
-
-            document.getElementById('btnExportPng').onclick = () => {
-                const ticketElem = document.getElementById('printableTicket');
-                html2canvas(ticketElem).then(canvas => {
-                    const link = document.createElement('a');
-                    link.download = `Boleto_${document.getElementById('mTicketId').textContent}.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                });
-            };
         }
 
         function updateBalanceDisplay() { document.getElementById('userBalanceDisplay').textContent = state.userBalance.toLocaleString() + ' pts'; }
