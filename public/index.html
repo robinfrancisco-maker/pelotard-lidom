@@ -181,4 +181,779 @@
         .status-GANADOR { background: #10b981; color: white; }
         .status-PERDEDOR { background: #ef4444; color: white; }
 
-        .line
+        .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 850px; margin: 0 auto; }
+        .lineup-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 0.8rem; margin-bottom: 1rem; }
+        .pitching-staff-box { background: #0f172a; border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
+        .admin-box { background: var(--card-bg); border: 1px dashed var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
+        .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+        
+        .lineup-loader-box { background: #0f172a; border: 1px solid var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
+        .lineup-textarea { width: 100%; height: 140px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; margin: 0.8rem 0; outline: none; }
+        .lineup-textarea:focus { border-color: var(--gold); }
+        .btn-load-lineup { background: var(--accent); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .btn-load-lineup:hover { background: var(--accent-hover); }
+
+        .admin-subtab-btn { background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+        .admin-subtab-btn.active { background: var(--secondary); color: white; border-color: var(--gold); }
+        
+        .sim-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; }
+        .sim-card { background: #0f172a; padding: 0.8rem; border-radius: 8px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--card-border); }
+        .admin-form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+        .admin-form-group label { font-size: 0.75rem; color: var(--gold); font-weight: bold; }
+        .admin-input { background: #1e293b; border: 1px solid var(--card-border); color: white; padding: 6px 10px; border-radius: 6px; font-size: 0.85rem; outline: none; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-logo">
+            <span class="ball-icon">⚾</span>
+            <div>
+                <h1>PELOTARD</h1>
+                <div class="brand-subtitle">LIDOM AUTOMÁTICO</div>
+            </div>
+        </div>
+
+        <div class="live-ticker-banner" id="liveTickerBanner"></div>
+
+        <div class="header-controls">
+            <button class="btn-sync" id="btnSyncLidom">
+                <span class="connection-dot" id="connDot"></span>
+                <span id="btnSyncText">Sincronizado</span>
+            </button>
+
+            <div class="player-input-box">
+                <label for="playerNameInput">👤 Jugador:</label>
+                <input type="text" id="playerNameInput" value="Robin Francisco" placeholder="Nombre">
+            </div>
+
+            <div class="user-balance-card">
+                <div>
+                    <div class="balance-label">Puntos Recreativos</div>
+                    <div class="balance-amount" id="userBalanceDisplay">5,000 pts</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <div>
+            <!-- PESTAÑAS PRINCIPALES -->
+            <div class="nav-tabs">
+                <button class="tab-btn active" id="btnTabGames" onclick="switchTab('viewGames', 'btnTabGames')">1. ⚾ Cartelera</button>
+                <button class="tab-btn" id="btnTabLineups" onclick="switchTab('viewLineups', 'btnTabLineups')">2. 🧢 Lineups / Pitcheo</button>
+                <button class="tab-btn" id="btnTabStandings" onclick="switchTab('viewStandings', 'btnTabStandings')">3. 📊 Standings</button>
+                <button class="tab-btn" id="btnTabTopLeaders" onclick="switchTab('viewTopLeaders', 'btnTabTopLeaders')">4. ⭐ Top 10 Líderes</button>
+                <button class="tab-btn" id="btnTabHistory" onclick="switchTab('viewHistory', 'btnTabHistory')">5. 📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
+                <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Administración</button>
+            </div>
+
+            <!-- VISTA 1: CARTELERA -->
+            <div id="viewGames">
+                <div class="filter-pills">
+                    <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
+                    <button class="filter-pill" id="filterUpcoming" onclick="setFilter('UPCOMING', 'filterUpcoming')">Próximos</button>
+                    <button class="filter-pill" id="filterPassed" onclick="setFilter('PASSED', 'filterPassed')">Resultados / Pasados</button>
+                    <button class="filter-pill" id="filterAll" onclick="setFilter('ALL', 'filterAll')">Todos</button>
+                </div>
+
+                <div class="games-grid" id="gamesContainer"></div>
+            </div>
+
+            <!-- VISTA 2: LINEUPS -->
+            <div id="viewLineups" style="display: none;">
+                <div class="filter-pills" id="lineupTeamPills"></div>
+                <div class="lineup-card" id="lineupDisplayCard"></div>
+            </div>
+
+            <!-- VISTA 3: STANDINGS -->
+            <div id="viewStandings" style="display: none;">
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">Equipo</th>
+                                <th>JJ</th><th>G</th><th>P</th><th>PCT</th><th>DIF.</th><th>U10</th><th>RACHA</th><th>CA</th><th>CP</th><th>DIF C</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standingsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 4: TOP 10 LÍDERES -->
+            <div id="viewTopLeaders" style="display: none;">
+                <div class="filter-pills" style="margin-bottom: 1rem;">
+                    <button class="filter-pill active" id="subBtnBatters" onclick="switchSubLeaders('batters')">🔥 Top 10 Bateadores</button>
+                    <button class="filter-pill" id="subBtnPitchers" onclick="switchSubLeaders('pitchers')">🎯 Top 10 Lanzadores</button>
+                </div>
+
+                <div id="subViewBatters" class="admin-box">
+                    <div class="admin-title">🔥 Líderes de Bateo LIDOM (Top 10)</div>
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th><th style="text-align:left;">Jugador</th><th>Equipo</th><th>AVG</th><th>OPS</th><th>H</th><th>HR</th><th>CI</th><th>CA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="battingLeadersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="subViewPitchers" class="admin-box" style="display: none;">
+                    <div class="admin-title">🎯 Líderes de Pitcheo LIDOM (Top 10)</div>
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Pos</th><th style="text-align:left;">Lanzador</th><th>Equipo</th><th>EFE</th><th>G-P</th><th>JS</th><th>IL</th><th>K</th><th>WHIP</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pitchingLeadersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VISTA 5: MIS BOLETOS -->
+            <div id="viewHistory" style="display: none;">
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Ticket ID</th><th>Fecha</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th><th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VISTA 6: ADMINISTRACIÓN CON SUBMÓDULOS DE CARGA -->
+            <div id="viewAdmin" style="display: none;">
+                
+                <div style="display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap;">
+                    <button class="admin-subtab-btn active" id="btnAdminSubLineups" onclick="switchAdminSub('subAdminLineups', 'btnAdminSubLineups')">🧢 Cargar Lineups</button>
+                    <button class="admin-subtab-btn" id="btnAdminSubGames" onclick="switchAdminSub('subAdminGames', 'btnAdminSubGames')">⚾ Pizarra y Resultados</button>
+                    <button class="admin-subtab-btn" id="btnAdminSubStandings" onclick="switchAdminSub('subAdminStandings', 'btnAdminSubStandings')">📊 Editar Standings</button>
+                    <button class="admin-subtab-btn" id="btnAdminSubLeaders" onclick="switchAdminSub('subAdminLeaders', 'btnAdminSubLeaders')">⭐ Editar Top 10</button>
+                </div>
+
+                <!-- SUBMÓDULO 1: CARGA DE LINEUPS -->
+                <div id="subAdminLineups" class="lineup-loader-box">
+                    <div class="admin-title">📥 Carga Rápida de Lineup por Texto</div>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">
+                        Pegue la alineación copiada de Instagram/WhatsApp y el sistema la procesará automáticamente.
+                    </p>
+
+                    <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                        <label style="font-size:0.85rem; font-weight:bold; color:var(--gold);">Equipo:</label>
+                        <select id="adminTeamSelect" class="admin-input">
+                            <option value="L">Tigres del Licey (L)</option>
+                            <option value="E">Leones del Escogido (E)</option>
+                            <option value="AC">Águilas Cibaeñas (AC)</option>
+                            <option value="GC">Gigantes del Cibao (GC)</option>
+                            <option value="TE">Toros del Este (TE)</option>
+                            <option value="EO">Estrellas Orientales (EO)</option>
+                        </select>
+
+                        <span style="font-size:0.8rem; color:var(--text-muted);">Pitcher Abridor:</span>
+                        <input type="text" id="adminPitcherInput" placeholder="Ej: L. Gil (RHP)" class="admin-input" style="width:180px;">
+                    </div>
+
+                    <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue el lineup de 1 al 9 aquí..."></textarea>
+
+                    <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP</button>
+                </div>
+
+                <!-- SUBMÓDULO 2: CONTROL DE JUEGOS Y RESULTADOS -->
+                <div id="subAdminGames" class="admin-box" style="display:none;">
+                    <div class="admin-title">⚾ Control Manual de Partido y Marcador</div>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; margin-top:1rem;" id="adminGameControlGrid"></div>
+                </div>
+
+                <!-- SUBMÓDULO 3: EDICIÓN DE STANDINGS -->
+                <div id="subAdminStandings" class="admin-box" style="display:none;">
+                    <div class="admin-title">📊 Actualizar Tabla de Posiciones (Standings)</div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">Modifique los valores de la tabla oficial y guarde los cambios.</p>
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Equipo</th><th>JJ</th><th>G</th><th>P</th><th>DIF</th><th>RACHA</th><th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminStandingsEditBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUBMÓDULO 4: EDICIÓN DE TOP 10 LÍDERES -->
+                <div id="subAdminLeaders" class="admin-box" style="display:none;">
+                    <div class="admin-title">⭐ Carga de Líderes Individuales</div>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Pegue la lista de bateadores o lanzadores en formato libre.</p>
+                    <textarea id="adminLeadersText" class="lineup-textarea" placeholder="1. Ismael Munguía (EO) .750 AVG..."></textarea>
+                    <button class="btn-load-lineup" onclick="alert('Líderes actualizados en memoria local.')">💾 ACTUALIZAR LÍDERES</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- PANEL DE LA BOLETA -->
+        <div class="bet-slip-panel">
+            <div class="slip-header">
+                <div class="slip-title">
+                    🎟️ Boleta
+                    <span class="slip-count" id="slipCountBadge">0</span>
+                </div>
+                <button style="background:transparent; border:none; color:var(--red-loss); cursor:pointer; font-size:0.8rem;" id="btnClearSlip" onclick="clearSlip()">Limpiar</button>
+            </div>
+
+            <div class="bet-type-selector">
+                <button class="bet-type-btn active" id="btnBetTypeSencilla" onclick="setBetType('Sencilla')">Sencilla</button>
+                <button class="bet-type-btn" id="btnBetTypeParlay" onclick="setBetType('Parlay')">Parlay</button>
+            </div>
+
+            <div class="slip-items-list" id="slipItemsList">
+                <p style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding: 2rem 0;">Selecciona logros en la cartelera.</p>
+            </div>
+
+            <div class="slip-summary">
+                <div class="summary-row"><span>Multiplicador:</span><span style="font-weight:bold;" id="slipOddsDisplay">1.00x</span></div>
+                <div class="stake-input-group">
+                    <span style="font-size:0.85rem; font-weight:bold;">Puntos:</span>
+                    <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10" step="10" oninput="updateSlipUI()">
+                </div>
+                <div class="summary-row total"><span>Pago:</span><span id="slipPayoutDisplay">0 pts</span></div>
+                <button class="btn-submit-bet" id="btnSubmitBet" onclick="generateTicket()" disabled>GENERAR BOLETO</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL DE IMPRESIÓN DE TICKET -->
+    <div class="modal-overlay" id="ticketModal">
+        <div class="ticket-receipt" id="printableTicket">
+            <div class="ticket-header">
+                <h2>⚾ PELOTARD ⚾</h2>
+                <div style="font-size:0.65rem;">SISTEMA AUTOMÁTICO DE APUESTAS</div>
+            </div>
+
+            <div class="ticket-details">
+                <div><strong>TICKET ID:</strong> <span id="mTicketId">#PT-0000</span></div>
+                <div><strong>FECHA:</strong> <span id="mTicketDate">--</span></div>
+                <div><strong>JUGADOR:</strong> <span id="mTicketPlayer">--</span></div>
+                <div><strong>TIPO:</strong> <span id="mTicketType">PARLAY</span></div>
+            </div>
+
+            <div class="ticket-legs" id="mTicketLegs"></div>
+
+            <div class="ticket-summary">
+                <div style="display:flex; justify-content:space-between;"><span>MONTO:</span><span id="mTicketStake">0 pts</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>MULTIPLICADOR:</span><span id="mTicketOdds">0.00x</span></div>
+                <div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-top:4px;"><span>PAGO POTENCIAL:</span><span id="mTicketPayout">0 pts</span></div>
+            </div>
+
+            <div class="ticket-barcode">
+                <svg class="barcode-svg" viewBox="0 0 100 30">
+                    <rect x="5" y="0" width="2" height="30" fill="#000"/><rect x="10" y="0" width="4" height="30" fill="#000"/><rect x="18" y="0" width="1" height="30" fill="#000"/><rect x="22" y="0" width="3" height="30" fill="#000"/><rect x="28" y="0" width="5" height="30" fill="#000"/>
+                </svg>
+                <div style="font-size:0.65rem; margin-top:2px;" id="mTicketValidation">VALIDACIÓN: PT-LIVE-ONLINE</div>
+            </div>
+
+            <button class="btn-close-ticket" onclick="closeTicketModal()">CERRAR BOLETO</button>
+            <button class="btn-close-ticket" style="background:#10b981; margin-top:4px;" id="btnExportPng">📸 DESCARGAR IMAGEN (PNG)</button>
+        </div>
+    </div>
+
+    <script>
+        let CURRENT_DATE = '2026-10-21';
+
+        const TEAMS = {
+            'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
+            'E': { code: 'E', name: 'Leones del Escogido', class: 'bg-E' },
+            'AC': { code: 'AC', name: 'Águilas Cibaeñas', class: 'bg-AC' },
+            'GC': { code: 'GC', name: 'Gigantes del Cibao', class: 'bg-GC' },
+            'TE': { code: 'TE', name: 'Toros del Este', class: 'bg-TE' },
+            'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
+        };
+
+        // VALORES OFICIALES Y FIJOS PARA LA JORNADA EN VIVO
+        const INITIAL_GAMES = [
+            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'LIVE', inning: 'RETRASADO (07:15 PM)', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 1, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 1, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
+            { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayName: 'Tigres del Licey', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 3, status: 'FINAL', inning: 'Final' }
+        ];
+
+        let OFFICIAL_STANDINGS = [
+            { code: 'L',  name: 'Tigres del Licey', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W2', ca: 21, cp: 18, difC: '+3' },
+            { code: 'TE', name: 'Toros del Este', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W3', ca: 17, cp: 20, difC: '-3' },
+            { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 2, p: 2, pct: '.500', dif: '1.00', u10: '2-2', racha: 'L1', ca: 27, cp: 11, difC: '+16' },
+            { code: 'GC', name: 'Gigantes del Cibao', jj: 4, g: 2, p: 2, pct: '.500', dif: '1.00', u10: '2-2', racha: 'L1', ca: 17, cp: 9, difC: '+8' },
+            { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'L1', ca: 10, cp: 16, difC: '-6' },
+            { code: 'E',  name: 'Leones del Escogido', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'W1', ca: 11, cp: 29, difC: '-18' }
+        ];
+
+        const BATTING_LEADERS = [
+            { pos: 1, name: 'Ismael Munguía', team: 'EO', avg: '.750', ops: '1.583', h: 3, hr: 0, ci: 0, ca: 1 },
+            { pos: 2, name: 'Marco Luciano', team: 'EO', avg: '.600', ops: '2.067', h: 3, hr: 1, ci: 2, ca: 2 },
+            { pos: 3, name: 'Francisco Mejía', team: 'L', avg: '.600', ops: '1.314', h: 3, hr: 0, ci: 2, ca: 1 },
+            { pos: 4, name: 'Jefferson Rojas', team: 'GC', avg: '.571', ops: '2.054', h: 4, hr: 2, ci: 3, ca: 4 },
+            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 },
+            { pos: 6, name: 'Sandro Fabián', team: 'TE', avg: '.462', ops: '1.250', h: 6, hr: 1, ci: 4, ca: 3 },
+            { pos: 7, name: 'Emilio Bonifacio', team: 'L', avg: '.429', ops: '1.150', h: 6, hr: 0, ci: 2, ca: 4 },
+            { pos: 8, name: 'Junior Lake', team: 'E', avg: '.417', ops: '1.080', h: 5, hr: 1, ci: 3, ca: 2 },
+            { pos: 9, name: 'Yairo Muñoz', team: 'TE', avg: '.400', ops: '1.010', h: 4, hr: 0, ci: 2, ca: 1 },
+            { pos: 10, name: 'Kelvin Gutiérrez', team: 'GC', avg: '.385', ops: '0.970', h: 5, hr: 0, ci: 3, ca: 2 }
+        ];
+
+        const PITCHING_LEADERS = [
+            { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 5, whip: '0.60' },
+            { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 9, whip: '0.60' },
+            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 0, il: '4.0', k: 4, whip: '0.33' },
+            { pos: 4, name: 'Esmil Rogers', team: 'TE', era: '1.20', gp: '1-0', js: 0, il: '5.0', k: 6, whip: '0.80' },
+            { pos: 5, name: 'Ariel Miranda', team: 'E', era: '1.80', gp: '1-0', js: 0, il: '5.0', k: 7, whip: '0.90' },
+            { pos: 6, name: 'Tyler Alexander', team: 'AC', era: '2.00', gp: '0-1', js: 0, il: '4.2', k: 5, whip: '1.00' },
+            { pos: 7, name: 'Jairo Asencio', team: 'L', era: '0.00', gp: '0-0', js: 2, il: '2.0', k: 3, whip: '0.50' },
+            { pos: 8, name: 'Fernando Abad', team: 'TE', era: '0.00', gp: '0-0', js: 1, il: '2.0', k: 2, whip: '0.50' },
+            { pos: 9, name: 'Cristopher Molina', team: 'GC', era: '2.25', gp: '1-0', js: 0, il: '4.0', k: 4, whip: '1.10' },
+            { pos: 10, name: 'Neftalí Feliz', team: 'AC', era: '2.70', gp: '0-0', js: 1, il: '3.1', k: 4, whip: '1.15' }
+        ];
+
+        let DETAILED_LINEUPS = {
+            'L': { pitcher: 'L. Gil (RHP)', bullpen: 'M. Castro, J. Asencio', batters: [{ pos: '1. SS', name: 'J. Madé' }, { pos: '2. 2B', name: 'S. Alcántara' }, { pos: '3. 1B', name: 'R. Hernández' }, { pos: '4. 3B', name: 'C. Adames' }, { pos: '5. LF', name: 'E. Florial' }, { pos: '6. CF', name: 'K. Alcántara' }, { pos: '7. C', name: 'F. Mejía' }, { pos: '8. DH', name: 'L. Peguero' }, { pos: '9. RF', name: 'E. Bonifacio' }] },
+            'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, F. Abad', batters: [{ pos: '1. CF', name: 'Gilberto Celestino' }, { pos: '2. 2B', name: 'Ronny Simon' }, { pos: '3. RF', name: 'Bryan de la Cruz' }, { pos: '4. LF', name: 'Eloy Jiménez' }, { pos: '5. 3B', name: 'Yairo Muñoz' }, { pos: '6. 1B', name: 'Jhonkensy Noel' }, { pos: '7. DH', name: 'Zoilo Almonte' }, { pos: '8. SS', name: 'Felnin Celesten' }, { pos: '9. C', name: 'Pedro Severino' }] },
+            'E': { pitcher: 'Ariel Miranda (LHP)', bullpen: 'J. Rhoades, S. Marte', batters: [{ pos: '1. LF', name: 'Junior Lake' }, { pos: '2. 3B', name: 'Vidal Bruján' }, { pos: '3. RF', name: 'Sócrates Brito' }, { pos: '4. DH', name: 'Yamaico Navarro' }, { pos: '5. 1B', name: 'José Marmolejos' }, { pos: '6. 2B', name: 'Marcos Hernández' }, { pos: '7. CF', name: 'Elier Hernández' }, { pos: '8. SS', name: 'Erik González' }, { pos: '9. C', name: 'Michael de la Cruz' }] },
+            'GC': { pitcher: 'Cristopher Molina (RHP)', bullpen: 'A. Pilar, R. Gudino', batters: [{ pos: '1. CF', name: 'Carlos Jorge' }, { pos: '2. RF', name: 'Noelvi Marte' }, { pos: '3. LF', name: 'Nomar Mazara' }, { pos: '4. DH', name: 'Marcell Ozuna' }, { pos: '5. C', name: 'Agustín Ramírez' }, { pos: '6. 2B', name: 'Roldy Brito' }, { pos: '7. 1B', name: 'Jake Holton' }, { pos: '8. 3B', name: 'Kelvin Gutiérrez' }, { pos: '9. SS', name: 'Pablo Reyes' }] },
+            'EO': { pitcher: 'Óscar de la Cruz (RHP)', bullpen: 'J. Barría, R. Blanco', batters: [{ pos: '1. CF', name: 'Ismael Munguía' }, { pos: '2. DH', name: 'Harold Ramírez' }, { pos: '3. LF', name: 'Raimel Tapia' }, { pos: '4. RF', name: 'Óscar González' }, { pos: '5. 1B', name: 'Josh Lester' }, { pos: '6. 2B', name: 'Marco Luciano' }, { pos: '7. C', name: 'Leo Bernal' }, { pos: '8. SS', name: 'César Prieto' }, { pos: '9. 3B', name: 'Aaron Schunk' }] },
+            'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, N. Feliz', batters: [{ pos: '1. SS', name: 'Angel Genao' }, { pos: '2. CF', name: 'Leody Taveras' }, { pos: '3. LF', name: 'Luis Liberato' }, { pos: '4. 1B', name: 'Aderlin Rodríguez' }, { pos: '5. DH', name: 'Jasson Domínguez' }, { pos: '6. 3B', name: 'Christopher Morel' }, { pos: '7. 2B', name: 'Adael Amador' }, { pos: '8. C', name: 'Webster Rivas' }, { pos: '9. RF', name: 'Steward Berroa' }] }
+        };
+
+        let liveGamesData = INITIAL_GAMES;
+        let socket = null;
+
+        function loadState() {
+            const saved = localStorage.getItem('pelotard_state_v18');
+            if (saved) {
+                try { 
+                    const parsed = JSON.parse(saved);
+                    if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
+                    return parsed; 
+                } catch(e){}
+            }
+            return {
+                userBalance: 5000,
+                playerName: 'Robin Francisco',
+                selectedBetType: 'Sencilla',
+                currentSlip: [],
+                userTickets: [],
+                activeFilter: 'TODAY',
+                selectedLineupTeam: 'L'
+            };
+        }
+
+        let state = loadState();
+        function saveState() { 
+            state.customLineups = DETAILED_LINEUPS;
+            localStorage.setItem('pelotard_state_v18', JSON.stringify(state)); 
+        }
+
+        window.switchTab = function(viewId, btnId) {
+            ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { 
+                document.getElementById(v).style.display = 'none'; 
+            });
+            document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => { 
+                b.classList.remove('active'); 
+            });
+            
+            document.getElementById(viewId).style.display = 'block';
+            document.getElementById(btnId).classList.add('active');
+        };
+
+        window.switchAdminSub = function(subId, btnId) {
+            ['subAdminLineups', 'subAdminGames', 'subAdminStandings', 'subAdminLeaders'].forEach(s => {
+                document.getElementById(s).style.display = 'none';
+            });
+            document.querySelectorAll('.admin-subtab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(subId).style.display = 'block';
+            document.getElementById(btnId).classList.add('active');
+            
+            if (subId === 'subAdminGames') renderAdminGameControls();
+            if (subId === 'subAdminStandings') renderAdminStandingsControls();
+        };
+
+        window.setFilter = function(filterType, btnId) {
+            state.activeFilter = filterType;
+            document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+            saveState();
+            renderGames();
+        };
+
+        window.switchSubLeaders = function(type) {
+            if (type === 'batters') {
+                document.getElementById('subViewBatters').style.display = 'block';
+                document.getElementById('subViewPitchers').style.display = 'none';
+                document.getElementById('subBtnBatters').classList.add('active');
+                document.getElementById('subBtnPitchers').classList.remove('active');
+            } else {
+                document.getElementById('subViewBatters').style.display = 'none';
+                document.getElementById('subViewPitchers').style.display = 'block';
+                document.getElementById('subBtnBatters').classList.remove('active');
+                document.getElementById('subBtnPitchers').classList.add('active');
+            }
+        };
+
+        window.processTextLineup = function() {
+            const teamCode = document.getElementById('adminTeamSelect').value;
+            const pitcherText = document.getElementById('adminPitcherInput').value.trim();
+            const rawText = document.getElementById('adminLineupText').value.trim();
+
+            if (!rawText) { alert('Pegue el texto del lineup.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedBatters = [];
+
+            lines.forEach((line, index) => {
+                let cleanLine = line.replace(/^[0-9]+[\.\-\s]+/, '').trim();
+                const posMatch = cleanLine.match(/^(SS|2B|1B|3B|LF|CF|RF|C|DH|BD|P)\b/i);
+                let pos = `${index + 1}. `;
+                let name = cleanLine;
+
+                if (posMatch) {
+                    pos += posMatch[0].toUpperCase();
+                    name = cleanLine.substring(posMatch[0].length).trim();
+                } else {
+                    pos += 'BAT';
+                }
+
+                parsedBatters.push({ pos: pos, name: name });
+            });
+
+            if (!DETAILED_LINEUPS[teamCode]) { DETAILED_LINEUPS[teamCode] = { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] }; }
+            if (pitcherText) { DETAILED_LINEUPS[teamCode].pitcher = pitcherText; }
+            DETAILED_LINEUPS[teamCode].batters = parsedBatters;
+
+            saveState(); renderLineups();
+            alert(`✅ Lineup de ${TEAMS[teamCode].name} publicado con éxito.`);
+            document.getElementById('adminLineupText').value = '';
+        };
+
+        function renderAdminGameControls() {
+            const container = document.getElementById('adminGameControlGrid');
+            container.innerHTML = '';
+            liveGamesData.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'sim-card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
+                    <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado / Inning (ej. BOT 4):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado de Juego:</label>
+                        <select id="status_${game.id}" class="admin-input">
+                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar)</option>
+                            <option value="LIVE" ${game.status==='LIVE'?'selected':''}>LIVE (En Vivo)</option>
+                            <option value="FINAL" ${game.status==='FINAL'?'selected':''}>FINAL (Concluido)</option>
+                        </select>
+                    </div>
+                    <button class="btn-load-lineup" style="margin-top:6px; padding:4px;" onclick="saveGameResult(${game.id})">💾 Guardar Partido</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.saveGameResult = function(gameId) {
+            const game = liveGamesData.find(g => g.id === gameId);
+            if (!game) return;
+            game.awayRuns = parseInt(document.getElementById(`awayR_${gameId}`).value) || 0;
+            game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
+            game.inning = document.getElementById(`inning_${gameId}`).value;
+            game.status = document.getElementById(`status_${gameId}`).value;
+            renderGames(); renderLiveTicker();
+            alert('⚾ Marcador actualizado.');
+        };
+
+        function renderAdminStandingsControls() {
+            const tbody = document.getElementById('adminStandingsEditBody');
+            tbody.innerHTML = '';
+            OFFICIAL_STANDINGS.forEach((t, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:left;"><strong>${t.name}</strong></td>
+                    <td><input type="number" id="st_jj_${index}" value="${t.jj}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_dif_${index}" value="${t.dif}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_racha_${index}" value="${t.racha}" class="admin-input" style="width:50px;"></td>
+                    <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.saveStandingRow = function(idx) {
+            OFFICIAL_STANDINGS[idx].jj = parseInt(document.getElementById(`st_jj_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].g = parseInt(document.getElementById(`st_g_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].dif = document.getElementById(`st_dif_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
+            renderStandings();
+            alert('📊 Standing actualizado.');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerNameInput').value = state.playerName;
+            renderBattingLeaders(); renderPitchingLeaders(); renderLineups();
+            renderStandings(); renderGames(); renderLiveTicker();
+            updateBalanceDisplay(); updateHistoryTable(); updateSlipUI(); setupWebSockets();
+        });
+
+        function setupWebSockets() {
+            try {
+                socket = io({ transports: ['websocket', 'polling'], reconnection: true });
+                socket.on('connect', () => { document.getElementById('connDot').classList.remove('offline'); document.getElementById('btnSyncText').textContent = 'Sincronizado'; });
+                socket.on('disconnect', () => { document.getElementById('connDot').classList.add('offline'); document.getElementById('btnSyncText').textContent = 'Reconectando...'; });
+                socket.on('lidom_update', (data) => {
+                    if (data) {
+                        if (data.date) CURRENT_DATE = data.date;
+                        if (data.games && data.games.length > 0) liveGamesData = data.games;
+                        renderLiveTicker(); renderGames(); renderStandings();
+                    }
+                });
+            } catch(e) {}
+        }
+
+        function renderLiveTicker() {
+            const banner = document.getElementById('liveTickerBanner');
+            banner.innerHTML = '';
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE || g.status === 'LIVE');
+            if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando cartelera de hoy...</span>'; return; }
+            todayGames.forEach(game => {
+                const item = document.createElement('div');
+                item.className = 'ticker-item';
+                let badge = `<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span>`;
+                if (game.status === 'LIVE') badge = `<span class="ticker-badge-live">LIVE</span>`;
+                else if (game.status === 'FINAL') badge = `<span class="ticker-badge-final">FINAL</span>`;
+                item.innerHTML = `${badge} <span class="ticker-teams">${game.away} vs ${game.home}</span> <span class="ticker-score">${game.awayRuns} - ${game.homeRuns}</span> <span class="ticker-inning">${game.inning || game.time}</span>`;
+                banner.appendChild(item);
+            });
+        }
+
+        function renderGames() {
+            const container = document.getElementById('gamesContainer');
+            container.innerHTML = '';
+            let filteredGames = liveGamesData;
+            if (state.activeFilter === 'TODAY') filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
+            else if (state.activeFilter === 'UPCOMING') filteredGames = liveGamesData.filter(g => g.date > CURRENT_DATE);
+            else if (state.activeFilter === 'PASSED') filteredGames = liveGamesData.filter(g => g.date < CURRENT_DATE || g.status === 'FINAL');
+
+            if (filteredGames.length === 0) { container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos para esta sección.</div>'; return; }
+
+            filteredGames.forEach(game => {
+                const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName || game.away, class: 'bg-AC' };
+                const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home, class: 'bg-EO' };
+                const isPassed = game.status === 'FINAL';
+                const isLive = game.status === 'LIVE';
+                const card = document.createElement('div');
+                card.className = `game-card ${isPassed ? 'finished-card' : ''} ${isLive ? 'live-card' : ''}`;
+
+                let headerStatus = `<span class="game-stadium">${game.stadium}</span>`;
+                if (isLive) headerStatus = `<span class="ticker-badge-live">EN VIVO</span>`;
+                else if (isPassed) headerStatus = '<span class="status-badge status-GANADOR">FINAL</span>';
+
+                const rlLine = game.rlLine || 1.5;
+                const awayMl = (game.awayMl || 1.85).toFixed(2);
+                const homeMl = (game.homeMl || 1.95).toFixed(2);
+                const awayRl = (game.awayRl || 1.60).toFixed(2);
+                const homeRl = (game.homeRl || 2.25).toFixed(2);
+                const total = game.total || 8.5;
+                const over = (game.over || 1.90).toFixed(2);
+                const under = (game.under || 1.90).toFixed(2);
+
+                let statusLabel = `<span>ENTRADA / ESTADO:</span> <span class="status-text">${game.inning || game.time}</span>`;
+                if (isLive) statusLabel = `<span style="color:#ef4444; font-weight:900;">🔴 EN VIVO:</span> <span class="status-text" style="color:#f59e0b;">${game.inning}</span>`;
+                else if (isPassed) statusLabel = `<span style="color:#10b981; font-weight:900;">🏁 PARTIDO FINALIZADO:</span> <span class="status-text">${game.awayRuns} - ${game.homeRuns}</span>`;
+
+                card.innerHTML = `
+                    <div class="game-header"><span>📅 ${game.date} - ${game.time}</span>${headerStatus}</div>
+                    <div class="team-row"><div class="team-info"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div><span>${awayTeam.name}</span></div><div class="team-score">${game.awayRuns}</div></div>
+                    <div class="team-row"><div class="team-info"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div><span>${homeTeam.name}</span></div><div class="team-score">${game.homeRuns}</div></div>
+                    <div class="live-status-bar ${isLive ? 'is-live' : ''}"><div>${statusLabel}</div><div class="live-score-badge">${game.awayRuns} - ${game.homeRuns}</div></div>
+                    <div class="pitchers-box"><span>⚾ <strong>Abridores:</strong> ${game.awayPitcher || 'Por definir'} vs ${game.homePitcher || 'Por definir'}</span></div>
+                    ${!isPassed ? `
+                        <div class="market-section">
+                            <span class="market-label">🎯 QUIÉN GANA (MONEYLINE)</span>
+                            <div class="odds-grid-3">
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.home}', ${homeMl})"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></div>
+                            </div>
+                            <span class="market-label">⚾ LÍNEA DE CARRERAS (RUN LINE)</span>
+                            <div class="odds-grid-3">
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></div>
+                            </div>
+                            <span class="market-label">📊 TOTAL DE CARRERAS (ALTAS / BAJAS)</span>
+                            <div class="odds-grid-3">
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></div>
+                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MENOS DE ${total}', ${under})"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></div>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="final-result-box">
+                            <div class="final-result-title">🏆 GANADOR: ${game.awayRuns > game.homeRuns ? awayTeam.name : homeTeam.name}</div>
+                            <div style="font-size:0.85rem; color:var(--text-muted);">Marcador Final: ${game.awayRuns} - ${game.homeRuns}</div>
+                        </div>
+                    `}
+                `;
+                container.appendChild(card);
+            });
+            updateOddsButtonsHighlight();
+        }
+
+        window.toggleSelection = function(gameId, market, pick, odd) {
+            const game = liveGamesData.find(g => g.id === gameId);
+            if (!game) return;
+            const idx = state.currentSlip.findIndex(i => i.gameId === gameId && i.market === market);
+            if (idx > -1) state.currentSlip.splice(idx, 1);
+            else state.currentSlip.push({ gameId, gameTitle: `${game.away} @ ${game.home}`, market, pick, odd });
+            saveState(); updateSlipUI(); updateOddsButtonsHighlight();
+        };
+
+        function updateSlipUI() {
+            const list = document.getElementById('slipItemsList');
+            document.getElementById('slipCountBadge').textContent = state.currentSlip.length;
+            if (state.selectedBetType === 'Parlay') { document.getElementById('btnBetTypeParlay').classList.add('active'); document.getElementById('btnBetTypeSencilla').classList.remove('active'); } 
+            else { document.getElementById('btnBetTypeSencilla').classList.add('active'); document.getElementById('btnBetTypeParlay').classList.remove('active'); }
+
+            if (state.currentSlip.length === 0) { 
+                list.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding: 2rem 0;">Selecciona logros en la cartelera.</p>'; 
+                document.getElementById('slipOddsDisplay').textContent = '1.00x'; document.getElementById('slipPayoutDisplay').textContent = '0 pts'; document.getElementById('btnSubmitBet').disabled = true; return; 
+            }
+
+            list.innerHTML = ''; let totalOdds = 1.0;
+            state.currentSlip.forEach((item, index) => {
+                totalOdds *= item.odd;
+                const div = document.createElement('div'); div.className = 'slip-item';
+                div.innerHTML = `<button class="slip-item-remove" onclick="removeSlipItem(${index})">✕</button><div class="slip-item-header"><span>${item.gameTitle} (${item.market})</span><span>${item.odd.toFixed(2)}</span></div><div class="slip-item-selection">${item.pick}</div>`;
+                list.appendChild(div);
+            });
+
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            if (state.selectedBetType === 'Parlay' && state.currentSlip.length < 2) {
+                document.getElementById('slipOddsDisplay').textContent = 'Mínimo 2 logros'; document.getElementById('slipPayoutDisplay').textContent = '0 pts'; document.getElementById('btnSubmitBet').disabled = true;
+            } else {
+                document.getElementById('slipOddsDisplay').textContent = totalOdds.toFixed(2) + 'x';
+                document.getElementById('slipPayoutDisplay').textContent = Math.round(stake * totalOdds).toLocaleString() + ' pts';
+                document.getElementById('btnSubmitBet').disabled = stake <= 0 || stake > state.userBalance;
+            }
+        }
+
+        window.removeSlipItem = function(index) { state.currentSlip.splice(index, 1); saveState(); updateSlipUI(); updateOddsButtonsHighlight(); };
+        window.clearSlip = function() { state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight(); };
+        window.setBetType = function(type) { state.selectedBetType = type; saveState(); updateSlipUI(); };
+
+        function updateOddsButtonsHighlight() {
+            document.querySelectorAll('.odds-btn').forEach(btn => {
+                const onclickAttr = btn.getAttribute('onclick') || '';
+                const isSelected = state.currentSlip.some(item => onclickAttr.includes(`'${item.pick}'`));
+                btn.classList.toggle('selected', isSelected);
+            });
+        }
+
+        function renderStandings() {
+            const tbody = document.getElementById('standingsTableBody');
+            tbody.innerHTML = '';
+            OFFICIAL_STANDINGS.forEach(team => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class="team-cell"><strong>${team.name}</strong></td><td><strong>${team.jj}</strong></td><td style="color:var(--green-win); font-weight:bold;">${team.g}</td><td style="color:var(--red-loss); font-weight:bold;">${team.p}</td><td><strong>${team.pct}</strong></td><td style="color:var(--gold); font-weight:bold;">${team.dif}</td><td>${team.u10}</td><td><strong>${team.racha}</strong></td><td>${team.ca}</td><td>${team.cp}</td><td style="font-weight:bold; color:${team.difC.includes('+') ? 'var(--green-win)' : 'var(--red-loss)'};">${team.difC}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderBattingLeaders() {
+            const tbody = document.getElementById('battingLeadersTableBody');
+            tbody.innerHTML = '';
+            BATTING_LEADERS.forEach(player => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>#${player.pos}</strong></td><td style="text-align:left;"><strong>${player.name}</strong></td><td><span class="status-badge ${TEAMS[player.team].class}">${player.team}</span></td><td style="color:var(--gold); font-weight:bold;">${player.avg}</td><td style="color:var(--green-win); font-weight:bold;">${player.ops}</td><td>${player.h}</td><td>${player.hr}</td><td>${player.ci}</td><td>${player.ca}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPitchingLeaders() {
+            const tbody = document.getElementById('pitchingLeadersTableBody');
+            tbody.innerHTML = '';
+            PITCHING_LEADERS.forEach(pitcher => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>#${pitcher.pos}</strong></td><td style="text-align:left;"><strong>${pitcher.name}</strong></td><td><span class="status-badge ${TEAMS[pitcher.team].class}">${pitcher.team}</span></td><td style="color:var(--green-win); font-weight:bold;">${pitcher.era}</td><td><strong>${pitcher.gp}</strong></td><td>${pitcher.js}</td><td>${pitcher.il}</td><td style="color:var(--gold); font-weight:bold;">${pitcher.k}</td><td>${pitcher.whip}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderLineups() {
+            const pillsContainer = document.getElementById('lineupTeamPills');
+            pillsContainer.innerHTML = '';
+            Object.keys(TEAMS).forEach(code => {
+                const btn = document.createElement('button');
+                btn.className = `filter-pill ${state.selectedLineupTeam === code ? 'active' : ''}`;
+                btn.textContent = TEAMS[code].name;
+                btn.onclick = () => { state.selectedLineupTeam = code; saveState(); renderLineups(); };
+                pillsContainer.appendChild(btn);
+            });
+
+            const teamCode = state.selectedLineupTeam;
+            const card = document.getElementById('lineupDisplayCard');
+            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
+
+            let battersRowsHtml = '';
+            data.batters.forEach(b => {
+                battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
+            });
+
+            card.innerHTML = `
+                <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
+                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div></div>
+                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
+                <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
+            `;
+        }
+
+        window.generateTicket = function() {
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            if (stake > state.userBalance) { alert('Puntos insuficientes.'); return; }
+            const legsCount = state.currentSlip.length;
+            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
+            const payout = Math.round(stake * totalOdds);
+            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
+
+            const ticket = { id: ticketId, date: new Date().toLocaleString('es-DO'), player: state.playerName, type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA', stake: stake, odds: totalOdds, payout: payout, legs: [...state.currentSlip], status: 'PENDIENTE' };
+            state.userBalance -= stake; state.userTickets.unshift(ticket); saveState();
+            updateBalanceDisplay(); updateHistoryTable(); showTicketModal(ticket);
+            state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight();
+        };
+
+        function showTicketModal(ticket) {
+            document.getElementById('mTicketId').textContent = ticket.id; document.getElementById('mTicketDate').textContent = ticket.date; document.getElementById('mTicketPlayer').textContent = ticket.player; document.getElementById('mTicketType').textContent = ticket.type; document.getElementById('mTicketStake').textContent = ticket.stake.toLocaleString() + ' pts'; document.getElementById('mTicketOdds').textContent = ticket.odds.toFixed(2) + 'x'; document.getElementById('mTicketPayout').textContent = ticket.payout.toLocaleString() + ' pts';
+            const legsContainer = document.getElementById('mTicketLegs'); legsContainer.innerHTML = '';
+            ticket.legs.forEach(leg => { legsContainer.innerHTML += `<div class="ticket-leg-item"><div><strong>${leg.gameTitle} (${leg.market})</strong></div><div>SELECCIÓN: ${leg.pick} @ ${leg.odd.toFixed(2)}</div></div>`; });
+            document.getElementById('ticketModal').classList.add('active');
+        }
+
+        window.closeTicketModal = function() { document.getElementById('ticketModal').classList.remove('active'); };
+
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyTableBody'); document.getElementById('ticketCountHeader').textContent = state.userTickets.length;
+            if (state.userTickets.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No tienes boletos registrados.</td></tr>'; return; }
+            tbody.innerHTML = '';
+            state.userTickets.forEach(t => { tbody.innerHTML += `<tr><td><strong>${t.id}</strong></td><td>${t.date}</td><td>${t.type}</td><td>${t.stake} pts</td><td style="color:var(--green-win);">${t.payout.toLocaleString()} pts</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td><button style="background:var(--secondary); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick='showTicketModal(${JSON.stringify(t)})'>Ver</button></td></tr>`; });
+        }
+
+        function updateBalanceDisplay() { document.getElementById('userBalanceDisplay').textContent = state.userBalance.toLocaleString() + ' pts'; }
+    </script>
+</body>
+</html>
