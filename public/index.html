@@ -176,9 +176,9 @@
         .btn-close-ticket { background: #000; color: #fff; border: none; width: 100%; padding: 0.6rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
 
         .table-responsive { overflow-x: auto; border-radius: 8px; border: 1px solid var(--card-border); }
-        .styled-table { width: 100%; border-collapse: collapse; background: var(--card-bg); font-size: 0.85rem; }
-        .styled-table th, .styled-table td { padding: 0.7rem 0.8rem; text-align: center; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
-        .styled-table th { background: #0f172a; color: var(--text-muted); font-weight: 700; }
+        .styled-table { width: 100%; border-collapse: collapse; background: var(--card-bg); font-size: 0.81rem; }
+        .styled-table th, .styled-table td { padding: 0.6rem 0.5rem; text-align: center; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+        .styled-table th { background: #0f172a; color: var(--gold); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; }
         .styled-table td.team-cell { text-align: left; }
 
         .status-badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
@@ -193,7 +193,7 @@
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
         
         .lineup-loader-box { background: #0f172a; border: 1px solid var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .lineup-textarea { width: 100%; height: 140px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; margin: 0.8rem 0; outline: none; }
+        .lineup-textarea { width: 100%; height: 140px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.82rem; margin: 0.8rem 0; outline: none; }
         .lineup-textarea:focus { border-color: var(--gold); }
         .btn-load-lineup { background: var(--accent); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .btn-load-lineup:hover { background: var(--accent-hover); }
@@ -295,12 +295,13 @@
                 </div>
 
                 <div id="subViewBatters" class="admin-box">
-                    <div class="admin-title">🔥 Líderes de Bateo LIDOM (Top 10)</div>
+                    <div class="admin-title">🔥 LÍDERES Y ESTADÍSTICAS DE BATEO LIDOM</div>
                     <div class="table-responsive">
                         <table class="styled-table">
                             <thead>
                                 <tr>
-                                    <th>Pos</th><th style="text-align:left;">Jugador</th><th>Equipo</th><th>AVG</th><th>OPS</th><th>H</th><th>HR</th><th>CI</th><th>CA</th>
+                                    <th style="text-align:left;">JUGADOR</th>
+                                    <th>EQ</th><th>J</th><th>TB</th><th>C</th><th>H</th><th>2B</th><th>3B</th><th>HR</th><th>CI</th><th>BB</th><th>P</th><th>BR</th><th>PRO</th><th>OBP</th><th>SLG</th><th>OPS</th>
                                 </tr>
                             </thead>
                             <tbody id="battingLeadersTableBody"></tbody>
@@ -309,12 +310,13 @@
                 </div>
 
                 <div id="subViewPitchers" class="admin-box" style="display: none;">
-                    <div class="admin-title">🎯 Líderes de Pitcheo LIDOM (Top 10)</div>
+                    <div class="admin-title">🎯 LÍDERES Y ESTADÍSTICAS DE PITCHEO LIDOM</div>
                     <div class="table-responsive">
                         <table class="styled-table">
                             <thead>
                                 <tr>
-                                    <th>Pos</th><th style="text-align:left;">Lanzador</th><th>Equipo</th><th>EFE</th><th>G-P</th><th>JS</th><th>IL</th><th>K</th><th>WHIP</th>
+                                    <th style="text-align:left;">JUGADOR</th>
+                                    <th>EQ</th><th>JG</th><th>JP</th><th>EFE</th><th>J</th><th>A</th><th>JC</th><th>SHO</th><th>JS</th><th>OS</th><th>IL</th><th>H</th><th>C</th><th>CL</th><th>HR</th><th>GP</th><th>BB</th><th>P</th><th>WHIP</th><th>PRO</th>
                                 </tr>
                             </thead>
                             <tbody id="pitchingLeadersTableBody"></tbody>
@@ -344,7 +346,7 @@
                     <button class="admin-subtab-btn active" id="btnAdminSubLineups" onclick="switchAdminSub('subAdminLineups', 'btnAdminSubLineups')">🧢 Cargar Lineups</button>
                     <button class="admin-subtab-btn" id="btnAdminSubGames" onclick="switchAdminSub('subAdminGames', 'btnAdminSubGames')">⚾ Pizarra y Resultados</button>
                     <button class="admin-subtab-btn" id="btnAdminSubStandings" onclick="switchAdminSub('subAdminStandings', 'btnAdminSubStandings')">📊 Editar Standings</button>
-                    <button class="admin-subtab-btn" id="btnAdminSubLeaders" onclick="switchAdminSub('subAdminLeaders', 'btnAdminSubLeaders')">⭐ Editar Top 10</button>
+                    <button class="admin-subtab-btn" id="btnAdminSubLeaders" onclick="switchAdminSub('subAdminLeaders', 'btnAdminSubLeaders')">⭐ Editar Top Líderes</button>
                 </div>
 
                 <!-- SUBMÓDULO 1: CARGA DE LINEUPS -->
@@ -396,12 +398,17 @@
                     </div>
                 </div>
 
-                <!-- SUBMÓDULO 4: EDICIÓN DE TOP 10 LÍDERES -->
+                <!-- SUBMÓDULO 4: EDICIÓN DE TOP LÍDERES -->
                 <div id="subAdminLeaders" class="admin-box" style="display:none;">
-                    <div class="admin-title">⭐ Carga de Líderes Individuales</div>
-                    <p style="font-size:0.8rem; color:var(--text-muted);">Pegue la lista de bateadores o lanzadores en formato libre.</p>
-                    <textarea id="adminLeadersText" class="lineup-textarea" placeholder="1. Ismael Munguía (EO) .750 AVG..."></textarea>
-                    <button class="btn-load-lineup" onclick="alert('Líderes actualizados en memoria local.')">💾 ACTUALIZAR LÍDERES</button>
+                    <div class="admin-title">🔥 1. Cargar/Editar Top 10 Bateadores</div>
+                    <p style="font-size:0.78rem; color:var(--text-muted);">Formato: <code>Nombre (Pos), Equipo, J, TB, C, H, 2B, 3B, HR, CI, BB, P, BR, PRO, OBP, SLG, OPS</code></p>
+                    <textarea id="adminBattingText" class="lineup-textarea" placeholder="Kevin Alcántara (CF), L, 3, 11, 4, 6, 1, 0, 2, 5, 2, 2, 0, .545, .615, 1.182, 1.797"></textarea>
+                    <button class="btn-load-lineup" style="margin-bottom:1.5rem;" onclick="saveBattingLeadersAdmin()">💾 PUBLICAR BATEADORES</button>
+
+                    <div class="admin-title">🎯 2. Cargar/Editar Top 10 Lanzadores</div>
+                    <p style="font-size:0.78rem; color:var(--text-muted);">Formato: <code>Nombre (P), Equipo, JG, JP, EFE, J, A, JC, SHO, JS, OS, IL, H, C, CL, HR, GP, BB, P, WHIP, PRO</code></p>
+                    <textarea id="adminPitchingText" class="lineup-textarea" placeholder="Carlos Peña (P), AC, 0, 1, 10.80, 2, 0, 0, 0, 0, 0, 3.1, 7, 4, 4, 2, 0, 0, 3, 2.10, .389&#10;Gerson Garabito (P), AC, 0, 1, 13.50, 1, 1, 0, 0, 0, 0, 3.1, 8, 5, 5, 0, 0, 0, 5, 2.40, .471"></textarea>
+                    <button class="btn-load-lineup" onclick="savePitchingLeadersAdmin()">💾 PUBLICAR LANZADORES</button>
                 </div>
 
             </div>
@@ -502,30 +509,29 @@
             { code: 'E',  name: 'Leones del Escogido', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'W1', ca: 11, cp: 29, difC: '-18' }
         ];
 
-        const BATTING_LEADERS = [
-            { pos: 1, name: 'Ismael Munguía', team: 'EO', avg: '.750', ops: '1.583', h: 3, hr: 0, ci: 0, ca: 1 },
-            { pos: 2, name: 'Marco Luciano', team: 'EO', avg: '.600', ops: '2.067', h: 3, hr: 1, ci: 2, ca: 2 },
-            { pos: 3, name: 'Francisco Mejía', team: 'L', avg: '.600', ops: '1.314', h: 3, hr: 0, ci: 2, ca: 1 },
-            { pos: 4, name: 'Jefferson Rojas', team: 'GC', avg: '.571', ops: '2.054', h: 4, hr: 2, ci: 3, ca: 4 },
-            { pos: 5, name: 'Eddys Leonard', team: 'AC', avg: '.500', ops: '1.100', h: 3, hr: 0, ci: 1, ca: 1 },
-            { pos: 6, name: 'Sandro Fabián', team: 'TE', avg: '.462', ops: '1.250', h: 6, hr: 1, ci: 4, ca: 3 },
-            { pos: 7, name: 'Emilio Bonifacio', team: 'L', avg: '.429', ops: '1.150', h: 6, hr: 0, ci: 2, ca: 4 },
-            { pos: 8, name: 'Junior Lake', team: 'E', avg: '.417', ops: '1.080', h: 5, hr: 1, ci: 3, ca: 2 },
-            { pos: 9, name: 'Yairo Muñoz', team: 'TE', avg: '.400', ops: '1.010', h: 4, hr: 0, ci: 2, ca: 1 },
-            { pos: 10, name: 'Kelvin Gutiérrez', team: 'GC', avg: '.385', ops: '0.970', h: 5, hr: 0, ci: 3, ca: 2 }
+        let BATTING_LEADERS = [
+            { name: 'Kevin Alcántara (CF)', team: 'L', j: 3, tb: 11, c: 4, h: 6, h2: 1, h3: 0, hr: 2, ci: 5, bb: 2, p: 2, br: 0, pro: '.545', obp: '.615', slg: '1.182', ops: '1.797' },
+            { name: 'Yairo Muñoz (2B)', team: 'TE', j: 3, tb: 11, c: 1, h: 7, h2: 2, h3: 0, hr: 0, ci: 2, bb: 1, p: 2, br: 0, pro: '.636', obp: '.667', slg: '.818', ops: '1.485' },
+            { name: 'Jefferson Rojas (3B)', team: 'GC', j: 4, tb: 14, c: 5, h: 5, h2: 1, h3: 0, hr: 2, ci: 3, bb: 1, p: 2, br: 1, pro: '.357', obp: '.400', slg: '.857', ops: '1.257' },
+            { name: 'Mason McCoy (SS)', team: 'AC', j: 3, tb: 11, c: 2, h: 5, h2: 1, h3: 0, hr: 0, ci: 3, bb: 3, p: 1, br: 3, pro: '.455', obp: '.571', slg: '.545', ops: '1.116' },
+            { name: 'Harold Ramírez (DH)', team: 'EO', j: 4, tb: 19, c: 5, h: 8, h2: 1, h3: 0, hr: 1, ci: 3, bb: 2, p: 3, br: 1, pro: '.421', obp: '.476', slg: '.632', ops: '1.108' },
+            { name: 'José Marmolejos (1B)', team: 'E', j: 4, tb: 13, c: 1, h: 4, h2: 2, h3: 0, hr: 1, ci: 3, bb: 2, p: 2, br: 0, pro: '.308', obp: '.400', slg: '.692', ops: '1.092' },
+            { name: 'Francisco Mejía (C)', team: 'L', j: 4, tb: 9, c: 2, h: 4, h2: 0, h3: 0, hr: 0, ci: 3, bb: 4, p: 0, br: 0, pro: '.444', obp: '.615', slg: '.444', ops: '1.059' },
+            { name: 'Marco Luciano (2B)', team: 'EO', j: 4, tb: 16, c: 3, h: 5, h2: 2, h3: 0, hr: 1, ci: 3, bb: 3, p: 5, br: 0, pro: '.313', obp: '.421', slg: '.625', ops: '1.046' },
+            { name: 'Ismael Munguía (CF)', team: 'EO', j: 4, tb: 18, c: 3, h: 8, h2: 1, h3: 0, hr: 0, ci: 3, bb: 2, p: 0, br: 1, pro: '.444', obp: '.524', slg: '.500', ops: '1.024' }
         ];
 
-        const PITCHING_LEADERS = [
-            { pos: 1, name: 'Óscar de la Cruz', team: 'EO', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 5, whip: '0.60' },
-            { pos: 2, name: 'Adonis Medina', team: 'L', era: '0.00', gp: '1-0', js: 0, il: '5.0', k: 9, whip: '0.60' },
-            { pos: 3, name: 'Jake Eder', team: 'GC', era: '0.00', gp: '0-0', js: 0, il: '4.0', k: 4, whip: '0.33' },
-            { pos: 4, name: 'Esmil Rogers', team: 'TE', era: '1.20', gp: '1-0', js: 0, il: '5.0', k: 6, whip: '0.80' },
-            { pos: 5, name: 'Ariel Miranda', team: 'E', era: '1.80', gp: '1-0', js: 0, il: '5.0', k: 7, whip: '0.90' },
-            { pos: 6, name: 'Tyler Alexander', team: 'AC', era: '2.00', gp: '0-1', js: 0, il: '4.2', k: 5, whip: '1.00' },
-            { pos: 7, name: 'Jairo Asencio', team: 'L', era: '0.00', gp: '0-0', js: 2, il: '2.0', k: 3, whip: '0.50' },
-            { pos: 8, name: 'Fernando Abad', team: 'TE', era: '0.00', gp: '0-0', js: 1, il: '2.0', k: 2, whip: '0.50' },
-            { pos: 9, name: 'Cristopher Molina', team: 'GC', era: '2.25', gp: '1-0', js: 0, il: '4.0', k: 4, whip: '1.10' },
-            { pos: 10, name: 'Neftalí Feliz', team: 'AC', era: '2.70', gp: '0-0', js: 1, il: '3.1', k: 4, whip: '1.15' }
+        let PITCHING_LEADERS = [
+            { name: 'Carlos Peña (P)', team: 'AC', jg: 0, jp: 1, efe: '10.80', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 7, c: 4, cl: 4, hr: 2, gp: 0, bb: 0, p: 3, whip: '2.10', pro: '.389' },
+            { name: 'Gerson Garabito (P)', team: 'AC', jg: 0, jp: 1, efe: '13.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 8, c: 5, cl: 5, hr: 0, gp: 0, bb: 0, p: 5, whip: '2.40', pro: '.471' },
+            { name: 'Vladimir Gutiérrez (P)', team: 'L', jg: 0, jp: 1, efe: '6.23', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.1', h: 4, c: 3, cl: 3, hr: 2, gp: 0, bb: 2, p: 8, whip: '1.38', pro: '.235' },
+            { name: 'Jhordany Mezquita (P)', team: 'AC', jg: 0, jp: 0, efe: '2.25', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 1, cl: 1, hr: 1, gp: 0, bb: 1, p: 5, whip: '1.25', pro: '.250' },
+            { name: 'Joan Adon (P)', team: 'AC', jg: 0, jp: 1, efe: '4.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.75', pro: '.267' },
+            { name: 'Evan Grills (P)', team: 'TE', jg: 0, jp: 0, efe: '8.10', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 3, c: 3, cl: 3, hr: 0, gp: 0, bb: 2, p: 3, whip: '1.50', pro: '.231' },
+            { name: 'Hancel Rincón (P)', team: 'EO', jg: 0, jp: 0, efe: '4.91', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.2', h: 3, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.64', pro: '.214' },
+            { name: 'Wily Peralta (P)', team: 'GC', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 3, c: 1, cl: 1, hr: 1, gp: 0, bb: 2, p: 6, whip: '1.00', pro: '.176' },
+            { name: 'Ángel Sánchez (P)', team: 'E', jg: 0, jp: 0, efe: '0.00', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 3, c: 1, cl: 0, hr: 0, gp: 0, bb: 3, p: 2, whip: '1.50', pro: '.200' },
+            { name: 'Daniel Martínez (P)', team: 'L', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 4, c: 1, cl: 1, hr: 0, gp: 0, bb: 1, p: 5, whip: '1.00', pro: '.222' }
         ];
 
         let DETAILED_LINEUPS = {
@@ -541,12 +547,14 @@
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v20');
+            const saved = localStorage.getItem('pelotard_state_v22');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
                     if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames;
+                    if (parsed.savedLeaders && parsed.savedLeaders.length > 0) BATTING_LEADERS = parsed.savedLeaders;
+                    if (parsed.savedPitching && parsed.savedPitching.length > 0) PITCHING_LEADERS = parsed.savedPitching;
                     return parsed; 
                 } catch(e){}
             }
@@ -558,7 +566,9 @@
                 userTickets: [],
                 activeFilter: 'TODAY',
                 selectedLineupTeam: 'L',
-                savedGames: INITIAL_GAMES
+                savedGames: INITIAL_GAMES,
+                savedLeaders: BATTING_LEADERS,
+                savedPitching: PITCHING_LEADERS
             };
         }
 
@@ -566,7 +576,9 @@
         function saveState() { 
             state.customLineups = DETAILED_LINEUPS;
             state.savedGames = liveGamesData;
-            localStorage.setItem('pelotard_state_v20', JSON.stringify(state)); 
+            state.savedLeaders = BATTING_LEADERS;
+            state.savedPitching = PITCHING_LEADERS;
+            localStorage.setItem('pelotard_state_v22', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -648,6 +660,63 @@
             saveState(); renderLineups();
             alert(`✅ Lineup de ${TEAMS[teamCode].name} publicado con éxito.`);
             document.getElementById('adminLineupText').value = '';
+        };
+
+        window.saveBattingLeadersAdmin = function() {
+            const rawText = document.getElementById('adminBattingText').value.trim();
+            if (!rawText) { alert('Pegue o modifique la lista de bateadores.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedLeaders = [];
+
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 17) {
+                    parsedLeaders.push({
+                        name: parts[0], team: parts[1], j: parts[2], tb: parts[3], c: parts[4], h: parts[5],
+                        h2: parts[6], h3: parts[7], hr: parts[8], ci: parts[9], bb: parts[10], p: parts[11],
+                        br: parts[12], pro: parts[13], obp: parts[14], slg: parts[15], ops: parts[16]
+                    });
+                }
+            });
+
+            if (parsedLeaders.length > 0) {
+                BATTING_LEADERS = parsedLeaders;
+                saveState();
+                renderBattingLeaders();
+                alert('🔥 Líderes de bateo actualizados exitosamente.');
+            } else {
+                alert('Formato incorrecto. Deben ser 17 columnas separadas por comas.');
+            }
+        };
+
+        window.savePitchingLeadersAdmin = function() {
+            const rawText = document.getElementById('adminPitchingText').value.trim();
+            if (!rawText) { alert('Pegue o modifique la lista de lanzadores.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedPitchers = [];
+
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 21) {
+                    parsedPitchers.push({
+                        name: parts[0], team: parts[1], jg: parts[2], jp: parts[3], efe: parts[4], j: parts[5],
+                        a: parts[6], jc: parts[7], sho: parts[8], js: parts[9], os: parts[10], il: parts[11],
+                        h: parts[12], c: parts[13], cl: parts[14], hr: parts[15], gp: parts[16], bb: parts[17],
+                        p: parts[18], whip: parts[19], pro: parts[20]
+                    });
+                }
+            });
+
+            if (parsedPitchers.length > 0) {
+                PITCHING_LEADERS = parsedPitchers;
+                saveState();
+                renderPitchingLeaders();
+                alert('🎯 Líderes de pitcheo actualizados exitosamente.');
+            } else {
+                alert('Formato incorrecto. Deben ser 21 columnas separadas por comas.');
+            }
         };
 
         function renderAdminGameControls() {
@@ -757,6 +826,7 @@
         function renderGames() {
             const container = document.getElementById('gamesContainer');
             container.innerHTML = '';
+
             let filteredGames = liveGamesData;
             if (state.activeFilter === 'TODAY') filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
             else if (state.activeFilter === 'UPCOMING') filteredGames = liveGamesData.filter(g => g.date > CURRENT_DATE);
@@ -769,7 +839,7 @@
                 const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home, class: 'bg-EO' };
                 const isPassed = game.status === 'FINAL';
                 const isLive = game.status === 'LIVE';
-                const isLocked = isLive || isPassed; // BLOQUEAR SI YA INICIÓ O FINALIZÓ
+                const isLocked = isLive || isPassed;
 
                 const card = document.createElement('div');
                 card.className = `game-card ${isPassed ? 'finished-card' : ''} ${isLive ? 'live-card' : ''}`;
@@ -826,9 +896,79 @@
             updateOddsButtonsHighlight();
         }
 
+        function renderBattingLeaders() {
+            const tbody = document.getElementById('battingLeadersTableBody');
+            tbody.innerHTML = '';
+            BATTING_LEADERS.forEach(player => {
+                const tr = document.createElement('tr');
+                const teamClass = TEAMS[player.team] ? TEAMS[player.team].class : 'bg-L';
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold; color:white;">${player.name}</td>
+                    <td><span class="status-badge ${teamClass}">${player.team}</span></td>
+                    <td>${player.j}</td><td>${player.tb}</td><td>${player.c}</td><td>${player.h}</td>
+                    <td>${player.h2}</td><td>${player.h3}</td><td>${player.hr}</td><td>${player.ci}</td>
+                    <td>${player.bb}</td><td>${player.p}</td><td>${player.br}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${player.pro}</td>
+                    <td>${player.obp}</td><td>${player.slg}</td>
+                    <td style="color:var(--green-win); font-weight:bold;">${player.ops}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPitchingLeaders() {
+            const tbody = document.getElementById('pitchingLeadersTableBody');
+            tbody.innerHTML = '';
+            PITCHING_LEADERS.forEach(p => {
+                const tr = document.createElement('tr');
+                const teamClass = TEAMS[p.team] ? TEAMS[p.team].class : 'bg-L';
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold; color:white;">${p.name}</td>
+                    <td><span class="status-badge ${teamClass}">${p.team}</span></td>
+                    <td>${p.jg}</td><td>${p.jp}</td>
+                    <td style="color:var(--green-win); font-weight:bold;">${p.efe}</td>
+                    <td>${p.j}</td><td>${p.a}</td><td>${p.jc}</td><td>${p.sho}</td>
+                    <td>${p.js}</td><td>${p.os}</td><td>${p.il}</td><td>${p.h}</td>
+                    <td>${p.c}</td><td>${p.cl}</td><td>${p.hr}</td><td>${p.gp}</td>
+                    <td>${p.bb}</td><td>${p.p}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${p.whip}</td>
+                    <td>${p.pro}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderLineups() {
+            const pillsContainer = document.getElementById('lineupTeamPills');
+            pillsContainer.innerHTML = '';
+            Object.keys(TEAMS).forEach(code => {
+                const btn = document.createElement('button');
+                btn.className = `filter-pill ${state.selectedLineupTeam === code ? 'active' : ''}`;
+                btn.textContent = TEAMS[code].name;
+                btn.onclick = () => { state.selectedLineupTeam = code; saveState(); renderLineups(); };
+                pillsContainer.appendChild(btn);
+            });
+
+            const teamCode = state.selectedLineupTeam;
+            const card = document.getElementById('lineupDisplayCard');
+            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
+
+            let battersRowsHtml = '';
+            data.batters.forEach(b => {
+                battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
+            });
+
+            card.innerHTML = `
+                <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
+                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div></div>
+                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
+                <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
+            `;
+        }
+
         window.toggleSelection = function(gameId, market, pick, odd) {
             const game = liveGamesData.find(g => g.id === gameId);
-            if (!game || game.status === 'LIVE' || game.status === 'FINAL') return; // PROTECCIÓN EXTRA AL SELECCIONAR
+            if (!game || game.status === 'LIVE' || game.status === 'FINAL') return;
             const idx = state.currentSlip.findIndex(i => i.gameId === gameId && i.market === market);
             if (idx > -1) state.currentSlip.splice(idx, 1);
             else state.currentSlip.push({ gameId, gameTitle: `${game.away} @ ${game.home}`, market, pick, odd });
@@ -886,56 +1026,7 @@
             });
         }
 
-        function renderBattingLeaders() {
-            const tbody = document.getElementById('battingLeadersTableBody');
-            tbody.innerHTML = '';
-            BATTING_LEADERS.forEach(player => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong>#${player.pos}</strong></td><td style="text-align:left;"><strong>${player.name}</strong></td><td><span class="status-badge ${TEAMS[player.team].class}">${player.team}</span></td><td style="color:var(--gold); font-weight:bold;">${player.avg}</td><td style="color:var(--green-win); font-weight:bold;">${player.ops}</td><td>${player.h}</td><td>${player.hr}</td><td>${player.ci}</td><td>${player.ca}</td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderPitchingLeaders() {
-            const tbody = document.getElementById('pitchingLeadersTableBody');
-            tbody.innerHTML = '';
-            PITCHING_LEADERS.forEach(pitcher => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong>#${pitcher.pos}</strong></td><td style="text-align:left;"><strong>${pitcher.name}</strong></td><td><span class="status-badge ${TEAMS[pitcher.team].class}">${pitcher.team}</span></td><td style="color:var(--green-win); font-weight:bold;">${pitcher.era}</td><td><strong>${pitcher.gp}</strong></td><td>${pitcher.js}</td><td>${pitcher.il}</td><td style="color:var(--gold); font-weight:bold;">${pitcher.k}</td><td>${pitcher.whip}</td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderLineups() {
-            const pillsContainer = document.getElementById('lineupTeamPills');
-            pillsContainer.innerHTML = '';
-            Object.keys(TEAMS).forEach(code => {
-                const btn = document.createElement('button');
-                btn.className = `filter-pill ${state.selectedLineupTeam === code ? 'active' : ''}`;
-                btn.textContent = TEAMS[code].name;
-                btn.onclick = () => { state.selectedLineupTeam = code; saveState(); renderLineups(); };
-                pillsContainer.appendChild(btn);
-            });
-
-            const teamCode = state.selectedLineupTeam;
-            const card = document.getElementById('lineupDisplayCard');
-            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
-
-            let battersRowsHtml = '';
-            data.batters.forEach(b => {
-                battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
-            });
-
-            card.innerHTML = `
-                <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
-                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div></div>
-                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
-                <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
-            `;
-        }
-
         window.generateTicket = function() {
-            // VERIFICAR QUE NINGÚN JUEGO DE LA BOLETA ESTÉ EN VIVO O FINALIZADO
             const hasInvalidLeg = state.currentSlip.some(item => {
                 const game = liveGamesData.find(g => g.id === item.gameId);
                 return !game || game.status === 'LIVE' || game.status === 'FINAL';
