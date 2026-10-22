@@ -114,7 +114,7 @@
         .bg-TE { background-color: #ff6600; }
         .bg-EO { background-color: #006a4e; }
 
-        /* LAYOUT DE APUESTAS: LINEAS Y BOLETA A LA DERECHA */
+        /* SECCIÓN APUESTAS LAYOUT GRID CON BOLETA */
         .bets-layout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
         @media (max-width: 1024px) { .bets-layout-grid { grid-template-columns: 1fr; } }
 
@@ -228,7 +228,7 @@
 
     <div class="main-container">
 
-        <!-- PESTAÑAS PRINCIPALES DE LA CARA DE LA PÁGINA -->
+        <!-- PESTAÑAS PRINCIPALES -->
         <div class="nav-tabs">
             <button class="tab-btn active" id="btnTabGames" onclick="switchTab('viewGames', 'btnTabGames')">1. ⚾ Cartelera</button>
             <button class="tab-btn" id="btnTabLineups" onclick="switchTab('viewLineups', 'btnTabLineups')">2. 🧢 Lineups / Pitcheo</button>
@@ -246,10 +246,10 @@
                 <button class="filter-pill" id="filterPassed" onclick="setFilter('PASSED', 'filterPassed')">Resultados / Pasados</button>
             </div>
 
-            <!-- JUEGOS DE HOY / PASADOS (FORMATO TARJETAS CON LA CARA DE LA PÁGINA) -->
+            <!-- JUEGOS DE HOY / PASADOS EN FORMATO TARJETAS DE CARTELERA -->
             <div class="games-grid" id="gamesContainer"></div>
 
-            <!-- SECCIÓN DE APUESTAS (ESTILO BETCRIS CON BOLETA AL LADO DERECHO) -->
+            <!-- SECCIÓN DE APUESTAS (ESTILO BETCRIS CON LA BOLETA INTEGRADA A LA DERECHA) -->
             <div id="betsSectionContainer" style="display: none;">
                 <div class="bets-layout-grid">
                     <div class="betcris-sportsbook">
@@ -265,7 +265,7 @@
                         <div id="betcrisGamesList"></div>
                     </div>
 
-                    <!-- BOLETA INTEGRADITA EXCLUSIVAMENTE DENTRO DE APUESTAS -->
+                    <!-- BOLETA DENTRO DEL ÁREA DE APUESTAS -->
                     <div class="bet-slip-panel">
                         <div class="slip-header">
                             <div class="slip-title">
@@ -496,25 +496,40 @@
             { name: 'Yairo Muñoz (2B)', team: 'TE', j: 3, tb: 11, c: 1, h: 7, h2: 2, h3: 0, hr: 0, ci: 2, bb: 1, p: 2, br: 0, pro: '.636', obp: '.667', slg: '.818', ops: '1.485' },
             { name: 'Jefferson Rojas (3B)', team: 'GC', j: 4, tb: 14, c: 5, h: 5, h2: 1, h3: 0, hr: 2, ci: 3, bb: 1, p: 2, br: 1, pro: '.357', obp: '.400', slg: '.857', ops: '1.257' },
             { name: 'Mason McCoy (SS)', team: 'AC', j: 3, tb: 11, c: 2, h: 5, h2: 1, h3: 0, hr: 0, ci: 3, bb: 3, p: 1, br: 3, pro: '.455', obp: '.571', slg: '.545', ops: '1.116' },
-            { name: 'Harold Ramírez (DH)', team: 'EO', j: 4, tb: 19, c: 5, h: 8, h2: 1, h3: 0, hr: 1, ci: 3, bb: 2, p: 3, br: 1, pro: '.421', obp: '.476', slg: '.632', ops: '1.108' }
+            { name: 'Harold Ramírez (DH)', team: 'EO', j: 4, tb: 19, c: 5, h: 8, h2: 1, h3: 0, hr: 1, ci: 3, bb: 2, p: 3, br: 1, pro: '.421', obp: '.476', slg: '.632', ops: '1.108' },
+            { name: 'José Marmolejos (1B)', team: 'E', j: 4, tb: 13, c: 1, h: 4, h2: 2, h3: 0, hr: 1, ci: 3, bb: 2, p: 2, br: 0, pro: '.308', obp: '.400', slg: '.692', ops: '1.092' },
+            { name: 'Francisco Mejía (C)', team: 'L', j: 4, tb: 9, c: 2, h: 4, h2: 0, h3: 0, hr: 0, ci: 3, bb: 4, p: 0, br: 0, pro: '.444', obp: '.615', slg: '.444', ops: '1.059' },
+            { name: 'Marco Luciano (2B)', team: 'EO', j: 4, tb: 16, c: 3, h: 5, h2: 2, h3: 0, hr: 1, ci: 3, bb: 3, p: 5, br: 0, pro: '.313', obp: '.421', slg: '.625', ops: '1.046' },
+            { name: 'Ismael Munguía (CF)', team: 'EO', j: 4, tb: 18, c: 3, h: 8, h2: 1, h3: 0, hr: 0, ci: 3, bb: 2, p: 0, br: 1, pro: '.444', obp: '.524', slg: '.500', ops: '1.024' },
+            { name: 'Ronny Simon (DH)', team: 'TE', j: 4, tb: 15, c: 3, h: 5, h2: 1, h3: 0, hr: 1, ci: 4, bb: 2, p: 3, br: 2, pro: '.333', obp: '.412', slg: '.600', ops: '1.012' }
         ];
 
         let PITCHING_LEADERS = [
             { name: 'Carlos Peña (P)', team: 'AC', jg: 0, jp: 1, efe: '10.80', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 7, c: 4, cl: 4, hr: 2, gp: 0, bb: 0, p: 3, whip: '2.10', pro: '.389' },
             { name: 'Gerson Garabito (P)', team: 'AC', jg: 0, jp: 1, efe: '13.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 8, c: 5, cl: 5, hr: 0, gp: 0, bb: 0, p: 5, whip: '2.40', pro: '.471' },
-            { name: 'Vladimir Gutiérrez (P)', team: 'L', jg: 0, jp: 1, efe: '6.23', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.1', h: 4, c: 3, cl: 3, hr: 2, gp: 0, bb: 2, p: 8, whip: '1.38', pro: '.235' }
+            { name: 'Vladimir Gutiérrez (P)', team: 'L', jg: 0, jp: 1, efe: '6.23', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.1', h: 4, c: 3, cl: 3, hr: 2, gp: 0, bb: 2, p: 8, whip: '1.38', pro: '.235' },
+            { name: 'Jhordany Mezquita (P)', team: 'AC', jg: 0, jp: 0, efe: '2.25', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 1, cl: 1, hr: 1, gp: 0, bb: 1, p: 5, whip: '1.25', pro: '.250' },
+            { name: 'Joan Adon (P)', team: 'AC', jg: 0, jp: 1, efe: '4.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.75', pro: '.267' },
+            { name: 'Evan Grills (P)', team: 'TE', jg: 0, jp: 0, efe: '8.10', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 3, c: 3, cl: 3, hr: 0, gp: 0, bb: 2, p: 3, whip: '1.50', pro: '.231' },
+            { name: 'Hancel Rincón (P)', team: 'EO', jg: 0, jp: 0, efe: '4.91', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.2', h: 3, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.64', pro: '.214' },
+            { name: 'Wily Peralta (P)', team: 'GC', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 3, c: 1, cl: 1, hr: 1, gp: 0, bb: 2, p: 6, whip: '1.00', pro: '.176' },
+            { name: 'Ángel Sánchez (P)', team: 'E', jg: 0, jp: 0, efe: '0.00', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 3, c: 1, cl: 0, hr: 0, gp: 0, bb: 3, p: 2, whip: '1.50', pro: '.200' },
+            { name: 'Daniel Martínez (P)', team: 'L', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 4, c: 1, cl: 1, hr: 0, gp: 0, bb: 1, p: 5, whip: '1.00', pro: '.222' }
         ];
 
         let DETAILED_LINEUPS = {
             'L': { pitcher: 'L. Gil (RHP)', bullpen: 'M. Castro, J. Asencio', batters: [{ pos: '1. SS', name: 'J. Madé' }, { pos: '2. 2B', name: 'S. Alcántara' }, { pos: '3. 1B', name: 'R. Hernández' }, { pos: '4. 3B', name: 'C. Adames' }, { pos: '5. LF', name: 'E. Florial' }, { pos: '6. CF', name: 'K. Alcántara' }, { pos: '7. C', name: 'F. Mejía' }, { pos: '8. DH', name: 'L. Peguero' }, { pos: '9. RF', name: 'E. Bonifacio' }] },
-            'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, F. Abad', batters: [{ pos: '1. CF', name: 'Gilberto Celestino' }, { pos: '2. 2B', name: 'Ronny Simon' }, { pos: '3. RF', name: 'Bryan de la Cruz' }, { pos: '4. LF', name: 'Eloy Jiménez' }, { pos: '5. 3B', name: 'Yairo Muñoz' }, { pos: '6. 1B', name: 'Jhonkensy Noel' }, { pos: '7. DH', name: 'Zoilo Almonte' }, { pos: '8. SS', name: 'Felnin Celesten' }, { pos: '9. C', name: 'Pedro Severino' }] }
+            'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, F. Abad', batters: [{ pos: '1. CF', name: 'Gilberto Celestino' }, { pos: '2. 2B', name: 'Ronny Simon' }, { pos: '3. RF', name: 'Bryan de la Cruz' }, { pos: '4. LF', name: 'Eloy Jiménez' }, { pos: '5. 3B', name: 'Yairo Muñoz' }, { pos: '6. 1B', name: 'Jhonkensy Noel' }, { pos: '7. DH', name: 'Zoilo Almonte' }, { pos: '8. SS', name: 'Felnin Celesten' }, { pos: '9. C', name: 'Pedro Severino' }] },
+            'E': { pitcher: 'Ariel Miranda (LHP)', bullpen: 'J. Rhoades, S. Marte', batters: [{ pos: '1. LF', name: 'Junior Lake' }, { pos: '2. 3B', name: 'Vidal Bruján' }, { pos: '3. RF', name: 'Sócrates Brito' }, { pos: '4. DH', name: 'Yamaico Navarro' }, { pos: '5. 1B', name: 'José Marmolejos' }, { pos: '6. 2B', name: 'Marcos Hernández' }, { pos: '7. CF', name: 'Elier Hernández' }, { pos: '8. SS', name: 'Erik González' }, { pos: '9. C', name: 'Michael de la Cruz' }] },
+            'GC': { pitcher: 'Cristopher Molina (RHP)', bullpen: 'A. Pilar, R. Gudino', batters: [{ pos: '1. CF', name: 'Carlos Jorge' }, { pos: '2. RF', name: 'Noelvi Marte' }, { pos: '3. LF', name: 'Nomar Mazara' }, { pos: '4. DH', name: 'Marcell Ozuna' }, { pos: '5. C', name: 'Agustín Ramírez' }, { pos: '6. 2B', name: 'Roldy Brito' }, { pos: '7. 1B', name: 'Jake Holton' }, { pos: '8. 3B', name: 'Kelvin Gutiérrez' }, { pos: '9. SS', name: 'Pablo Reyes' }] },
+            'EO': { pitcher: 'Óscar de la Cruz (RHP)', bullpen: 'J. Barría, R. Blanco', batters: [{ pos: '1. CF', name: 'Ismael Munguía' }, { pos: '2. DH', name: 'Harold Ramírez' }, { pos: '3. LF', name: 'Raimel Tapia' }, { pos: '4. RF', name: 'Óscar González' }, { pos: '5. 1B', name: 'Josh Lester' }, { pos: '6. 2B', name: 'Marco Luciano' }, { pos: '7. C', name: 'Leo Bernal' }, { pos: '8. SS', name: 'César Prieto' }, { pos: '9. 3B', name: 'Aaron Schunk' }] },
+            'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, N. Feliz', batters: [{ pos: '1. SS', name: 'Angel Genao' }, { pos: '2. CF', name: 'Leody Taveras' }, { pos: '3. LF', name: 'Luis Liberato' }, { pos: '4. 1B', name: 'Aderlin Rodríguez' }, { pos: '5. DH', name: 'Jasson Domínguez' }, { pos: '6. 3B', name: 'Christopher Morel' }, { pos: '7. 2B', name: 'Adael Amador' }, { pos: '8. C', name: 'Webster Rivas' }, { pos: '9. RF', name: 'Steward Berroa' }] }
         };
 
         let liveGamesData = INITIAL_GAMES;
-        let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v24');
+            const saved = localStorage.getItem('pelotard_state_v25');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -532,10 +547,7 @@
                 currentSlip: [],
                 userTickets: [],
                 activeFilter: 'TODAY',
-                selectedLineupTeam: 'L',
-                savedGames: INITIAL_GAMES,
-                savedLeaders: BATTING_LEADERS,
-                savedPitching: PITCHING_LEADERS
+                selectedLineupTeam: 'L'
             };
         }
 
@@ -545,7 +557,7 @@
             state.savedGames = liveGamesData;
             state.savedLeaders = BATTING_LEADERS;
             state.savedPitching = PITCHING_LEADERS;
-            localStorage.setItem('pelotard_state_v24', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v25', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -679,7 +691,6 @@
                             <div class="betcris-team-item"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div> ${homeTeam.name}</div>
                         </div>
 
-                        <!-- A GANAR (MONEYLINE) -->
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})`}">
                                 <span class="betcris-odd-line">${game.away} ML</span>
@@ -691,7 +702,6 @@
                             </div>
                         </div>
 
-                        <!-- TOTAL (ALTAS / BAJAS) -->
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})`}">
                                 <span class="betcris-odd-line">Más de ${total}</span>
@@ -703,7 +713,6 @@
                             </div>
                         </div>
 
-                        <!-- HANDICAP / RUN LINE -->
                         <div style="display:flex; flex-direction:column; gap:6px;">
                             <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})`}">
                                 <span class="betcris-odd-line">+${rlLine}</span>
@@ -860,6 +869,161 @@
                 <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
             `;
         }
+
+        function renderAdminGameControls() {
+            const container = document.getElementById('adminGameControlGrid');
+            container.innerHTML = '';
+            liveGamesData.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'sim-card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
+                    <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado / Inning (ej. BOT 4):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado de Juego:</label>
+                        <select id="status_${game.id}" class="admin-input">
+                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar)</option>
+                            <option value="LIVE" ${game.status==='LIVE'?'selected':''}>LIVE (En Vivo)</option>
+                            <option value="FINAL" ${game.status==='FINAL'?'selected':''}>FINAL (Concluido)</option>
+                        </select>
+                    </div>
+                    <button class="btn-load-lineup" style="margin-top:6px; padding:4px;" onclick="saveGameResult(${game.id})">💾 Guardar Partido</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.saveGameResult = function(gameId) {
+            const game = liveGamesData.find(g => g.id === gameId);
+            if (!game) return;
+            game.awayRuns = parseInt(document.getElementById(`awayR_${gameId}`).value) || 0;
+            game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
+            game.inning = document.getElementById(`inning_${gameId}`).value;
+            game.status = document.getElementById(`status_${gameId}`).value;
+            saveState(); renderGames(); renderLiveTicker();
+            alert('⚾ Marcador actualizado y guardado permanentemente.');
+        };
+
+        function renderAdminStandingsControls() {
+            const tbody = document.getElementById('adminStandingsEditBody');
+            tbody.innerHTML = '';
+            OFFICIAL_STANDINGS.forEach((t, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:left;"><strong>${t.name}</strong></td>
+                    <td><input type="number" id="st_jj_${index}" value="${t.jj}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_dif_${index}" value="${t.dif}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_racha_${index}" value="${t.racha}" class="admin-input" style="width:50px;"></td>
+                    <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.saveStandingRow = function(idx) {
+            OFFICIAL_STANDINGS[idx].jj = parseInt(document.getElementById(`st_jj_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].g = parseInt(document.getElementById(`st_g_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].dif = document.getElementById(`st_dif_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
+            renderStandings();
+            alert('📊 Standing actualizado.');
+        };
+
+        window.processTextLineup = function() {
+            const teamCode = document.getElementById('adminTeamSelect').value;
+            const pitcherText = document.getElementById('adminPitcherInput').value.trim();
+            const rawText = document.getElementById('adminLineupText').value.trim();
+
+            if (!rawText) { alert('Pegue el texto del lineup.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedBatters = [];
+
+            lines.forEach((line, index) => {
+                let cleanLine = line.replace(/^[0-9]+[\.\-\s]+/, '').trim();
+                const posMatch = cleanLine.match(/^(SS|2B|1B|3B|LF|CF|RF|C|DH|BD|P)\b/i);
+                let pos = `${index + 1}. `;
+                let name = cleanLine;
+
+                if (posMatch) {
+                    pos += posMatch[0].toUpperCase();
+                    name = cleanLine.substring(posMatch[0].length).trim();
+                } else {
+                    pos += 'BAT';
+                }
+
+                parsedBatters.push({ pos: pos, name: name });
+            });
+
+            if (!DETAILED_LINEUPS[teamCode]) { DETAILED_LINEUPS[teamCode] = { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] }; }
+            if (pitcherText) { DETAILED_LINEUPS[teamCode].pitcher = pitcherText; }
+            DETAILED_LINEUPS[teamCode].batters = parsedBatters;
+
+            saveState(); renderLineups();
+            alert(`✅ Lineup de ${TEAMS[teamCode].name} publicado con éxito.`);
+            document.getElementById('adminLineupText').value = '';
+        };
+
+        window.saveBattingLeadersAdmin = function() {
+            const rawText = document.getElementById('adminBattingText').value.trim();
+            if (!rawText) { alert('Pegue o modifique la lista de bateadores.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedLeaders = [];
+
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 17) {
+                    parsedLeaders.push({
+                        name: parts[0], team: parts[1], j: parts[2], tb: parts[3], c: parts[4], h: parts[5],
+                        h2: parts[6], h3: parts[7], hr: parts[8], ci: parts[9], bb: parts[10], p: parts[11],
+                        br: parts[12], pro: parts[13], obp: parts[14], slg: parts[15], ops: parts[16]
+                    });
+                }
+            });
+
+            if (parsedLeaders.length > 0) {
+                BATTING_LEADERS = parsedLeaders;
+                saveState();
+                renderBattingLeaders();
+                alert('🔥 Líderes de bateo actualizados exitosamente.');
+            } else {
+                alert('Formato incorrecto. Deben ser 17 columnas separadas por comas.');
+            }
+        };
+
+        window.savePitchingLeadersAdmin = function() {
+            const rawText = document.getElementById('adminPitchingText').value.trim();
+            if (!rawText) { alert('Pegue o modifique la lista de lanzadores.'); return; }
+
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedPitchers = [];
+
+            lines.forEach(line => {
+                const parts = line.split(',').map(p => p.trim());
+                if (parts.length >= 21) {
+                    parsedPitchers.push({
+                        name: parts[0], team: parts[1], jg: parts[2], jp: parts[3], efe: parts[4], j: parts[5],
+                        a: parts[6], jc: parts[7], sho: parts[8], js: parts[9], os: parts[10], il: parts[11],
+                        h: parts[12], c: parts[13], cl: parts[14], hr: parts[15], gp: parts[16], bb: parts[17],
+                        p: parts[18], whip: parts[19], pro: parts[20]
+                    });
+                }
+            });
+
+            if (parsedPitchers.length > 0) {
+                PITCHING_LEADERS = parsedPitchers;
+                saveState();
+                renderPitchingLeaders();
+                alert('🎯 Líderes de pitcheo actualizados exitosamente.');
+            } else {
+                alert('Formato incorrecto. Deben ser 21 columnas separadas por comas.');
+            }
+        };
 
         window.generateTicket = function() {
             const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
