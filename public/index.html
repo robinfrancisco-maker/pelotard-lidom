@@ -379,7 +379,7 @@
                 <button class="admin-subtab-btn" id="btnAdminSubStandings" onclick="switchAdminSub('subAdminStandings', 'btnAdminSubStandings')">📊 Editar Standings</button>
             </div>
 
-            <!-- CARGAR JUEGOS CON SEDE AUTOMÁTICA -->
+            <!-- CARGAR JUEGOS DEL DÍA CON SEDE AUTOMÁTICA -->
             <div id="subAdminAddGames" class="lineup-loader-box">
                 <div class="admin-title">➕ Agregar Partido a la Cartelera de Hoy</div>
                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Seleccione los equipos y la hora. La sede y el estadio se asignan automáticamente según el Home Club.</p>
@@ -388,7 +388,7 @@
                     <div class="admin-form-group">
                         <label>Equipo Visitante:</label>
                         <select id="newAwayTeam" class="admin-input">
-                            <option value="TE">Toros del Este (TE)</option>
+                            <option value="TE" selected>Toros del Este (TE)</option>
                             <option value="AC">Águilas Cibaeñas (AC)</option>
                             <option value="L">Tigres del Licey (L)</option>
                             <option value="E">Leones del Escogido (E)</option>
@@ -400,7 +400,7 @@
                     <div class="admin-form-group">
                         <label>Equipo Home Club (Local):</label>
                         <select id="newHomeTeam" class="admin-input" onchange="updateAutoStadiumPreview()">
-                            <option value="GC">Gigantes del Cibao (GC)</option>
+                            <option value="GC" selected>Gigantes del Cibao (GC)</option>
                             <option value="E">Leones del Escogido (E)</option>
                             <option value="EO">Estrellas Orientales (EO)</option>
                             <option value="L">Tigres del Licey (L)</option>
@@ -557,10 +557,9 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO', stadium: 'Estadio Tetelo Vargas (SPM)' }
         };
 
+        // ÚNICO JUEGO OFICIAL PARA HOY
         const INITIAL_GAMES = [
-            { id: 304, date: '2026-10-22', time: '07:00 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 305, date: '2026-10-22', time: '07:15 PM', stadium: TEAMS['E'].stadium, away: 'AC', home: 'E', awayName: 'Águilas Cibaeñas', homeName: 'Leones del Escogido', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 306, date: '2026-10-22', time: '07:30 PM', stadium: TEAMS['EO'].stadium, away: 'L', home: 'EO', awayName: 'Tigres del Licey', homeName: 'Estrellas Orientales', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.0, over: 1.90, under: 1.90 }
+            { id: 301, date: '2026-10-22', time: '07:15 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
         ];
 
         let OFFICIAL_STANDINGS = [
@@ -596,15 +595,20 @@
         let latestGeneratedCode = '';
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v35');
+            // Se fuerza el reseteo de la clave previa para limpiar partidas duplicadas anteriores
+            localStorage.removeItem('pelotard_state_v33');
+            localStorage.removeItem('pelotard_state_v34');
+            localStorage.removeItem('pelotard_state_v35');
+            
+            const saved = localStorage.getItem('pelotard_state_v36');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
-                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames;
-                    if (parsed.savedLeaders && parsed.savedLeaders.length > 0) BATTING_LEADERS = parsed.savedLeaders;
-                    if (parsed.savedPitching && parsed.savedPitching.length > 0) PITCHING_LEADERS = parsed.savedPitching;
-                    if (parsed.savedStandings && parsed.savedStandings.length > 0) OFFICIAL_STANDINGS = parsed.savedStandings;
+                    if (parsed.savedGames) liveGamesData = parsed.savedGames;
+                    if (parsed.savedLeaders) BATTING_LEADERS = parsed.savedLeaders;
+                    if (parsed.savedPitching) PITCHING_LEADERS = parsed.savedPitching;
+                    if (parsed.savedStandings) OFFICIAL_STANDINGS = parsed.savedStandings;
                     if (parsed.savedPines) ALL_PREPAGO_PINES = parsed.savedPines;
                     return parsed; 
                 } catch(e){}
@@ -615,7 +619,7 @@
                 currentSlip: [],
                 userTickets: [],
                 activeFilter: 'TODAY',
-                selectedLineupTeam: 'L'
+                selectedLineupTeam: 'TE'
             };
         }
 
@@ -627,7 +631,7 @@
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v35', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v36', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
