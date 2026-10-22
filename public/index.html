@@ -180,7 +180,7 @@
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
         
         .lineup-loader-box { background: #0f172a; border: 1px solid var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .lineup-textarea { width: 100%; height: 140px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.82rem; margin: 0.8rem 0; outline: none; }
+        .lineup-textarea { width: 100%; height: 160px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; margin: 0.8rem 0; outline: none; }
         .btn-load-lineup { background: var(--accent); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
         .admin-subtab-btn { background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: bold; cursor: pointer; }
@@ -482,23 +482,29 @@
                 </div>
             </div>
 
+            <!-- SUBPESTAÑA LINEUPS CORREGIDA -->
             <div id="subAdminLineups" class="lineup-loader-box" style="display:none;">
-                <div class="admin-title">📥 Carga Rápida de Lineup por Texto</div>
+                <div class="admin-title">📥 Carga Rápida de Lineup y Pitcher Abridor</div>
                 <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
                     <label style="font-size:0.85rem; font-weight:bold; color:var(--gold);">Equipo:</label>
                     <select id="adminTeamSelect" class="admin-input">
+                        <option value="TE" selected>Toros del Este (TE)</option>
+                        <option value="GC">Gigantes del Cibao (GC)</option>
                         <option value="L">Tigres del Licey (L)</option>
                         <option value="E">Leones del Escogido (E)</option>
                         <option value="AC">Águilas Cibaeñas (AC)</option>
-                        <option value="GC">Gigantes del Cibao (GC)</option>
-                        <option value="TE">Toros del Este (TE)</option>
                         <option value="EO">Estrellas Orientales (EO)</option>
                     </select>
                     <span style="font-size:0.8rem; color:var(--text-muted);">Pitcher Abridor:</span>
-                    <input type="text" id="adminPitcherInput" placeholder="Ej: L. Gil (RHP)" class="admin-input" style="width:180px;">
+                    <input type="text" id="adminPitcherInput" placeholder="Ej: P. Espino (RHP)" class="admin-input" style="width:200px;">
                 </div>
-                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue el lineup de 1 al 9 aquí..."></textarea>
-                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP</button>
+                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue la alineación de 1 al 9 aquí...
+Ejemplo:
+1. B. Hamilton (CF)
+2. Y. Muñoz (2B)
+3. S. Castro (3B)
+..."></textarea>
+                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP Y PITCHER</button>
             </div>
 
             <div id="subAdminStandings" class="admin-box" style="display:none;">
@@ -557,7 +563,6 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO', stadium: 'Estadio Tetelo Vargas (SPM)' }
         };
 
-        // ÚNICO JUEGO OFICIAL PARA HOY
         const INITIAL_GAMES = [
             { id: 301, date: '2026-10-22', time: '07:15 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
         ];
@@ -595,12 +600,10 @@
         let latestGeneratedCode = '';
 
         function loadState() {
-            // Se fuerza el reseteo de la clave previa para limpiar partidas duplicadas anteriores
-            localStorage.removeItem('pelotard_state_v33');
-            localStorage.removeItem('pelotard_state_v34');
             localStorage.removeItem('pelotard_state_v35');
+            localStorage.removeItem('pelotard_state_v36');
             
-            const saved = localStorage.getItem('pelotard_state_v36');
+            const saved = localStorage.getItem('pelotard_state_v37');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -631,7 +634,7 @@
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v36', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v37', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -731,6 +734,58 @@
                 renderGames();
                 renderLiveTicker();
             }
+        };
+
+        // FUNCIÓN CORREGIDA PARA PROCESAR LINEUP Y PITCHER
+        window.processTextLineup = function() {
+            const teamCode = document.getElementById('adminTeamSelect').value;
+            const pitcherName = document.getElementById('adminPitcherInput').value.trim() || 'Por definir';
+            const rawText = document.getElementById('adminLineupText').value.trim();
+
+            if (!rawText) {
+                alert('⚠️ Por favor pegue la lista de bateadores.');
+                return;
+            }
+
+            const lines = rawText.split('\n').filter(line => line.trim() !== '');
+            const parsedBatters = [];
+
+            lines.forEach((line, index) => {
+                let text = line.trim();
+                let posStr = `${index + 1}. BATEADOR`;
+                let nameStr = text;
+
+                // Extrae numeración o posición si está presente
+                const match = text.match(/^(\d+[\.\-]?\s*)?([^(]+)(\(.*\))?$/);
+                if (match) {
+                    const posClean = match[3] ? match[3].replace(/[()]/g, '').trim() : 'BAT';
+                    posStr = `${index + 1}. ${posClean}`;
+                    nameStr = match[2].trim();
+                }
+
+                parsedBatters.push({ pos: posStr, name: nameStr });
+            });
+
+            // Guardar en la estructura global de lineups
+            DETAILED_LINEUPS[teamCode] = {
+                pitcher: pitcherName,
+                bullpen: 'Roster activo',
+                batters: parsedBatters
+            };
+
+            // Sincronizar el pitcher abridor en la cartelera si el equipo juega hoy
+            liveGamesData.forEach(game => {
+                if (game.away === teamCode) game.awayPitcher = pitcherName;
+                if (game.home === teamCode) game.homePitcher = pitcherName;
+            });
+
+            state.selectedLineupTeam = teamCode;
+            saveState();
+            renderLineups();
+            renderGames();
+
+            document.getElementById('adminLineupText').value = '';
+            alert(`✅ Lineup y Abridor (${pitcherName}) del equipo ${TEAMS[teamCode].name} publicados con éxito.`);
         };
 
         function renderGames() {
@@ -1024,13 +1079,17 @@
             const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
 
             let battersRowsHtml = '';
-            data.batters.forEach(b => {
-                battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
-            });
+            if (data.batters && data.batters.length > 0) {
+                data.batters.forEach(b => {
+                    battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
+                });
+            } else {
+                battersRowsHtml = '<tr><td colspan="2" style="color:var(--text-muted); padding:1rem;">No hay lineup publicado para este equipo. Cargue la alineación desde el panel de Administración.</td></tr>';
+            }
 
             card.innerHTML = `
                 <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
-                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div></div>
+                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher || 'Por definir'}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen || 'Roster activo'}</div></div>
                 <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
                 <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
             `;
