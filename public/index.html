@@ -379,7 +379,7 @@
                 <button class="admin-subtab-btn" id="btnAdminSubStandings" onclick="switchAdminSub('subAdminStandings', 'btnAdminSubStandings')">📊 Editar Standings</button>
             </div>
 
-            <!-- SUBPESTAÑA CARGAR JUEGOS DEL DÍA CON SEDE AUTOMÁTICA -->
+            <!-- CARGAR JUEGOS CON SEDE AUTOMÁTICA -->
             <div id="subAdminAddGames" class="lineup-loader-box">
                 <div class="admin-title">➕ Agregar Partido a la Cartelera de Hoy</div>
                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Seleccione los equipos y la hora. La sede y el estadio se asignan automáticamente según el Home Club.</p>
@@ -596,7 +596,7 @@
         let latestGeneratedCode = '';
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v34');
+            const saved = localStorage.getItem('pelotard_state_v35');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -627,28 +627,34 @@
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v34', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v35', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
             ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { 
-                document.getElementById(v).style.display = 'none'; 
+                const el = document.getElementById(v);
+                if (el) el.style.display = 'none'; 
             });
             document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => { 
                 b.classList.remove('active'); 
             });
             
-            document.getElementById(viewId).style.display = 'block';
-            document.getElementById(btnId).classList.add('active');
+            const target = document.getElementById(viewId);
+            if (target) target.style.display = 'block';
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
         };
 
         window.switchAdminSub = function(subId, btnId) {
             ['subAdminAddGames', 'subAdminGames', 'subAdminPines', 'subAdminLineups', 'subAdminStandings'].forEach(s => {
-                document.getElementById(s).style.display = 'none';
+                const el = document.getElementById(s);
+                if (el) el.style.display = 'none';
             });
             document.querySelectorAll('.admin-subtab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(subId).style.display = 'block';
-            document.getElementById(btnId).classList.add('active');
+            const target = document.getElementById(subId);
+            if (target) target.style.display = 'block';
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
             
             if (subId === 'subAdminGames') renderAdminGameControls();
             if (subId === 'subAdminStandings') renderAdminStandingsControls();
@@ -659,19 +665,18 @@
         window.setFilter = function(filterType, btnId) {
             state.activeFilter = filterType;
             document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
-            document.getElementById(btnId).classList.add('active');
+            const btn = document.getElementById(btnId);
+            if (btn) btn.classList.add('active');
             saveState();
             renderGames();
         };
 
-        // ACTUALIZA LA VISTA PREVIA DEL ESTADIO SEGÚN EL HOME CLUB ELEGIDO
         window.updateAutoStadiumPreview = function() {
             const homeCode = document.getElementById('newHomeTeam').value;
             const stadium = TEAMS[homeCode] ? TEAMS[homeCode].stadium : 'Estadio LIDOM';
             document.getElementById('autoStadiumDisplay').textContent = stadium;
         };
 
-        // CARGAR JUEGO CON SEDE AUTOMÁTICA
         window.addGameToSchedule = function() {
             const away = document.getElementById('newAwayTeam').value;
             const home = document.getElementById('newHomeTeam').value;
@@ -712,7 +717,7 @@
             saveState();
             renderGames();
             renderLiveTicker();
-            alert(`✅ Partido ${TEAMS[away].code} vs ${TEAMS[home].code} publicado en${autoStadium}.`);
+            alert(`✅ Partido ${TEAMS[away].code} vs ${TEAMS[home].code} publicado en ${autoStadium}.`);
         };
 
         window.clearAllTodayGames = function() {
@@ -761,11 +766,11 @@
                 else if (isPassed) statusLabel = `<span style="color:#10b981; font-weight:900;">🏁 FINALIZADO</span>`;
 
                 card.innerHTML = `
-                    <div class="game-header"><span>📅 ${game.date} -${game.time}</span><span class="game-stadium">${game.stadium}</span></div>
+                    <div class="game-header"><span>📅 ${game.date} - ${game.time}</span><span class="game-stadium">${game.stadium}</span></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div><span>${awayTeam.name}</span></div><div class="team-score">${game.awayRuns}</div></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div><span>${homeTeam.name}</span></div><div class="team-score">${game.homeRuns}</div></div>
-                    <div class="live-status-bar ${isLive ? 'is-live' : ''}"><div>${statusLabel}</div><div class="live-score-badge">${game.awayRuns} -${game.homeRuns}</div></div>
-                    <div class="pitchers-box"><span>⚾ <strong>Abridores:</strong> ${game.awayPitcher \vert{}\vert{} 'Por definir'} vs${game.homePitcher || 'Por definir'}</span></div>
+                    <div class="live-status-bar ${isLive ? 'is-live' : ''}"><div>${statusLabel}</div><div class="live-score-badge">${game.awayRuns} - ${game.homeRuns}</div></div>
+                    <div class="pitchers-box"><span>⚾ <strong>Abridores:</strong> ${game.awayPitcher || 'Por definir'} vs ${game.homePitcher || 'Por definir'}</span></div>
                 `;
                 container.appendChild(card);
             });
@@ -800,8 +805,453 @@
 
                 row.innerHTML = `
                     <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:6px;">
-                        ⏰ ${game.time} | ${game.stadium}${isLocked ? '<span style="color:#ef4444;">(🔴 EN VIVO - BLOQUEADO)</span>' : ''}
+                        ⏰ ${game.time} | ${game.stadium} ${isLocked ? '<span style="color:#ef4444;">(🔴 EN VIVO - BLOQUEADO)</span>' : ''}
                     </div>
                     <div class="betcris-row-grid">
                         <div class="betcris-team-box">
-                            <div class="betcris-team-item"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div>${awayTeam.name}
+                            <div class="betcris-team-item"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div> ${awayTeam.name}</div>
+                            <div class="betcris-team-item"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div> ${homeTeam.name}</div>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})`}">
+                                <span class="betcris-odd-line">${game.away} ML</span>
+                                <span class="betcris-odd-val">${awayMl}</span>
+                            </div>
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'ML', '${game.home}', ${homeMl})`}">
+                                <span class="betcris-odd-line">${game.home} ML</span>
+                                <span class="betcris-odd-val">${homeMl}</span>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})`}">
+                                <span class="betcris-odd-line">Más de ${total}</span>
+                                <span class="betcris-odd-val">${over}</span>
+                            </div>
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'OU', 'MENOS DE ${total}', ${under})`}">
+                                <span class="betcris-odd-line">Menos de ${total}</span>
+                                <span class="betcris-odd-val">${under}</span>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; gap:6px;">
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})`}">
+                                <span class="betcris-odd-line">+${rlLine}</span>
+                                <span class="betcris-odd-val">${awayRl}</span>
+                            </div>
+                            <div class="betcris-odds-cell ${isLocked ? 'disabled' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})`}">
+                                <span class="betcris-odd-line">-${rlLine}</span>
+                                <span class="betcris-odd-val">${homeRl}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+            updateOddsButtonsHighlight();
+        }
+
+        window.toggleSelection = function(gameId, market, pick, odd) {
+            const game = liveGamesData.find(g => g.id === gameId);
+            if (!game || game.status === 'LIVE' || game.status === 'FINAL') return;
+            const idx = state.currentSlip.findIndex(i => i.gameId === gameId && i.market === market);
+            if (idx > -1) state.currentSlip.splice(idx, 1);
+            else state.currentSlip.push({ gameId, gameTitle: `${game.away} @ ${game.home}`, market, pick, odd });
+            saveState(); updateSlipUI(); updateOddsButtonsHighlight();
+        };
+
+        function updateSlipUI() {
+            const list = document.getElementById('slipItemsList');
+            document.getElementById('slipCountBadge').textContent = state.currentSlip.length;
+            if (state.selectedBetType === 'Parlay') { 
+                document.getElementById('btnBetTypeParlay').classList.add('active'); 
+                document.getElementById('btnBetTypeSencilla').classList.remove('active'); 
+            } else { 
+                document.getElementById('btnBetTypeSencilla').classList.add('active'); 
+                document.getElementById('btnBetTypeParlay').classList.remove('active'); 
+            }
+
+            if (state.currentSlip.length === 0) { 
+                list.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding: 2rem 0;">Selecciona logros en las líneas.</p>'; 
+                document.getElementById('slipOddsDisplay').textContent = '1.00x'; 
+                document.getElementById('slipPayoutDisplay').textContent = '0 pts'; 
+                document.getElementById('btnSubmitBet').disabled = true; 
+                return; 
+            }
+
+            list.innerHTML = ''; let totalOdds = 1.0;
+            state.currentSlip.forEach((item, index) => {
+                totalOdds *= item.odd;
+                const div = document.createElement('div'); div.className = 'slip-item';
+                div.innerHTML = `<button class="slip-item-remove" onclick="removeSlipItem(${index})">✕</button><div class="slip-item-header"><span>${item.gameTitle} (${item.market})</span><span>${item.odd.toFixed(2)}</span></div><div class="slip-item-selection">${item.pick}</div>`;
+                list.appendChild(div);
+            });
+
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const codeVal = document.getElementById('slipCodeInput').value.trim();
+
+            if (state.selectedBetType === 'Parlay' && state.currentSlip.length < 2) {
+                document.getElementById('slipOddsDisplay').textContent = 'Mínimo 2 logros'; 
+                document.getElementById('slipPayoutDisplay').textContent = '0 pts'; 
+                document.getElementById('btnSubmitBet').disabled = true;
+            } else {
+                document.getElementById('slipOddsDisplay').textContent = totalOdds.toFixed(2) + 'x';
+                document.getElementById('slipPayoutDisplay').textContent = Math.round(stake * totalOdds).toLocaleString() + ' pts';
+                document.getElementById('btnSubmitBet').disabled = stake <= 0 || codeVal.length !== 11;
+            }
+        }
+
+        window.removeSlipItem = function(index) { state.currentSlip.splice(index, 1); saveState(); updateSlipUI(); updateOddsButtonsHighlight(); };
+        window.clearSlip = function() { state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight(); };
+        window.setBetType = function(type) { state.selectedBetType = type; saveState(); updateSlipUI(); };
+
+        function updateOddsButtonsHighlight() {
+            document.querySelectorAll('.betcris-odds-cell').forEach(btn => {
+                const onclickAttr = btn.getAttribute('onclick') || '';
+                const isSelected = state.currentSlip.some(item => onclickAttr.includes(`'${item.pick}'`));
+                btn.classList.toggle('selected', isSelected);
+            });
+        }
+
+        function renderStandings() {
+            const tbody = document.getElementById('standingsTableBody');
+            tbody.innerHTML = '';
+
+            OFFICIAL_STANDINGS.sort((a, b) => {
+                const pctA = a.jj > 0 ? a.g / a.jj : 0;
+                const pctB = b.jj > 0 ? b.g / b.jj : 0;
+                return pctB - pctA;
+            });
+
+            const leader = OFFICIAL_STANDINGS[0];
+
+            OFFICIAL_STANDINGS.forEach((team, idx) => {
+                const totalJuegos = team.g + team.p;
+                team.jj = totalJuegos;
+                const pctVal = totalJuegos > 0 ? (team.g / totalJuegos).toFixed(3).replace('0.', '.') : '.000';
+                
+                let difVal = '-';
+                if (idx > 0 && leader) {
+                    const diffCalc = ((leader.g - team.g) + (team.p - leader.p)) / 2;
+                    difVal = diffCalc.toFixed(1);
+                }
+
+                const diffCarreras = team.ca - team.cp;
+                const difCStr = diffCarreras > 0 ? `+${diffCarreras}` : `${diffCarreras}`;
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:left;"><strong>${team.name}</strong></td>
+                    <td><strong>${team.jj}</strong></td>
+                    <td style="color:var(--green-win); font-weight:bold;">${team.g}</td>
+                    <td style="color:var(--red-loss); font-weight:bold;">${team.p}</td>
+                    <td><strong style="color:var(--gold);">${pctVal}</strong></td>
+                    <td><strong style="color:var(--gold);">${difVal}</strong></td>
+                    <td>${team.u10 || `${team.g}-${team.p}`}</td>
+                    <td><strong>${team.racha || 'W1'}</strong></td>
+                    <td>${team.ca}</td>
+                    <td>${team.cp}</td>
+                    <td style="font-weight:bold; color:${diffCarreras >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${difCStr}</td>
+                    <td>${team.x1 || '0-0'}</td>
+                    <td>${team.casa || '0-0'}</td>
+                    <td>${team.visita || '0-0'}</td>
+                    <td>${team.over500 || '0-0'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderBattingLeaders() {
+            const tbody = document.getElementById('battingLeadersTableBody');
+            tbody.innerHTML = '';
+            BATTING_LEADERS.forEach(player => {
+                const tr = document.createElement('tr');
+                const teamClass = TEAMS[player.team] ? TEAMS[player.team].class : 'bg-L';
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold; color:white;">${player.name}</td>
+                    <td><span class="status-badge ${teamClass}">${player.team}</span></td>
+                    <td>${player.j}</td><td>${player.tb}</td><td>${player.c}</td><td>${player.h}</td>
+                    <td>${player.h2}</td><td>${player.h3}</td><td>${player.hr}</td><td>${player.ci}</td>
+                    <td>${player.bb}</td><td>${player.p}</td><td>${player.br}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${player.pro}</td>
+                    <td>${player.obp}</td><td>${player.slg}</td>
+                    <td style="color:var(--green-win); font-weight:bold;">${player.ops}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPitchingLeaders() {
+            const tbody = document.getElementById('pitchingLeadersTableBody');
+            tbody.innerHTML = '';
+            PITCHING_LEADERS.forEach(p => {
+                const tr = document.createElement('tr');
+                const teamClass = TEAMS[p.team] ? TEAMS[p.team].class : 'bg-L';
+                tr.innerHTML = `
+                    <td style="text-align:left; font-weight:bold; color:white;">${p.name}</td>
+                    <td><span class="status-badge ${teamClass}">${p.team}</span></td>
+                    <td>${p.jg}</td><td>${p.jp}</td>
+                    <td style="color:var(--green-win); font-weight:bold;">${p.efe}</td>
+                    <td>${p.j}</td><td>${p.a}</td><td>${p.jc}</td><td>${p.sho}</td>
+                    <td>${p.js}</td><td>${p.os}</td><td>${p.il}</td><td>${p.h}</td>
+                    <td>${p.c}</td><td>${p.cl}</td><td>${p.hr}</td><td>${p.gp}</td>
+                    <td>${p.bb}</td><td>${p.p}</td>
+                    <td style="color:var(--gold); font-weight:bold;">${p.whip}</td>
+                    <td>${p.pro}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderLineups() {
+            const pillsContainer = document.getElementById('lineupTeamPills');
+            pillsContainer.innerHTML = '';
+            Object.keys(TEAMS).forEach(code => {
+                const btn = document.createElement('button');
+                btn.className = `filter-pill ${state.selectedLineupTeam === code ? 'active' : ''}`;
+                btn.textContent = TEAMS[code].name;
+                btn.onclick = () => { state.selectedLineupTeam = code; saveState(); renderLineups(); };
+                pillsContainer.appendChild(btn);
+            });
+
+            const teamCode = state.selectedLineupTeam;
+            const card = document.getElementById('lineupDisplayCard');
+            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
+
+            let battersRowsHtml = '';
+            data.batters.forEach(b => {
+                battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
+            });
+
+            card.innerHTML = `
+                <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
+                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen}</div></div>
+                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
+                <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
+            `;
+        }
+
+        function renderAdminGameControls() {
+            const container = document.getElementById('adminGameControlGrid');
+            container.innerHTML = '';
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
+            
+            todayGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'sim-card';
+                card.innerHTML = `
+                    <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
+                    <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado / Inning (ej. FINAL / POSPUESTO POR LLUVIA):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado de Juego:</label>
+                        <select id="status_${game.id}" class="admin-input">
+                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar / Pospuesto)</option>
+                            <option value="LIVE" ${game.status==='LIVE'?'selected':''}>LIVE (En Vivo)</option>
+                            <option value="FINAL" ${game.status==='FINAL'?'selected':''}>FINAL (Concluido)</option>
+                        </select>
+                    </div>
+                    <button class="btn-load-lineup" style="margin-top:6px; padding:4px;" onclick="saveGameResult(${game.id})">💾 Guardar Partido</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.saveGameResult = function(gameId) {
+            const game = liveGamesData.find(g => g.id === gameId);
+            if (!game) return;
+            game.awayRuns = parseInt(document.getElementById(`awayR_${gameId}`).value) || 0;
+            game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
+            game.inning = document.getElementById(`inning_${gameId}`).value;
+            game.status = document.getElementById(`status_${gameId}`).value;
+            saveState(); renderGames(); renderLiveTicker();
+            alert('⚾ Marcador actualizado y guardado permanentemente.');
+        };
+
+        function renderAdminStandingsControls() {
+            const tbody = document.getElementById('adminStandingsEditBody');
+            tbody.innerHTML = '';
+            OFFICIAL_STANDINGS.forEach((t, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="text-align:left;"><strong>${t.name}</strong></td>
+                    <td><strong>${t.g + t.p}</strong></td>
+                    <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="text" id="st_racha_${index}" value="${t.racha || 'W1'}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_ca_${index}" value="${t.ca}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_cp_${index}" value="${t.cp}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="text" id="st_x1_${index}" value="${t.x1 || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_casa_${index}" value="${t.casa || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_visita_${index}" value="${t.visita || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_over500_${index}" value="${t.over500 || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾 Guardar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.saveStandingRow = function(idx) {
+            OFFICIAL_STANDINGS[idx].g = parseInt(document.getElementById(`st_g_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].jj = OFFICIAL_STANDINGS[idx].g + OFFICIAL_STANDINGS[idx].p;
+            OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].ca = parseInt(document.getElementById(`st_ca_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].cp = parseInt(document.getElementById(`st_cp_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].x1 = document.getElementById(`st_x1_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].casa = document.getElementById(`st_casa_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].visita = document.getElementById(`st_visita_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].over500 = document.getElementById(`st_over500_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].u10 = `${OFFICIAL_STANDINGS[idx].g}-${OFFICIAL_STANDINGS[idx].p}`;
+            saveState(); renderStandings();
+            alert('📊 Standing actualizado y recalculado.');
+        };
+
+        function generateUniquePin11() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const specialChars = '@#$';
+            let pin = '';
+            while (true) {
+                pin = '';
+                for (let i = 0; i < 9; i++) pin += chars.charAt(Math.floor(Math.random() * chars.length));
+                pin += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+                pin += chars.charAt(Math.floor(Math.random() * chars.length));
+                if (!ALL_PREPAGO_PINES.some(p => p.code === pin)) break;
+            }
+            return pin;
+        }
+
+        window.generateSingleCustomPin = function() {
+            const amount = parseInt(document.getElementById('singlePinAmountSelect').value) || 500;
+            const uniqueCode = generateUniquePin11();
+            const newPin = { code: uniqueCode, initialAmount: amount, remainingAmount: amount, status: 'ACTIVO', usedBy: '--', usedAt: '--' };
+            ALL_PREPAGO_PINES.unshift(newPin);
+            latestGeneratedCode = uniqueCode;
+            saveState();
+            document.getElementById('latestCodeValue').textContent = uniqueCode;
+            document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
+            document.getElementById('latestCodeBox').style.display = 'block';
+            renderPinesAdminTable();
+        };
+
+        window.copyLatestCode = function() {
+            if (latestGeneratedCode) {
+                navigator.clipboard.writeText(latestGeneratedCode);
+                alert(`📋 Código ${latestGeneratedCode} copiado al portapapeles.`);
+            }
+        };
+
+        function renderPinesAdminTable() {
+            const tbody = document.getElementById('pinesTableBody');
+            tbody.innerHTML = '';
+            if (ALL_PREPAGO_PINES.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">No hay códigos generados en el sistema.</td></tr>';
+                return;
+            }
+            ALL_PREPAGO_PINES.forEach((pin) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:var(--gold); font-family:monospace; font-size:0.95rem;">${pin.code}</strong></td>
+                    <td>${pin.initialAmount} pts</td>
+                    <td style="font-weight:bold; color:${pin.remainingAmount > 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${pin.remainingAmount} pts</td>
+                    <td><span class="status-badge status-${pin.status}">${pin.status}</span></td>
+                    <td>${pin.usedBy}</td>
+                    <td>${pin.usedAt}</td>
+                    <td><button style="background:var(--secondary); color:white; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" onclick="copyPinCode('${pin.code}')">Copiar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.copyPinCode = function(code) { navigator.clipboard.writeText(code); alert(`📋 Código ${code} copiado.`); };
+
+        window.generateTicket = function() {
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const codeInput = document.getElementById('slipCodeInput').value.trim();
+            if (stake <= 0) { alert('Ingrese un monto válido.'); return; }
+            if (codeInput.length !== 11) { alert('⚠️ Debe ingresar un código de 11 caracteres válido.'); return; }
+            const pinObj = ALL_PREPAGO_PINES.find(p => p.code === codeInput);
+            if (!pinObj) { alert('❌ El código no existe.'); return; }
+            if (pinObj.status === 'USADO' || pinObj.remainingAmount <= 0) { alert('⚠️ El código ya agotó su saldo.'); return; }
+            if (stake > pinObj.remainingAmount) { alert(`⚠️ Saldo insuficiente en el código (${pinObj.remainingAmount} Pts).`); return; }
+
+            pinObj.remainingAmount -= stake;
+            pinObj.usedBy = state.playerName;
+            pinObj.usedAt = new Date().toLocaleString('es-DO');
+            if (pinObj.remainingAmount <= 0) pinObj.status = 'USADO';
+
+            const legsCount = state.currentSlip.length;
+            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
+            const payout = Math.round(stake * totalOdds);
+            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
+
+            const ticket = { id: ticketId, date: new Date().toLocaleString('es-DO'), player: state.playerName, usedCode: pinObj.code, remainingBalance: pinObj.remainingAmount, type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA', stake: stake, odds: totalOdds, payout: payout, legs: [...state.currentSlip], status: 'PENDIENTE' };
+            state.userTickets.unshift(ticket);
+            saveState();
+            updateHistoryTable();
+            showTicketModal(ticket);
+            state.currentSlip = [];
+            document.getElementById('slipCodeInput').value = '';
+            saveState();
+            updateSlipUI();
+            updateOddsButtonsHighlight();
+        };
+
+        function showTicketModal(ticket) {
+            document.getElementById('mTicketId').textContent = ticket.id; 
+            document.getElementById('mTicketDate').textContent = ticket.date; 
+            document.getElementById('mTicketPlayer').textContent = ticket.player; 
+            document.getElementById('mTicketCode').textContent = ticket.usedCode; 
+            document.getElementById('mTicketCodeRemaining').textContent = ticket.remainingBalance.toLocaleString() + ' pts'; 
+            document.getElementById('mTicketType').textContent = ticket.type; 
+            document.getElementById('mTicketStake').textContent = ticket.stake.toLocaleString() + ' pts'; 
+            document.getElementById('mTicketOdds').textContent = ticket.odds.toFixed(2) + 'x'; 
+            document.getElementById('mTicketPayout').textContent = ticket.payout.toLocaleString() + ' pts';
+            
+            const legsContainer = document.getElementById('mTicketLegs'); 
+            legsContainer.innerHTML = '';
+            ticket.legs.forEach(leg => { 
+                legsContainer.innerHTML += `<div class="ticket-leg-item"><div><strong>${leg.gameTitle} (${leg.market})</strong></div><div>SELECCIÓN: ${leg.pick} @ ${leg.odd.toFixed(2)}</div></div>`; 
+            });
+            document.getElementById('ticketModal').classList.add('active');
+        }
+
+        window.closeTicketModal = function() { document.getElementById('ticketModal').classList.remove('active'); };
+
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyTableBody'); 
+            document.getElementById('ticketCountHeader').textContent = state.userTickets.length;
+            if (state.userTickets.length === 0) { tbody.innerHTML = '<tr><td colspan="9">No tienes boletos registrados.</td></tr>'; return; }
+            tbody.innerHTML = '';
+            state.userTickets.forEach(t => { 
+                tbody.innerHTML += `<tr><td><strong>${t.id}</strong></td><td>${t.date}</td><td>${t.player}</td><td><code style="color:var(--gold); font-weight:bold;">${t.usedCode}</code></td><td>${t.type}</td><td>${t.stake} pts</td><td style="color:var(--green-win);">${t.payout.toLocaleString()} pts</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td><button style="background:var(--secondary); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick='showTicketModal(${JSON.stringify(t)})'>Ver</button></td></tr>`; 
+            });
+        }
+
+        function renderLiveTicker() {
+            const banner = document.getElementById('liveTickerBanner');
+            banner.innerHTML = '';
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
+            if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">No hay partidos cargados hoy.</span>'; return; }
+            todayGames.forEach(game => {
+                const item = document.createElement('div');
+                item.className = 'ticker-item';
+                let badge = `<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span>`;
+                if (game.status === 'LIVE') badge = `<span class="ticker-badge-live">LIVE</span>`;
+                else if (game.status === 'FINAL') badge = `<span class="ticker-badge-final">FINAL</span>`;
+                item.innerHTML = `${badge} <span class="ticker-teams">${game.away} vs ${game.home}</span> <span class="ticker-score">${game.awayRuns} - ${game.homeRuns}</span> <span class="ticker-inning">${game.inning || game.time}</span>`;
+                banner.appendChild(item);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('playerNameInput').value = state.playerName;
+            renderBattingLeaders(); renderPitchingLeaders(); renderLineups();
+            renderStandings(); renderGames(); renderLiveTicker();
+            updateHistoryTable(); updateSlipUI();
+            updateAutoStadiumPreview();
+        });
+    </script>
+</body>
+</html>
