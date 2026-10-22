@@ -45,7 +45,7 @@
         .live-ticker-banner {
             flex: 1; display: flex; align-items: center; gap: 12px;
             background: rgba(15, 23, 42, 0.85); border: 1px solid var(--card-border);
-            border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 500px;
+            border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 550px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
         .live-ticker-banner::-webkit-scrollbar { height: 4px; }
@@ -70,15 +70,7 @@
         
         .player-input-box { display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; border-radius: 8px; }
         .player-input-box label { font-size: 0.8rem; color: var(--gold); font-weight: bold; }
-        .player-input-box input { background: transparent; border: none; color: white; font-weight: bold; font-size: 0.9rem; outline: none; width: 120px; }
-
-        .redeem-box { display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.9); border: 1px solid var(--gold); padding: 0.3rem 0.6rem; border-radius: 8px; }
-        .redeem-input { background: #0f172a; border: 1px solid var(--card-border); color: var(--gold); font-weight: bold; font-family: monospace; font-size: 0.85rem; padding: 4px 8px; border-radius: 4px; width: 120px; outline: none; text-transform: uppercase; }
-        .btn-redeem { background: var(--green-win); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
-
-        .user-balance-card { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--gold); padding: 0.4rem 0.9rem; border-radius: 50px; display: flex; align-items: center; gap: 8px; box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
-        .balance-label { font-size: 0.65rem; color: var(--text-muted); }
-        .balance-amount { font-size: 0.95rem; font-weight: 800; color: var(--gold); }
+        .player-input-box input { background: transparent; border: none; color: white; font-weight: bold; font-size: 0.9rem; outline: none; width: 130px; }
 
         .main-container { padding: 1.5rem 2rem; flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
 
@@ -118,7 +110,7 @@
         .bg-TE { background-color: #ff6600; }
         .bg-EO { background-color: #006a4e; }
 
-        .bets-layout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
+        .bets-layout-grid { display: grid; grid-template-columns: 1fr 370px; gap: 1.5rem; }
         @media (max-width: 1024px) { .bets-layout-grid { grid-template-columns: 1fr; } }
 
         .betcris-sportsbook { background: #1e293b; border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; }
@@ -142,7 +134,7 @@
         .bet-type-selector { display: flex; background: #0f172a; border-radius: 6px; padding: 3px; margin-bottom: 1rem; }
         .bet-type-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 0.4rem; font-size: 0.85rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
         .bet-type-btn.active { background: var(--secondary); color: white; border: 1px solid var(--gold); }
-        .slip-items-list { max-height: 320px; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px; }
+        .slip-items-list { max-height: 280px; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px; }
         .slip-item { background: #0f172a; border-left: 4px solid var(--accent); padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; position: relative; }
         .slip-item-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
         .slip-item-selection { font-weight: 700; font-size: 0.9rem; color: var(--gold); }
@@ -151,9 +143,14 @@
         .slip-summary { border-top: 1px solid var(--card-border); padding-top: 1rem; display: flex; flex-direction: column; gap: 10px; }
         .summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; }
         .summary-row.total { font-weight: 800; font-size: 1.1rem; color: var(--green-win); border-top: 1px dashed var(--card-border); padding-top: 8px; }
+        
+        .code-input-panel { background: #0f172a; border: 1px solid var(--gold); border-radius: 8px; padding: 10px; margin-top: 4px; }
+        .code-input-panel label { font-size: 0.75rem; color: var(--gold); font-weight: bold; display: block; margin-bottom: 4px; }
+        .code-input-field { width: 100%; background: #1e293b; border: 1px solid var(--card-border); color: var(--gold); font-family: monospace; font-size: 1rem; font-weight: bold; padding: 8px; border-radius: 6px; outline: none; text-transform: uppercase; text-align: center; }
+
         .stake-input-group { display: flex; align-items: center; gap: 8px; }
         .stake-input { width: 100%; background: #0f172a; border: 1px solid var(--card-border); color: white; padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 1rem; font-weight: 700; text-align: right; }
-        .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.8rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
+        .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-top: 6px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
@@ -173,7 +170,7 @@
         .status-PENDIENTE { background: #d97706; color: white; }
         .status-GANADOR { background: #10b981; color: white; }
         .status-PERDEDOR { background: #ef4444; color: white; }
-        .status-DISPONIBLE { background: #10b981; color: white; }
+        .status-ACTIVO { background: #10b981; color: white; }
         .status-USADO { background: #64748b; color: white; }
 
         .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 850px; margin: 0 auto; }
@@ -220,19 +217,6 @@
             <div class="player-input-box">
                 <label for="playerNameInput">👤 Jugador:</label>
                 <input type="text" id="playerNameInput" value="Robin Francisco" placeholder="Nombre" onchange="updatePlayerName(this.value)">
-            </div>
-
-            <!-- CANJEAR CÓDIGO PREPAGO (11 CARACTERES) -->
-            <div class="redeem-box">
-                <input type="text" id="userRedeemInput" class="redeem-input" maxlength="11" placeholder="CÓDIGO (11)">
-                <button class="btn-redeem" onclick="redeemPinUser()">CANJEAR</button>
-            </div>
-
-            <div class="user-balance-card">
-                <div>
-                    <div class="balance-label">Puntos Recreativos</div>
-                    <div class="balance-amount" id="userBalanceDisplay">0 pts</div>
-                </div>
             </div>
         </div>
     </header>
@@ -293,11 +277,19 @@
 
                         <div class="slip-summary">
                             <div class="summary-row"><span>Multiplicador:</span><span style="font-weight:bold;" id="slipOddsDisplay">1.00x</span></div>
+                            
                             <div class="stake-input-group">
                                 <span style="font-size:0.85rem; font-weight:bold;">Puntos:</span>
                                 <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10" step="10" oninput="updateSlipUI()">
                             </div>
-                            <div class="summary-row total"><span>Pago:</span><span id="slipPayoutDisplay">0 pts</span></div>
+
+                            <!-- INGRESO DEL CÓDIGO DE JUEGO (11 CARACTERES) AL PAGAR -->
+                            <div class="code-input-panel">
+                                <label for="slipCodeInput">🔑 Ingrese Código de Juego (11 caracteres):</label>
+                                <input type="text" id="slipCodeInput" class="code-input-field" maxlength="11" placeholder="EJ: A8#K9X2M4Q1" oninput="updateSlipUI()">
+                            </div>
+
+                            <div class="summary-row total"><span>Pago Potencial:</span><span id="slipPayoutDisplay">0 pts</span></div>
                             <button class="btn-submit-bet" id="btnSubmitBet" onclick="generateTicket()" disabled>GENERAR BOLETO</button>
                         </div>
                     </div>
@@ -370,7 +362,7 @@
                 <table class="styled-table">
                     <thead>
                         <tr>
-                            <th>Ticket ID</th><th>Fecha</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th><th>Acción</th>
+                            <th>Ticket ID</th><th>Fecha</th><th>Jugador</th><th>Código Usado</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th><th>Acción</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody"></tbody>
@@ -435,14 +427,14 @@
                 <button class="btn-load-lineup" onclick="savePitchingLeadersAdmin()">💾 PUBLICAR LANZADORES</button>
             </div>
 
-            <!-- SUBPESTAÑA GENERADOR INSTANTÁNEO DE CÓDIGOS A LA MEDIDA (50 - 500 PTS) -->
+            <!-- SUBPESTAÑA GENERADOR Y CONTROL DE CÓDIGOS -->
             <div id="subAdminPines" class="admin-box" style="display:none;">
                 <div class="admin-title">🎟️ Generador Instantáneo de Código Único</div>
                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Seleccione el valor en puntos deseado (de 50 a 500 Pts). El sistema generará automáticamente un código irrepetible de 11 caracteres listo para entregar.</p>
                 
                 <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; background:#0f172a; padding:15px; border-radius:8px; border:1px solid var(--card-border);">
                     <div>
-                        <label style="font-size:0.8rem; color:var(--gold); font-weight:bold;">Valor del Código:</label><br>
+                        <label style="font-size:0.8rem; color:var(--gold); font-weight:bold;">Valor Inicial del Código:</label><br>
                         <select id="singlePinAmountSelect" class="admin-input" style="margin-top:6px; font-size:0.95rem; font-weight:bold; width:160px;">
                             <option value="50">50 Puntos</option>
                             <option value="100">100 Puntos</option>
@@ -465,20 +457,21 @@
                 <div class="code-display-box" id="latestCodeBox">
                     <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">¡Código Generado Exitosamente!</div>
                     <div class="code-display-value" id="latestCodeValue">A8#K9X2M4Q1</div>
-                    <div style="font-size:0.85rem; color:white; margin-top:4px;">Valor: <strong id="latestCodeAmount" style="color:var(--gold);">500 Pts</strong></div>
+                    <div style="font-size:0.85rem; color:white; margin-top:4px;">Valor Inicial: <strong id="latestCodeAmount" style="color:var(--gold);">500 Pts</strong></div>
                     <button style="margin-top:10px; background:var(--secondary); color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="copyLatestCode()">📋 Copiar Código para Enviar</button>
                 </div>
 
-                <div class="admin-title" style="margin-top:2rem;">📋 Historial de Códigos Creados</div>
+                <div class="admin-title" style="margin-top:2rem;">📋 Control de Saldos de Códigos Creados</div>
                 <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
                     <table class="styled-table">
                         <thead>
                             <tr>
                                 <th>Código (11 Caracteres)</th>
-                                <th>Valor (Pts)</th>
+                                <th>Monto Inicial</th>
+                                <th>Saldo Restante</th>
                                 <th>Estado</th>
-                                <th>Canjeado Por</th>
-                                <th>Fecha de Canje</th>
+                                <th>Último Usuario</th>
+                                <th>Último Uso</th>
                                 <th>Acción</th>
                             </tr>
                         </thead>
@@ -502,13 +495,15 @@
                 <div><strong>TICKET ID:</strong> <span id="mTicketId">#PT-0000</span></div>
                 <div><strong>FECHA:</strong> <span id="mTicketDate">--</span></div>
                 <div><strong>JUGADOR:</strong> <span id="mTicketPlayer">--</span></div>
+                <div><strong>CÓDIGO USADO:</strong> <span id="mTicketCode">--</span></div>
                 <div><strong>TIPO:</strong> <span id="mTicketType">PARLAY</span></div>
             </div>
 
             <div class="ticket-legs" id="mTicketLegs"></div>
 
             <div class="ticket-summary">
-                <div style="display:flex; justify-content:space-between;"><span>MONTO:</span><span id="mTicketStake">0 pts</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>APUESTA:</span><span id="mTicketStake">0 pts</span></div>
+                <div style="display:flex; justify-content:space-between;"><span>SALDO RESTANTE CÓDIGO:</span><span id="mTicketCodeRemaining" style="color:#059669; font-weight:bold;">0 pts</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>MULTIPLICADOR:</span><span id="mTicketOdds">0.00x</span></div>
                 <div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-top:4px;"><span>PAGO POTENCIAL:</span><span id="mTicketPayout">0 pts</span></div>
             </div>
@@ -591,7 +586,7 @@
         let latestGeneratedCode = '';
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v30');
+            const saved = localStorage.getItem('pelotard_state_v31');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -605,7 +600,6 @@
                 } catch(e){}
             }
             return {
-                userBalance: 0,
                 playerName: 'Robin Francisco',
                 selectedBetType: 'Sencilla',
                 currentSlip: [],
@@ -623,7 +617,7 @@
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v30', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v31', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -678,13 +672,12 @@
             saveState();
         };
 
-        // ALGORITMO INTELIGENTE: GENERADOR DE CÓDIGO ÚNICO DE 11 CARACTERES
+        // GENERADOR DE CÓDIGO ÚNICO DE 11 CARACTERES
         function generateUniquePin11() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             const specialChars = '@#$';
             let pin = '';
             
-            // Loop de verificación anticolisión
             while (true) {
                 pin = '';
                 for (let i = 0; i < 9; i++) {
@@ -693,7 +686,6 @@
                 pin += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
                 pin += chars.charAt(Math.floor(Math.random() * chars.length));
 
-                // Verificar que no exista en la base de datos
                 if (!ALL_PREPAGO_PINES.some(p => p.code === pin)) {
                     break;
                 }
@@ -707,8 +699,9 @@
 
             const newPin = {
                 code: uniqueCode,
-                amount: amount,
-                status: 'DISPONIBLE',
+                initialAmount: amount,
+                remainingAmount: amount,
+                status: 'ACTIVO',
                 usedBy: '--',
                 usedAt: '--'
             };
@@ -717,7 +710,6 @@
             latestGeneratedCode = uniqueCode;
             saveState();
 
-            // Mostrar el código en la caja desplegable de administración
             document.getElementById('latestCodeValue').textContent = uniqueCode;
             document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
             document.getElementById('latestCodeBox').style.display = 'block';
@@ -736,7 +728,7 @@
             const tbody = document.getElementById('pinesTableBody');
             tbody.innerHTML = '';
             if (ALL_PREPAGO_PINES.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6">No hay códigos generados en el sistema.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7">No hay códigos generados en el sistema.</td></tr>';
                 return;
             }
 
@@ -744,7 +736,8 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong style="color:var(--gold); font-family:monospace; font-size:0.95rem;">${pin.code}</strong></td>
-                    <td style="font-weight:bold;">${pin.amount} pts</td>
+                    <td>${pin.initialAmount} pts</td>
+                    <td style="font-weight:bold; color:${pin.remainingAmount > 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${pin.remainingAmount} pts</td>
                     <td><span class="status-badge status-${pin.status}">${pin.status}</span></td>
                     <td>${pin.usedBy}</td>
                     <td>${pin.usedAt}</td>
@@ -761,38 +754,78 @@
             alert(`📋 Código ${code} copiado al portapapeles.`);
         };
 
-        window.redeemPinUser = function() {
-            const input = document.getElementById('userRedeemInput');
-            const codeVal = input.value.trim();
+        // DESCUENTO Y CANJE DIRECTO EN LA BOLETA
+        window.generateTicket = function() {
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const codeInput = document.getElementById('slipCodeInput').value.trim();
 
-            if (codeVal.length !== 11) {
-                alert('El código debe tener exactamente 11 caracteres.');
+            if (stake <= 0) {
+                alert('Ingrese un monto válido para la apuesta.');
                 return;
             }
 
-            const pinObj = ALL_PREPAGO_PINES.find(p => p.code === codeVal);
+            if (codeInput.length !== 11) {
+                alert('⚠️ Debe ingresar un código de 11 caracteres válido para realizar la jugada.');
+                return;
+            }
+
+            const pinObj = ALL_PREPAGO_PINES.find(p => p.code === codeInput);
 
             if (!pinObj) {
-                alert('❌ Código prepago inválido o no existente.');
+                alert('❌ El código ingresado no existe en el sistema.');
                 return;
             }
 
-            if (pinObj.status === 'USADO') {
-                alert(`⚠️ Este código ya fue canjeado por ${pinObj.usedBy} el ${pinObj.usedAt}.`);
+            if (pinObj.status === 'USADO' || pinObj.remainingAmount <= 0) {
+                alert('⚠️ Este código ya agotó su saldo disponible y ha sido cancelado.');
                 return;
             }
 
-            pinObj.status = 'USADO';
+            if (stake > pinObj.remainingAmount) {
+                alert(`⚠️ Saldo insuficiente en el código. El saldo restante del código es: ${pinObj.remainingAmount} Pts.`);
+                return;
+            }
+
+            // DESCUENTO AUTOMÁTICO AL CÓDIGO
+            pinObj.remainingAmount -= stake;
             pinObj.usedBy = state.playerName;
             pinObj.usedAt = new Date().toLocaleString('es-DO');
 
-            state.userBalance += pinObj.amount;
-            saveState();
-            updateBalanceDisplay();
-            updateSlipUI();
-            input.value = '';
+            if (pinObj.remainingAmount <= 0) {
+                pinObj.status = 'USADO';
+            }
 
-            alert(`🎉 ¡Éxito! Has canjeado el código por ${pinObj.amount} Puntos. Saldo actual: ${state.userBalance.toLocaleString()} pts.`);
+            const legsCount = state.currentSlip.length;
+            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
+            const payout = Math.round(stake * totalOdds);
+            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
+
+            const ticket = {
+                id: ticketId,
+                date: new Date().toLocaleString('es-DO'),
+                player: state.playerName,
+                usedCode: pinObj.code,
+                remainingBalance: pinObj.remainingAmount,
+                type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA',
+                stake: stake,
+                odds: totalOdds,
+                payout: payout,
+                legs: [...state.currentSlip],
+                status: 'PENDIENTE'
+            };
+
+            state.userTickets.unshift(ticket);
+            saveState();
+
+            updateHistoryTable();
+            showTicketModal(ticket);
+
+            // Limpiar la boleta
+            state.currentSlip = [];
+            document.getElementById('slipCodeInput').value = '';
+            saveState();
+            updateSlipUI();
+            updateOddsButtonsHighlight();
         };
 
         function renderGames() {
@@ -955,6 +988,8 @@
             });
 
             const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const codeVal = document.getElementById('slipCodeInput').value.trim();
+
             if (state.selectedBetType === 'Parlay' && state.currentSlip.length < 2) {
                 document.getElementById('slipOddsDisplay').textContent = 'Mínimo 2 logros'; 
                 document.getElementById('slipPayoutDisplay').textContent = '0 pts'; 
@@ -962,7 +997,7 @@
             } else {
                 document.getElementById('slipOddsDisplay').textContent = totalOdds.toFixed(2) + 'x';
                 document.getElementById('slipPayoutDisplay').textContent = Math.round(stake * totalOdds).toLocaleString() + ' pts';
-                document.getElementById('btnSubmitBet').disabled = stake <= 0 || stake > state.userBalance;
+                document.getElementById('btnSubmitBet').disabled = stake <= 0 || codeVal.length !== 11;
             }
         }
 
@@ -1264,24 +1299,12 @@
             }
         };
 
-        window.generateTicket = function() {
-            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
-            if (stake > state.userBalance) { alert('Puntos insuficientes.'); return; }
-            const legsCount = state.currentSlip.length;
-            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
-            const payout = Math.round(stake * totalOdds);
-            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
-
-            const ticket = { id: ticketId, date: new Date().toLocaleString('es-DO'), player: state.playerName, type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA', stake: stake, odds: totalOdds, payout: payout, legs: [...state.currentSlip], status: 'PENDIENTE' };
-            state.userBalance -= stake; state.userTickets.unshift(ticket); saveState();
-            updateBalanceDisplay(); updateHistoryTable(); showTicketModal(ticket);
-            state.currentSlip = []; saveState(); updateSlipUI(); updateOddsButtonsHighlight();
-        };
-
         function showTicketModal(ticket) {
             document.getElementById('mTicketId').textContent = ticket.id; 
             document.getElementById('mTicketDate').textContent = ticket.date; 
             document.getElementById('mTicketPlayer').textContent = ticket.player; 
+            document.getElementById('mTicketCode').textContent = ticket.usedCode; 
+            document.getElementById('mTicketCodeRemaining').textContent = ticket.remainingBalance.toLocaleString() + ' pts'; 
             document.getElementById('mTicketType').textContent = ticket.type; 
             document.getElementById('mTicketStake').textContent = ticket.stake.toLocaleString() + ' pts'; 
             document.getElementById('mTicketOdds').textContent = ticket.odds.toFixed(2) + 'x'; 
@@ -1300,14 +1323,12 @@
         function updateHistoryTable() {
             const tbody = document.getElementById('historyTableBody'); 
             document.getElementById('ticketCountHeader').textContent = state.userTickets.length;
-            if (state.userTickets.length === 0) { tbody.innerHTML = '<tr><td colspan="7">No tienes boletos registrados.</td></tr>'; return; }
+            if (state.userTickets.length === 0) { tbody.innerHTML = '<tr><td colspan="9">No tienes boletos registrados.</td></tr>'; return; }
             tbody.innerHTML = '';
             state.userTickets.forEach(t => { 
-                tbody.innerHTML += `<tr><td><strong>${t.id}</strong></td><td>${t.date}</td><td>${t.type}</td><td>${t.stake} pts</td><td style="color:var(--green-win);">${t.payout.toLocaleString()} pts</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td><button style="background:var(--secondary); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick='showTicketModal(${JSON.stringify(t)})'>Ver</button></td></tr>`; 
+                tbody.innerHTML += `<tr><td><strong>${t.id}</strong></td><td>${t.date}</td><td>${t.player}</td><td><code style="color:var(--gold); font-weight:bold;">${t.usedCode}</code></td><td>${t.type}</td><td>${t.stake} pts</td><td style="color:var(--green-win);">${t.payout.toLocaleString()} pts</td><td><span class="status-badge status-${t.status}">${t.status}</span></td><td><button style="background:var(--secondary); color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;" onclick='showTicketModal(${JSON.stringify(t)})'>Ver</button></td></tr>`; 
             });
         }
-
-        function updateBalanceDisplay() { document.getElementById('userBalanceDisplay').textContent = state.userBalance.toLocaleString() + ' pts'; }
 
         function renderLiveTicker() {
             const banner = document.getElementById('liveTickerBanner');
@@ -1329,7 +1350,7 @@
             document.getElementById('playerNameInput').value = state.playerName;
             renderBattingLeaders(); renderPitchingLeaders(); renderLineups();
             renderStandings(); renderGames(); renderLiveTicker();
-            updateBalanceDisplay(); updateHistoryTable(); updateSlipUI();
+            updateHistoryTable(); updateSlipUI();
         });
     </script>
 </body>
