@@ -48,8 +48,6 @@
             border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 550px;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
-        .live-ticker-banner::-webkit-scrollbar { height: 4px; }
-        .live-ticker-banner::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
         
         .ticker-item {
             display: flex; align-items: center; gap: 8px; background: #1e293b;
@@ -66,7 +64,7 @@
         .connection-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 5px; }
 
         .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
-        .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
         
         .player-input-box { display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; border-radius: 8px; }
         .player-input-box label { font-size: 0.8rem; color: var(--gold); font-weight: bold; }
@@ -76,23 +74,18 @@
 
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; border-bottom: 2px solid var(--card-border); padding-bottom: 0.6rem; overflow-x: auto; }
         .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer !important; border-radius: 8px; transition: all 0.2s ease; white-space: nowrap; user-select: none; }
-        .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.08); border-color: var(--gold); }
         .tab-btn.active { color: #fff !important; background: var(--accent) !important; border-color: var(--gold) !important; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4); }
         
         .filter-pills { display: flex; gap: 8px; margin-bottom: 1.2rem; flex-wrap: wrap; }
-        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer !important; transition: all 0.2s; user-select: none; }
-        .filter-pill:hover { color: white; border-color: var(--gold); }
+        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer !important; user-select: none; }
         .filter-pill.active { background: var(--secondary) !important; color: white !important; border-color: var(--gold) !important; }
 
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.2rem; }
         .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-        .game-card.finished-card { border-color: #334155; background-color: #172033; }
-        .game-card.live-card { border-color: #b45309; }
         .game-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
         .game-stadium { font-weight: 600; color: var(--gold); }
         
         .live-status-bar { background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 12px; margin: 8px 0 10px 0; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; }
-        .live-status-bar.is-live { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
         .live-status-bar .status-text { font-weight: 800; color: #38bdf8; }
         .live-status-bar .live-score-badge { background: var(--primary); color: var(--gold); padding: 2px 8px; border-radius: 4px; font-weight: 900; border: 1px solid var(--card-border); }
 
@@ -110,6 +103,16 @@
         .bg-TE { background-color: #ff6600; }
         .bg-EO { background-color: #006a4e; }
 
+        /* ESTILOS DE LINEUP VERTICAL ESTRICTO */
+        .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 550px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        .lineup-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 0.8rem; }
+        .pitching-staff-box { background: #0f172a; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; }
+        
+        .vertical-lineup-container { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; width: 100%; }
+        .vertical-lineup-row { display: flex; align-items: center; background: #0f172a; border: 1px solid var(--card-border); border-left: 4px solid var(--accent); border-radius: 6px; padding: 10px 14px; width: 100%; justify-content: space-between; }
+        .vertical-lineup-pos { font-weight: 900; color: var(--gold); font-size: 0.95rem; min-width: 80px; }
+        .vertical-lineup-name { font-weight: 800; color: white; font-size: 0.95rem; flex: 1; text-align: left; padding-left: 10px; }
+
         .bets-layout-grid { display: grid; grid-template-columns: 1fr 370px; gap: 1.5rem; }
         @media (max-width: 1024px) { .bets-layout-grid { grid-template-columns: 1fr; } }
 
@@ -120,19 +123,17 @@
         .betcris-row-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; align-items: center; }
         .betcris-team-box { display: flex; flex-direction: column; gap: 8px; }
         .betcris-team-item { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; }
-        .betcris-odds-cell { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; user-select: none; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 42px; transition: all 0.2s; }
-        .betcris-odds-cell:hover { border-color: var(--accent); background: #1e293b; }
+        .betcris-odds-cell { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; user-select: none; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 42px; }
         .betcris-odds-cell.selected { background: var(--accent) !important; border-color: var(--gold) !important; }
-        .betcris-odds-cell.disabled { opacity: 0.4; cursor: not-allowed !important; background: #080d1a; }
         .betcris-odd-line { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
         .betcris-odd-val { font-size: 0.88rem; font-weight: 800; color: var(--gold); }
 
-        .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 90px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 90px; }
         .slip-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; margin-bottom: 1rem; }
         .slip-title { font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
         .slip-count { background: var(--accent); color: white; font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
         .bet-type-selector { display: flex; background: #0f172a; border-radius: 6px; padding: 3px; margin-bottom: 1rem; }
-        .bet-type-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 0.4rem; font-size: 0.85rem; font-weight: 700; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .bet-type-btn { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 0.4rem; font-size: 0.85rem; font-weight: 700; border-radius: 4px; cursor: pointer; }
         .bet-type-btn.active { background: var(--secondary); color: white; border: 1px solid var(--gold); }
         .slip-items-list { max-height: 280px; overflow-y: auto; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 8px; }
         .slip-item { background: #0f172a; border-left: 4px solid var(--accent); padding: 0.6rem 0.8rem; border-radius: 0 6px 6px 0; position: relative; }
@@ -150,9 +151,9 @@
 
         .stake-input-group { display: flex; align-items: center; gap: 8px; }
         .stake-input { width: 100%; background: #0f172a; border: 1px solid var(--card-border); color: white; padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 1rem; font-weight: 700; text-align: right; }
-        .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-top: 6px; }
+        .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.85rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; margin-top: 6px; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
         .ticket-receipt { background: #fff; color: #000; width: 340px; padding: 1.5rem; font-family: 'Courier New', Courier, monospace; border-radius: 4px; }
         .ticket-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
@@ -167,20 +168,11 @@
         .styled-table th { background: #0f172a; color: var(--gold); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; }
 
         .status-badge { padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
-        .status-PENDIENTE { background: #d97706; color: white; }
-        .status-GANADOR { background: #10b981; color: white; }
-        .status-PERDEDOR { background: #ef4444; color: white; }
-        .status-ACTIVO { background: #10b981; color: white; }
-        .status-USADO { background: #64748b; color: white; }
-
-        .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 850px; margin: 0 auto; }
-        .lineup-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 0.8rem; margin-bottom: 1rem; }
-        .pitching-staff-box { background: #0f172a; border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; }
         .admin-box { background: var(--card-bg); border: 1px dashed var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
         .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
         
         .lineup-loader-box { background: #0f172a; border: 1px solid var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .lineup-textarea { width: 100%; height: 160px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; margin: 0.8rem 0; outline: none; }
+        .lineup-textarea { width: 100%; height: 180px; background: #1e293b; border: 1px solid var(--card-border); color: white; border-radius: 8px; padding: 0.8rem; font-family: monospace; font-size: 0.85rem; margin: 0.8rem 0; outline: none; }
         .btn-load-lineup { background: var(--accent); color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
         .admin-subtab-btn { background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 6px; font-size: 0.82rem; font-weight: bold; cursor: pointer; }
@@ -482,7 +474,7 @@
                 </div>
             </div>
 
-            <!-- SUBPESTAÑA LINEUPS CORREGIDA -->
+            <!-- CARGA DE LINEUP VERTICAL -->
             <div id="subAdminLineups" class="lineup-loader-box" style="display:none;">
                 <div class="admin-title">📥 Carga Rápida de Lineup y Pitcher Abridor</div>
                 <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
@@ -498,13 +490,17 @@
                     <span style="font-size:0.8rem; color:var(--text-muted);">Pitcher Abridor:</span>
                     <input type="text" id="adminPitcherInput" placeholder="Ej: P. Espino (RHP)" class="admin-input" style="width:200px;">
                 </div>
-                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue la alineación de 1 al 9 aquí...
-Ejemplo:
+                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue la lista de bateadores de forma vertical o en bloque...
 1. B. Hamilton (CF)
 2. Y. Muñoz (2B)
 3. S. Castro (3B)
-..."></textarea>
-                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP Y PITCHER</button>
+4. E. Sosa (1B)
+5. L. Adams (DH)
+6. J. Fermín (SS)
+7. C. Bethancourt (C)
+8. L. Liberato (LF)
+9. G. Urshela (RF)"></textarea>
+                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP VERTICAL</button>
             </div>
 
             <div id="subAdminStandings" class="admin-box" style="display:none;">
@@ -600,10 +596,10 @@ Ejemplo:
         let latestGeneratedCode = '';
 
         function loadState() {
-            localStorage.removeItem('pelotard_state_v35');
             localStorage.removeItem('pelotard_state_v36');
+            localStorage.removeItem('pelotard_state_v37');
             
-            const saved = localStorage.getItem('pelotard_state_v37');
+            const saved = localStorage.getItem('pelotard_state_v38');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -634,7 +630,7 @@ Ejemplo:
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v37', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v38', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -736,44 +732,44 @@ Ejemplo:
             }
         };
 
-        // FUNCIÓN CORREGIDA PARA PROCESAR LINEUP Y PITCHER
+        // PARSER Y PROCESADOR DE LINEUP VERTICAL
         window.processTextLineup = function() {
             const teamCode = document.getElementById('adminTeamSelect').value;
             const pitcherName = document.getElementById('adminPitcherInput').value.trim() || 'Por definir';
             const rawText = document.getElementById('adminLineupText').value.trim();
 
             if (!rawText) {
-                alert('⚠️ Por favor pegue la lista de bateadores.');
+                alert('⚠️ Por favor ingrese la alineación.');
                 return;
             }
 
-            const lines = rawText.split('\n').filter(line => line.trim() !== '');
+            // Normaliza saltos de línea, comas o delimitadores para garantizar orientación vertical
+            const lines = rawText.split(/[\n;]/).filter(line => line.trim() !== '');
             const parsedBatters = [];
 
             lines.forEach((line, index) => {
                 let text = line.trim();
-                let posStr = `${index + 1}. BATEADOR`;
+                let posStr = `${index + 1}º Turno`;
                 let nameStr = text;
 
-                // Extrae numeración o posición si está presente
-                const match = text.match(/^(\d+[\.\-]?\s*)?([^(]+)(\(.*\))?$/);
+                // Extrae número/posición y nombre
+                const match = text.match(/^(\d+[\.\-]?\s*)?([^(,]+)(\(.*\))?$/);
                 if (match) {
-                    const posClean = match[3] ? match[3].replace(/[()]/g, '').trim() : 'BAT';
-                    posStr = `${index + 1}. ${posClean}`;
+                    const posClean = match[3] ? match[3].replace(/[()]/g, '').trim() : '';
+                    posStr = `${index + 1}º ${posClean}`.trim();
                     nameStr = match[2].trim();
                 }
 
                 parsedBatters.push({ pos: posStr, name: nameStr });
             });
 
-            // Guardar en la estructura global de lineups
             DETAILED_LINEUPS[teamCode] = {
                 pitcher: pitcherName,
                 bullpen: 'Roster activo',
                 batters: parsedBatters
             };
 
-            // Sincronizar el pitcher abridor en la cartelera si el equipo juega hoy
+            // Sincroniza pitcher abridor en la cartelera
             liveGamesData.forEach(game => {
                 if (game.away === teamCode) game.awayPitcher = pitcherName;
                 if (game.home === teamCode) game.homePitcher = pitcherName;
@@ -785,7 +781,7 @@ Ejemplo:
             renderGames();
 
             document.getElementById('adminLineupText').value = '';
-            alert(`✅ Lineup y Abridor (${pitcherName}) del equipo ${TEAMS[teamCode].name} publicados con éxito.`);
+            alert(`✅ Lineup vertical y Pitcher (${pitcherName}) del equipo ${TEAMS[teamCode].name} publicados.`);
         };
 
         function renderGames() {
@@ -1063,6 +1059,7 @@ Ejemplo:
             });
         }
 
+        // RENDERIZADO VERTICAL ESTRICTO DE LINEUP
         function renderLineups() {
             const pillsContainer = document.getElementById('lineupTeamPills');
             pillsContainer.innerHTML = '';
@@ -1076,22 +1073,40 @@ Ejemplo:
 
             const teamCode = state.selectedLineupTeam;
             const card = document.getElementById('lineupDisplayCard');
-            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Por definir', batters: [] };
+            const data = DETAILED_LINEUPS[teamCode] || { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] };
 
-            let battersRowsHtml = '';
+            let verticalRowsHtml = '';
             if (data.batters && data.batters.length > 0) {
-                data.batters.forEach(b => {
-                    battersRowsHtml += `<tr><td style="text-align:left; font-weight:bold; color:var(--gold);">${b.pos}</td><td style="text-align:left; font-weight:bold; color:white;">${b.name}</td></tr>`;
+                data.batters.forEach((b, i) => {
+                    verticalRowsHtml += `
+                        <div class="vertical-lineup-row">
+                            <span class="vertical-lineup-pos">${b.pos || (i + 1) + 'º Turno'}</span>
+                            <span class="vertical-lineup-name">${b.name}</span>
+                        </div>
+                    `;
                 });
             } else {
-                battersRowsHtml = '<tr><td colspan="2" style="color:var(--text-muted); padding:1rem;">No hay lineup publicado para este equipo. Cargue la alineación desde el panel de Administración.</td></tr>';
+                verticalRowsHtml = '<div style="color:var(--text-muted); padding:1rem; text-align:center;">No hay lineup registrado para este equipo. Cargue la alineación desde el panel de Administración.</div>';
             }
 
             card.innerHTML = `
-                <div class="lineup-card-header"><div style="display:flex; align-items:center; gap:10px;"><div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div><div><h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2><div style="font-size:0.8rem; color:var(--text-muted);">Lineup Oficial Activo</div></div></div></div>
-                <div class="pitching-staff-box"><div>⚾ <strong>Abridor Anunciado LIDOM:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher || 'Por definir'}</span></div><div style="margin-top:4px;">🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen || 'Roster activo'}</div></div>
-                <h3 style="font-size:0.95rem; color:var(--gold); margin: 1rem 0 0.5rem 0;">📋 Orden al Bate Confirmado (Posiciones 1 al 9)</h3>
-                <div class="table-responsive"><table class="styled-table"><thead><tr><th style="text-align:left;">Posición / Orden</th><th style="text-align:left;">Jugador</th></tr></thead><tbody>${battersRowsHtml}</tbody></table></div>
+                <div class="lineup-card-header">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
+                        <div>
+                            <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Alineación Oficial (Vertical)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pitching-staff-box">
+                    <div>⚾ <strong>Pitcher Abridor:</strong> <span style="color:var(--gold); font-weight:bold;">${data.pitcher || 'Por definir'}</span></div>
+                    <div>🔥 <strong>Bullpen Disponible:</strong> ${data.bullpen || 'Roster activo'}</div>
+                </div>
+                <h3 style="font-size:0.95rem; color:var(--gold); margin-top:0.5rem;">📋 Orden al Bate (Del 1 al 9)</h3>
+                <div class="vertical-lineup-container">
+                    ${verticalRowsHtml}
+                </div>
             `;
         }
 
