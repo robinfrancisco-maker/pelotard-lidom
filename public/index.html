@@ -283,7 +283,6 @@
                                 <input type="number" class="stake-input" id="slipStakeInput" value="100" min="10" step="10" oninput="updateSlipUI()">
                             </div>
 
-                            <!-- INGRESO DEL CÓDIGO DE JUEGO (11 CARACTERES) AL PAGAR -->
                             <div class="code-input-panel">
                                 <label for="slipCodeInput">🔑 Ingrese Código de Juego (11 caracteres):</label>
                                 <input type="text" id="slipCodeInput" class="code-input-field" maxlength="11" placeholder="EJ: A8#K9X2M4Q1" oninput="updateSlipUI()">
@@ -370,33 +369,61 @@
             </div>
         </div>
 
-        <!-- VISTA 6: ADMINISTRACIÓN -->
+        <!-- VISTA 6: ADMINISTRACIÓN COMPLETA -->
         <div id="viewAdmin" style="display: none;">
             <div style="display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap;">
-                <button class="admin-subtab-btn active" id="btnAdminSubLineups" onclick="switchAdminSub('subAdminLineups', 'btnAdminSubLineups')">🧢 Cargar Lineups</button>
+                <button class="admin-subtab-btn active" id="btnAdminAddGames" onclick="switchAdminSub('subAdminAddGames', 'btnAdminAddGames')">➕ Cargar Juegos del Día</button>
                 <button class="admin-subtab-btn" id="btnAdminSubGames" onclick="switchAdminSub('subAdminGames', 'btnAdminSubGames')">⚾ Pizarra y Resultados</button>
+                <button class="admin-subtab-btn" id="btnAdminSubPines" onclick="switchAdminSub('subAdminPines', 'btnAdminSubPines')">🎟️ Generador de Códigos</button>
+                <button class="admin-subtab-btn" id="btnAdminSubLineups" onclick="switchAdminSub('subAdminLineups', 'btnAdminSubLineups')">🧢 Cargar Lineups</button>
                 <button class="admin-subtab-btn" id="btnAdminSubStandings" onclick="switchAdminSub('subAdminStandings', 'btnAdminSubStandings')">📊 Editar Standings</button>
-                <button class="admin-subtab-btn" id="btnAdminSubLeaders" onclick="switchAdminSub('subAdminLeaders', 'btnAdminSubLeaders')">⭐ Editar Top Líderes</button>
-                <button class="admin-subtab-btn" id="btnAdminSubPines" onclick="switchAdminSub('subAdminPines', 'btnAdminSubPines')">🎟️ Generador de Códigos (50 - 500 Pts)</button>
             </div>
 
-            <div id="subAdminLineups" class="lineup-loader-box">
-                <div class="admin-title">📥 Carga Rápida de Lineup por Texto</div>
-                <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                    <label style="font-size:0.85rem; font-weight:bold; color:var(--gold);">Equipo:</label>
-                    <select id="adminTeamSelect" class="admin-input">
-                        <option value="L">Tigres del Licey (L)</option>
-                        <option value="E">Leones del Escogido (E)</option>
-                        <option value="AC">Águilas Cibaeñas (AC)</option>
-                        <option value="GC">Gigantes del Cibao (GC)</option>
-                        <option value="TE">Toros del Este (TE)</option>
-                        <option value="EO">Estrellas Orientales (EO)</option>
-                    </select>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Pitcher Abridor:</span>
-                    <input type="text" id="adminPitcherInput" placeholder="Ej: L. Gil (RHP)" class="admin-input" style="width:180px;">
+            <!-- SUBPESTAÑA NUEVA: CARGAR JUEGOS RÁPIDAMENTE -->
+            <div id="subAdminAddGames" class="lineup-loader-box">
+                <div class="admin-title">➕ Agregar Partido a la Cartelera de Hoy</div>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Solo seleccione los equipos, hora y estadio. El sistema creará el juego y sus líneas de apuestas automáticamente.</p>
+                
+                <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:12px; background:#0f172a; padding:15px; border-radius:8px; border:1px solid var(--card-border);">
+                    <div class="admin-form-group">
+                        <label>Equipo Visitante:</label>
+                        <select id="newAwayTeam" class="admin-input">
+                            <option value="TE">Toros del Este (TE)</option>
+                            <option value="AC">Águilas Cibaeñas (AC)</option>
+                            <option value="L">Tigres del Licey (L)</option>
+                            <option value="E">Leones del Escogido (E)</option>
+                            <option value="GC">Gigantes del Cibao (GC)</option>
+                            <option value="EO">Estrellas Orientales (EO)</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Equipo Home Club (Local):</label>
+                        <select id="newHomeTeam" class="admin-input">
+                            <option value="GC">Gigantes del Cibao (GC)</option>
+                            <option value="E">Leones del Escogido (E)</option>
+                            <option value="EO">Estrellas Orientales (EO)</option>
+                            <option value="L">Tigres del Licey (L)</option>
+                            <option value="AC">Águilas Cibaeñas (AC)</option>
+                            <option value="TE">Toros del Este (TE)</option>
+                        </select>
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Hora del Partido:</label>
+                        <input type="text" id="newGameTime" value="07:15 PM" class="admin-input">
+                    </div>
+
+                    <div class="admin-form-group">
+                        <label>Estadio / Sede:</label>
+                        <input type="text" id="newGameStadium" value="Estadio Quisqueya (SD)" class="admin-input">
+                    </div>
                 </div>
-                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue el lineup de 1 al 9 aquí..."></textarea>
-                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP</button>
+
+                <div style="margin-top:12px; display:flex; gap:10px;">
+                    <button class="btn-load-lineup" onclick="addGameToSchedule()">🚀 PUBLICAR PARTIDO EN CARTELERA</button>
+                    <button style="background:var(--red-loss); color:white; border:none; padding:0.7rem 1.2rem; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="clearAllTodayGames()">🗑️ Limpiar Todos los Juegos</button>
+                </div>
             </div>
 
             <div id="subAdminGames" class="admin-box" style="display:none;">
@@ -404,30 +431,6 @@
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; margin-top:1rem;" id="adminGameControlGrid"></div>
             </div>
 
-            <div id="subAdminStandings" class="admin-box" style="display:none;">
-                <div class="admin-title">📊 Actualizar Tabla de Posiciones Completa (Standings LIDOM)</div>
-                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Modifique los datos en las casillas y presione Guardar. El PCT y la DIF (Juegos de Ventaja) se recalculan automáticamente.</p>
-                <div class="table-responsive">
-                    <table class="styled-table">
-                        <thead>
-                            <tr><th>Equipo</th><th>JJ</th><th>G</th><th>P</th><th>RACHA</th><th>CA</th><th>CP</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th><th>Acción</th></tr>
-                        </thead>
-                        <tbody id="adminStandingsEditBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="subAdminLeaders" class="admin-box" style="display:none;">
-                <div class="admin-title">🔥 1. Cargar/Editar Top 10 Bateadores</div>
-                <textarea id="adminBattingText" class="lineup-textarea" placeholder="Kevin Alcántara (CF), L, 3, 11, 4, 6, 1, 0, 2, 5, 2, 2, 0, .545, .615, 1.182, 1.797"></textarea>
-                <button class="btn-load-lineup" style="margin-bottom:1.5rem;" onclick="saveBattingLeadersAdmin()">💾 PUBLICAR BATEADORES</button>
-
-                <div class="admin-title">🎯 2. Cargar/Editar Top 10 Lanzadores</div>
-                <textarea id="adminPitchingText" class="lineup-textarea" placeholder="Carlos Peña (P), AC, 0, 1, 10.80, 2, 0, 0, 0, 0, 0, 3.1, 7, 4, 4, 2, 0, 0, 3, 2.10, .389"></textarea>
-                <button class="btn-load-lineup" onclick="savePitchingLeadersAdmin()">💾 PUBLICAR LANZADORES</button>
-            </div>
-
-            <!-- SUBPESTAÑA GENERADOR Y CONTROL DE CÓDIGOS -->
             <div id="subAdminPines" class="admin-box" style="display:none;">
                 <div class="admin-title">🎟️ Generador Instantáneo de Código Único</div>
                 <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Seleccione el valor en puntos deseado (de 50 a 500 Pts). El sistema generará automáticamente un código irrepetible de 11 caracteres listo para entregar.</p>
@@ -453,7 +456,6 @@
                     </div>
                 </div>
 
-                <!-- CUADRO DE CÓDIGO GENERADO RECIENTEMENTE -->
                 <div class="code-display-box" id="latestCodeBox">
                     <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">¡Código Generado Exitosamente!</div>
                     <div class="code-display-value" id="latestCodeValue">A8#K9X2M4Q1</div>
@@ -476,6 +478,37 @@
                             </tr>
                         </thead>
                         <tbody id="pinesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="subAdminLineups" class="lineup-loader-box" style="display:none;">
+                <div class="admin-title">📥 Carga Rápida de Lineup por Texto</div>
+                <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <label style="font-size:0.85rem; font-weight:bold; color:var(--gold);">Equipo:</label>
+                    <select id="adminTeamSelect" class="admin-input">
+                        <option value="L">Tigres del Licey (L)</option>
+                        <option value="E">Leones del Escogido (E)</option>
+                        <option value="AC">Águilas Cibaeñas (AC)</option>
+                        <option value="GC">Gigantes del Cibao (GC)</option>
+                        <option value="TE">Toros del Este (TE)</option>
+                        <option value="EO">Estrellas Orientales (EO)</option>
+                    </select>
+                    <span style="font-size:0.8rem; color:var(--text-muted);">Pitcher Abridor:</span>
+                    <input type="text" id="adminPitcherInput" placeholder="Ej: L. Gil (RHP)" class="admin-input" style="width:180px;">
+                </div>
+                <textarea id="adminLineupText" class="lineup-textarea" placeholder="Pegue el lineup de 1 al 9 aquí..."></textarea>
+                <button class="btn-load-lineup" onclick="processTextLineup()">🚀 PUBLICAR LINEUP</button>
+            </div>
+
+            <div id="subAdminStandings" class="admin-box" style="display:none;">
+                <div class="admin-title">📊 Actualizar Tabla de Posiciones Completa (Standings LIDOM)</div>
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th>Equipo</th><th>JJ</th><th>G</th><th>P</th><th>RACHA</th><th>CA</th><th>CP</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th><th>Acción</th></tr>
+                        </thead>
+                        <tbody id="adminStandingsEditBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -508,19 +541,12 @@
                 <div style="display:flex; justify-content:space-between; font-size:0.95rem; margin-top:4px;"><span>PAGO POTENCIAL:</span><span id="mTicketPayout">0 pts</span></div>
             </div>
 
-            <div class="ticket-barcode">
-                <svg class="barcode-svg" viewBox="0 0 100 30">
-                    <rect x="5" y="0" width="2" height="30" fill="#000"/><rect x="10" y="0" width="4" height="30" fill="#000"/><rect x="18" y="0" width="1" height="30" fill="#000"/><rect x="22" y="0" width="3" height="30" fill="#000"/><rect x="28" y="0" width="5" height="30" fill="#000"/>
-                </svg>
-                <div style="font-size:0.65rem; margin-top:2px;" id="mTicketValidation">VALIDACIÓN: PT-LIVE-ONLINE</div>
-            </div>
-
             <button class="btn-close-ticket" onclick="closeTicketModal()">CERRAR BOLETO</button>
         </div>
     </div>
 
     <script>
-        let CURRENT_DATE = '2026-10-21';
+        let CURRENT_DATE = '2026-10-22';
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
@@ -531,16 +557,17 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
+        // PARTIDOS INICIALES DE HOY 22 DE OCTUBRE
         const INITIAL_GAMES = [
-            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'FINAL', inning: 'POSPUESTO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 6, status: 'FINAL', inning: 'FINAL', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 4, homeRuns: 2, status: 'FINAL', inning: 'FINAL', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 }
+            { id: 304, date: '2026-10-22', time: '07:00 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 305, date: '2026-10-22', time: '07:15 PM', stadium: 'Estadio Quisqueya (SD)', away: 'AC', home: 'E', awayName: 'Águilas Cibaeñas', homeName: 'Leones del Escogido', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 306, date: '2026-10-22', time: '07:30 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'L', home: 'EO', awayName: 'Tigres del Licey', homeName: 'Estrellas Orientales', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Por Definir', awayMl: 1.80, homeMl: 2.00, rlLine: 1.5, awayRl: 1.60, homeRl: 2.25, total: 8.0, over: 1.90, under: 1.90 }
         ];
 
         let OFFICIAL_STANDINGS = [
             { code: 'L',  name: 'Tigres del Licey', jj: 5, g: 4, p: 1, u10: '4-1', racha: 'W3', ca: 35, cp: 14, x1: '4-1', casa: '1-1', visita: '3-0', over500: '2-1' },
-            { code: 'GC', name: 'Gigantes del Cibao', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'W1', ca: 27, cp: 29, x1: '2-3', casa: '2-1', visita: '1-1', over500: '2-1' },
             { code: 'TE', name: 'Toros del Este', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'L1', ca: 18, cp: 25, x1: '1-8', casa: '2-0', visita: '1-2', over500: '3-2' },
+            { code: 'GC', name: 'Gigantes del Cibao', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'W1', ca: 27, cp: 29, x1: '2-3', casa: '2-1', visita: '1-1', over500: '2-1' },
             { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 2, p: 2, u10: '2-2', racha: 'L2', ca: 26, cp: 14, x1: '3-8', casa: '1-1', visita: '1-1', over500: '1-2' },
             { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, u10: '1-3', racha: 'L1', ca: 12, cp: 17, x1: '1-7', casa: '0-2', visita: '1-1', over500: '3-3' },
             { code: 'E',  name: 'Leones del Escogido', jj: 5, g: 1, p: 4, u10: '1-4', racha: 'L1', ca: 23, cp: 42, x1: '1-3', casa: '0-2', visita: '1-2', over500: '1-4' }
@@ -549,36 +576,20 @@
         let BATTING_LEADERS = [
             { name: 'Kevin Alcántara (CF)', team: 'L', j: 3, tb: 11, c: 4, h: 6, h2: 1, h3: 0, hr: 2, ci: 5, bb: 2, p: 2, br: 0, pro: '.545', obp: '.615', slg: '1.182', ops: '1.797' },
             { name: 'Yairo Muñoz (2B)', team: 'TE', j: 3, tb: 11, c: 1, h: 7, h2: 2, h3: 0, hr: 0, ci: 2, bb: 1, p: 2, br: 0, pro: '.636', obp: '.667', slg: '.818', ops: '1.485' },
-            { name: 'Jefferson Rojas (3B)', team: 'GC', j: 4, tb: 14, c: 5, h: 5, h2: 1, h3: 0, hr: 2, ci: 3, bb: 1, p: 2, br: 1, pro: '.357', obp: '.400', slg: '.857', ops: '1.257' },
-            { name: 'Mason McCoy (SS)', team: 'AC', j: 3, tb: 11, c: 2, h: 5, h2: 1, h3: 0, hr: 0, ci: 3, bb: 3, p: 1, br: 3, pro: '.455', obp: '.571', slg: '.545', ops: '1.116' },
-            { name: 'Harold Ramírez (DH)', team: 'EO', j: 4, tb: 19, c: 5, h: 8, h2: 1, h3: 0, hr: 1, ci: 3, bb: 2, p: 3, br: 1, pro: '.421', obp: '.476', slg: '.632', ops: '1.108' },
-            { name: 'José Marmolejos (1B)', team: 'E', j: 4, tb: 13, c: 1, h: 4, h2: 2, h3: 0, hr: 1, ci: 3, bb: 2, p: 2, br: 0, pro: '.308', obp: '.400', slg: '.692', ops: '1.092' },
-            { name: 'Francisco Mejía (C)', team: 'L', j: 4, tb: 9, c: 2, h: 4, h2: 0, h3: 0, hr: 0, ci: 3, bb: 4, p: 0, br: 0, pro: '.444', obp: '.615', slg: '.444', ops: '1.059' },
-            { name: 'Marco Luciano (2B)', team: 'EO', j: 4, tb: 16, c: 3, h: 5, h2: 2, h3: 0, hr: 1, ci: 3, bb: 3, p: 5, br: 0, pro: '.313', obp: '.421', slg: '.625', ops: '1.046' },
-            { name: 'Ismael Munguía (CF)', team: 'EO', j: 4, tb: 18, c: 3, h: 8, h2: 1, h3: 0, hr: 0, ci: 3, bb: 2, p: 0, br: 1, pro: '.444', obp: '.524', slg: '.500', ops: '1.024' },
-            { name: 'Ronny Simon (DH)', team: 'TE', j: 4, tb: 15, c: 3, h: 5, h2: 1, h3: 0, hr: 1, ci: 4, bb: 2, p: 3, br: 2, pro: '.333', obp: '.412', slg: '.600', ops: '1.012' }
+            { name: 'Jefferson Rojas (3B)', team: 'GC', j: 4, tb: 14, c: 5, h: 5, h2: 1, h3: 0, hr: 2, ci: 3, bb: 1, p: 2, br: 1, pro: '.357', obp: '.400', slg: '.857', ops: '1.257' }
         ];
 
         let PITCHING_LEADERS = [
-            { name: 'Carlos Peña (P)', team: 'AC', jg: 0, jp: 1, efe: '10.80', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 7, c: 4, cl: 4, hr: 2, gp: 0, bb: 0, p: 3, whip: '2.10', pro: '.389' },
-            { name: 'Gerson Garabito (P)', team: 'AC', jg: 0, jp: 1, efe: '13.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 8, c: 5, cl: 5, hr: 0, gp: 0, bb: 0, p: 5, whip: '2.40', pro: '.471' },
-            { name: 'Vladimir Gutiérrez (P)', team: 'L', jg: 0, jp: 1, efe: '6.23', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.1', h: 4, c: 3, cl: 3, hr: 2, gp: 0, bb: 2, p: 8, whip: '1.38', pro: '.235' },
-            { name: 'Jhordany Mezquita (P)', team: 'AC', jg: 0, jp: 0, efe: '2.25', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 1, cl: 1, hr: 1, gp: 0, bb: 1, p: 5, whip: '1.25', pro: '.250' },
-            { name: 'Joan Adon (P)', team: 'AC', jg: 0, jp: 1, efe: '4.50', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 4, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.75', pro: '.267' },
-            { name: 'Evan Grills (P)', team: 'TE', jg: 0, jp: 0, efe: '8.10', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 3, c: 3, cl: 3, hr: 0, gp: 0, bb: 2, p: 3, whip: '1.50', pro: '.231' },
-            { name: 'Hancel Rincón (P)', team: 'EO', jg: 0, jp: 0, efe: '4.91', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.2', h: 3, c: 2, cl: 2, hr: 0, gp: 0, bb: 3, p: 6, whip: '1.64', pro: '.214' },
-            { name: 'Wily Peralta (P)', team: 'GC', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 3, c: 1, cl: 1, hr: 1, gp: 0, bb: 2, p: 6, whip: '1.00', pro: '.176' },
-            { name: 'Ángel Sánchez (P)', team: 'E', jg: 0, jp: 0, efe: '0.00', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '4.0', h: 3, c: 1, cl: 0, hr: 0, gp: 0, bb: 3, p: 2, whip: '1.50', pro: '.200' },
-            { name: 'Daniel Martínez (P)', team: 'L', jg: 1, jp: 0, efe: '1.80', j: 1, a: 1, jc: 0, sho: 0, js: 0, os: 0, il: '5.0', h: 4, c: 1, cl: 1, hr: 0, gp: 0, bb: 1, p: 5, whip: '1.00', pro: '.222' }
+            { name: 'Carlos Peña (P)', team: 'AC', jg: 0, jp: 1, efe: '10.80', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 7, c: 4, cl: 4, hr: 2, gp: 0, bb: 0, p: 3, whip: '2.10', pro: '.389' }
         ];
 
         let DETAILED_LINEUPS = {
-            'L': { pitcher: 'L. Gil (RHP)', bullpen: 'M. Castro, J. Asencio', batters: [{ pos: '1. SS', name: 'J. Madé' }, { pos: '2. 2B', name: 'S. Alcántara' }, { pos: '3. 1B', name: 'R. Hernández' }, { pos: '4. 3B', name: 'C. Adames' }, { pos: '5. LF', name: 'E. Florial' }, { pos: '6. CF', name: 'K. Alcántara' }, { pos: '7. C', name: 'F. Mejía' }, { pos: '8. DH', name: 'L. Peguero' }, { pos: '9. RF', name: 'E. Bonifacio' }] },
-            'TE': { pitcher: 'Esmil Rogers (RHP)', bullpen: 'A. Brooks, F. Abad', batters: [{ pos: '1. CF', name: 'Gilberto Celestino' }, { pos: '2. 2B', name: 'Ronny Simon' }, { pos: '3. RF', name: 'Bryan de la Cruz' }, { pos: '4. LF', name: 'Eloy Jiménez' }, { pos: '5. 3B', name: 'Yairo Muñoz' }, { pos: '6. 1B', name: 'Jhonkensy Noel' }, { pos: '7. DH', name: 'Zoilo Almonte' }, { pos: '8. SS', name: 'Felnin Celesten' }, { pos: '9. C', name: 'Pedro Severino' }] },
-            'E': { pitcher: 'Ariel Miranda (LHP)', bullpen: 'J. Rhoades, S. Marte', batters: [{ pos: '1. LF', name: 'Junior Lake' }, { pos: '2. 3B', name: 'Vidal Bruján' }, { pos: '3. RF', name: 'Sócrates Brito' }, { pos: '4. DH', name: 'Yamaico Navarro' }, { pos: '5. 1B', name: 'José Marmolejos' }, { pos: '6. 2B', name: 'Marcos Hernández' }, { pos: '7. CF', name: 'Elier Hernández' }, { pos: '8. SS', name: 'Erik González' }, { pos: '9. C', name: 'Michael de la Cruz' }] },
-            'GC': { pitcher: 'Cristopher Molina (RHP)', bullpen: 'A. Pilar, R. Gudino', batters: [{ pos: '1. CF', name: 'Carlos Jorge' }, { pos: '2. RF', name: 'Noelvi Marte' }, { pos: '3. LF', name: 'Nomar Mazara' }, { pos: '4. DH', name: 'Marcell Ozuna' }, { pos: '5. C', name: 'Agustín Ramírez' }, { pos: '6. 2B', name: 'Roldy Brito' }, { pos: '7. 1B', name: 'Jake Holton' }, { pos: '8. 3B', name: 'Kelvin Gutiérrez' }, { pos: '9. SS', name: 'Pablo Reyes' }] },
-            'EO': { pitcher: 'Óscar de la Cruz (RHP)', bullpen: 'J. Barría, R. Blanco', batters: [{ pos: '1. CF', name: 'Ismael Munguía' }, { pos: '2. DH', name: 'Harold Ramírez' }, { pos: '3. LF', name: 'Raimel Tapia' }, { pos: '4. RF', name: 'Óscar González' }, { pos: '5. 1B', name: 'Josh Lester' }, { pos: '6. 2B', name: 'Marco Luciano' }, { pos: '7. C', name: 'Leo Bernal' }, { pos: '8. SS', name: 'César Prieto' }, { pos: '9. 3B', name: 'Aaron Schunk' }] },
-            'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, N. Feliz', batters: [{ pos: '1. SS', name: 'Angel Genao' }, { pos: '2. CF', name: 'Leody Taveras' }, { pos: '3. LF', name: 'Luis Liberato' }, { pos: '4. 1B', name: 'Aderlin Rodríguez' }, { pos: '5. DH', name: 'Jasson Domínguez' }, { pos: '6. 3B', name: 'Christopher Morel' }, { pos: '7. 2B', name: 'Adael Amador' }, { pos: '8. C', name: 'Webster Rivas' }, { pos: '9. RF', name: 'Steward Berroa' }] }
+            'L': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
+            'TE': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
+            'E': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
+            'GC': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
+            'EO': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
+            'AC': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] }
         };
 
         let liveGamesData = INITIAL_GAMES;
@@ -586,7 +597,7 @@
         let latestGeneratedCode = '';
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v31');
+            const saved = localStorage.getItem('pelotard_state_v33');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -617,7 +628,7 @@
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v31', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v33', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -633,7 +644,7 @@
         };
 
         window.switchAdminSub = function(subId, btnId) {
-            ['subAdminLineups', 'subAdminGames', 'subAdminStandings', 'subAdminLeaders', 'subAdminPines'].forEach(s => {
+            ['subAdminAddGames', 'subAdminGames', 'subAdminPines', 'subAdminLineups', 'subAdminStandings'].forEach(s => {
                 document.getElementById(s).style.display = 'none';
             });
             document.querySelectorAll('.admin-subtab-btn').forEach(b => b.classList.remove('active'));
@@ -653,179 +664,57 @@
             renderGames();
         };
 
-        window.switchSubLeaders = function(type) {
-            if (type === 'batters') {
-                document.getElementById('subViewBatters').style.display = 'block';
-                document.getElementById('subViewPitchers').style.display = 'none';
-                document.getElementById('subBtnBatters').classList.add('active');
-                document.getElementById('subBtnPitchers').classList.remove('active');
-            } else {
-                document.getElementById('subViewBatters').style.display = 'none';
-                document.getElementById('subViewPitchers').style.display = 'block';
-                document.getElementById('subBtnBatters').classList.remove('active');
-                document.getElementById('subBtnPitchers').classList.add('active');
+        // NUEVA FUNCIÓN: CARGAR JUEGO A LA CARTELERA DESDE EL ADMIN
+        window.addGameToSchedule = function() {
+            const away = document.getElementById('newAwayTeam').value;
+            const home = document.getElementById('newHomeTeam').value;
+            const time = document.getElementById('newGameTime').value.trim();
+            const stadium = document.getElementById('newGameStadium').value.trim();
+
+            if (away === home) {
+                alert('El equipo visitante y local no pueden ser el mismo.');
+                return;
             }
-        };
 
-        window.updatePlayerName = function(val) {
-            state.playerName = val.trim() || 'Jugador Recreativo';
-            saveState();
-        };
-
-        // GENERADOR DE CÓDIGO ÚNICO DE 11 CARACTERES
-        function generateUniquePin11() {
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            const specialChars = '@#$';
-            let pin = '';
-            
-            while (true) {
-                pin = '';
-                for (let i = 0; i < 9; i++) {
-                    pin += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                pin += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
-                pin += chars.charAt(Math.floor(Math.random() * chars.length));
-
-                if (!ALL_PREPAGO_PINES.some(p => p.code === pin)) {
-                    break;
-                }
-            }
-            return pin;
-        }
-
-        window.generateSingleCustomPin = function() {
-            const amount = parseInt(document.getElementById('singlePinAmountSelect').value) || 500;
-            const uniqueCode = generateUniquePin11();
-
-            const newPin = {
-                code: uniqueCode,
-                initialAmount: amount,
-                remainingAmount: amount,
-                status: 'ACTIVO',
-                usedBy: '--',
-                usedAt: '--'
+            const newGame = {
+                id: Date.now(),
+                date: CURRENT_DATE,
+                time: time || '07:15 PM',
+                stadium: stadium || 'Estadio LIDOM',
+                away: away,
+                home: home,
+                awayName: TEAMS[away].name,
+                homeName: TEAMS[home].name,
+                awayRuns: 0,
+                homeRuns: 0,
+                status: 'SCHEDULED',
+                inning: 'POR COMENZAR',
+                awayPitcher: 'Por Definir',
+                homePitcher: 'Por Definir',
+                awayMl: 1.85,
+                homeMl: 1.95,
+                rlLine: 1.5,
+                awayRl: 1.65,
+                homeRl: 2.20,
+                total: 8.5,
+                over: 1.90,
+                under: 1.90
             };
 
-            ALL_PREPAGO_PINES.unshift(newPin);
-            latestGeneratedCode = uniqueCode;
+            liveGamesData.push(newGame);
             saveState();
-
-            document.getElementById('latestCodeValue').textContent = uniqueCode;
-            document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
-            document.getElementById('latestCodeBox').style.display = 'block';
-
-            renderPinesAdminTable();
+            renderGames();
+            renderLiveTicker();
+            alert(`✅ ¡Partido ${TEAMS[away].code} vs ${TEAMS[home].code} agregado exitosamente a la cartelera!`);
         };
 
-        window.copyLatestCode = function() {
-            if (latestGeneratedCode) {
-                navigator.clipboard.writeText(latestGeneratedCode);
-                alert(`📋 Código ${latestGeneratedCode} copiado al portapapeles.`);
+        window.clearAllTodayGames = function() {
+            if (confirm('¿Está seguro de borrar todos los partidos de hoy para cargarlos desde cero?')) {
+                liveGamesData = [];
+                saveState();
+                renderGames();
+                renderLiveTicker();
             }
-        };
-
-        function renderPinesAdminTable() {
-            const tbody = document.getElementById('pinesTableBody');
-            tbody.innerHTML = '';
-            if (ALL_PREPAGO_PINES.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">No hay códigos generados en el sistema.</td></tr>';
-                return;
-            }
-
-            ALL_PREPAGO_PINES.forEach((pin) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong style="color:var(--gold); font-family:monospace; font-size:0.95rem;">${pin.code}</strong></td>
-                    <td>${pin.initialAmount} pts</td>
-                    <td style="font-weight:bold; color:${pin.remainingAmount > 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${pin.remainingAmount} pts</td>
-                    <td><span class="status-badge status-${pin.status}">${pin.status}</span></td>
-                    <td>${pin.usedBy}</td>
-                    <td>${pin.usedAt}</td>
-                    <td>
-                        <button style="background:var(--secondary); color:white; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" onclick="copyPinCode('${pin.code}')">Copiar</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        window.copyPinCode = function(code) {
-            navigator.clipboard.writeText(code);
-            alert(`📋 Código ${code} copiado al portapapeles.`);
-        };
-
-        // DESCUENTO Y CANJE DIRECTO EN LA BOLETA
-        window.generateTicket = function() {
-            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
-            const codeInput = document.getElementById('slipCodeInput').value.trim();
-
-            if (stake <= 0) {
-                alert('Ingrese un monto válido para la apuesta.');
-                return;
-            }
-
-            if (codeInput.length !== 11) {
-                alert('⚠️ Debe ingresar un código de 11 caracteres válido para realizar la jugada.');
-                return;
-            }
-
-            const pinObj = ALL_PREPAGO_PINES.find(p => p.code === codeInput);
-
-            if (!pinObj) {
-                alert('❌ El código ingresado no existe en el sistema.');
-                return;
-            }
-
-            if (pinObj.status === 'USADO' || pinObj.remainingAmount <= 0) {
-                alert('⚠️ Este código ya agotó su saldo disponible y ha sido cancelado.');
-                return;
-            }
-
-            if (stake > pinObj.remainingAmount) {
-                alert(`⚠️ Saldo insuficiente en el código. El saldo restante del código es: ${pinObj.remainingAmount} Pts.`);
-                return;
-            }
-
-            // DESCUENTO AUTOMÁTICO AL CÓDIGO
-            pinObj.remainingAmount -= stake;
-            pinObj.usedBy = state.playerName;
-            pinObj.usedAt = new Date().toLocaleString('es-DO');
-
-            if (pinObj.remainingAmount <= 0) {
-                pinObj.status = 'USADO';
-            }
-
-            const legsCount = state.currentSlip.length;
-            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
-            const payout = Math.round(stake * totalOdds);
-            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
-
-            const ticket = {
-                id: ticketId,
-                date: new Date().toLocaleString('es-DO'),
-                player: state.playerName,
-                usedCode: pinObj.code,
-                remainingBalance: pinObj.remainingAmount,
-                type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA',
-                stake: stake,
-                odds: totalOdds,
-                payout: payout,
-                legs: [...state.currentSlip],
-                status: 'PENDIENTE'
-            };
-
-            state.userTickets.unshift(ticket);
-            saveState();
-
-            updateHistoryTable();
-            showTicketModal(ticket);
-
-            // Limpiar la boleta
-            state.currentSlip = [];
-            document.getElementById('slipCodeInput').value = '';
-            saveState();
-            updateSlipUI();
-            updateOddsButtonsHighlight();
         };
 
         function renderGames() {
@@ -846,7 +735,7 @@
             let filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
 
             if (filteredGames.length === 0) { 
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos programados para la jornada de hoy.</div>'; 
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos cargados para hoy. Vaya a Administración para agregar partidos.</div>'; 
                 return; 
             }
 
@@ -881,7 +770,7 @@
 
             const todayGames = liveGamesData.filter(g => g.status !== 'FINAL' && !g.inning.includes('POSPUESTO'));
             if (todayGames.length === 0) {
-                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas hoy (Juegos Concluidos o Pospuestos).</div>';
+                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas.</div>';
                 return;
             }
 
@@ -1207,96 +1096,94 @@
             alert('📊 Standing actualizado y recalculado.');
         };
 
-        window.processTextLineup = function() {
-            const teamCode = document.getElementById('adminTeamSelect').value;
-            const pitcherText = document.getElementById('adminPitcherInput').value.trim();
-            const rawText = document.getElementById('adminLineupText').value.trim();
+        function generateUniquePin11() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const specialChars = '@#$';
+            let pin = '';
+            while (true) {
+                pin = '';
+                for (let i = 0; i < 9; i++) pin += chars.charAt(Math.floor(Math.random() * chars.length));
+                pin += specialChars.charAt(Math.floor(Math.random() * specialChars.length));
+                pin += chars.charAt(Math.floor(Math.random() * chars.length));
+                if (!ALL_PREPAGO_PINES.some(p => p.code === pin)) break;
+            }
+            return pin;
+        }
 
-            if (!rawText) { alert('Pegue el texto del lineup.'); return; }
-
-            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const parsedBatters = [];
-
-            lines.forEach((line, index) => {
-                let cleanLine = line.replace(/^[0-9]+[\.\-\s]+/, '').trim();
-                const posMatch = cleanLine.match(/^(SS|2B|1B|3B|LF|CF|RF|C|DH|BD|P)\b/i);
-                let pos = `${index + 1}. `;
-                let name = cleanLine;
-
-                if (posMatch) {
-                    pos += posMatch[0].toUpperCase();
-                    name = cleanLine.substring(posMatch[0].length).trim();
-                } else {
-                    pos += 'BAT';
-                }
-
-                parsedBatters.push({ pos: pos, name: name });
-            });
-
-            if (!DETAILED_LINEUPS[teamCode]) { DETAILED_LINEUPS[teamCode] = { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] }; }
-            if (pitcherText) { DETAILED_LINEUPS[teamCode].pitcher = pitcherText; }
-            DETAILED_LINEUPS[teamCode].batters = parsedBatters;
-
-            saveState(); renderLineups();
-            alert(`✅ Lineup de ${TEAMS[teamCode].name} publicado con éxito.`);
-            document.getElementById('adminLineupText').value = '';
+        window.generateSingleCustomPin = function() {
+            const amount = parseInt(document.getElementById('singlePinAmountSelect').value) || 500;
+            const uniqueCode = generateUniquePin11();
+            const newPin = { code: uniqueCode, initialAmount: amount, remainingAmount: amount, status: 'ACTIVO', usedBy: '--', usedAt: '--' };
+            ALL_PREPAGO_PINES.unshift(newPin);
+            latestGeneratedCode = uniqueCode;
+            saveState();
+            document.getElementById('latestCodeValue').textContent = uniqueCode;
+            document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
+            document.getElementById('latestCodeBox').style.display = 'block';
+            renderPinesAdminTable();
         };
 
-        window.saveBattingLeadersAdmin = function() {
-            const rawText = document.getElementById('adminBattingText').value.trim();
-            if (!rawText) { alert('Pegue o modifique la lista de bateadores.'); return; }
-
-            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const parsedLeaders = [];
-
-            lines.forEach(line => {
-                const parts = line.split(',').map(p => p.trim());
-                if (parts.length >= 17) {
-                    parsedLeaders.push({
-                        name: parts[0], team: parts[1], j: parts[2], tb: parts[3], c: parts[4], h: parts[5],
-                        h2: parts[6], h3: parts[7], hr: parts[8], ci: parts[9], bb: parts[10], p: parts[11],
-                        br: parts[12], pro: parts[13], obp: parts[14], slg: parts[15], ops: parts[16]
-                    });
-                }
-            });
-
-            if (parsedLeaders.length > 0) {
-                BATTING_LEADERS = parsedLeaders;
-                saveState();
-                renderBattingLeaders();
-                alert('🔥 Líderes de bateo actualizados exitosamente.');
-            } else {
-                alert('Formato incorrecto. Deben ser 17 columnas separadas por comas.');
+        window.copyLatestCode = function() {
+            if (latestGeneratedCode) {
+                navigator.clipboard.writeText(latestGeneratedCode);
+                alert(`📋 Código ${latestGeneratedCode} copiado al portapapeles.`);
             }
         };
 
-        window.savePitchingLeadersAdmin = function() {
-            const rawText = document.getElementById('adminPitchingText').value.trim();
-            if (!rawText) { alert('Pegue o modifique la lista de lanzadores.'); return; }
-
-            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const parsedPitchers = [];
-
-            lines.forEach(line => {
-                const parts = line.split(',').map(p => p.trim());
-                if (parts.length >= 21) {
-                    parsedPitchers.push({
-                        name: parts[0], team: parts[1], jg: parts[2], jp: parts[3], efe: parts[4], j: parts[5],
-                        a: parts[6], jc: parts[7], sho: parts[8], js: parts[9], os: parts[10], il: parts[11],
-                        h: parts[12], c: parts[13], cl: parts[14], hr: parts[15], gp: parts[16], bb: parts[17],
-                        p: parts[18], whip: parts[19], pro: parts[20]
-                    });
-                }
-            });
-
-            if (parsedPitchers.length > 0) {
-                PITCHING_LEADERS = parsedPitchers;
-                saveState();
-                renderPitchingLeaders();
-                alert('🎯 Líderes de pitcheo actualizados exitosamente.');
-            } else {
-                alert('Formato incorrecto. Deben ser 21 columnas separadas por comas.');
+        function renderPinesAdminTable() {
+            const tbody = document.getElementById('pinesTableBody');
+            tbody.innerHTML = '';
+            if (ALL_PREPAGO_PINES.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">No hay códigos generados en el sistema.</td></tr>';
+                return;
             }
+            ALL_PREPAGO_PINES.forEach((pin) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong style="color:var(--gold); font-family:monospace; font-size:0.95rem;">${pin.code}</strong></td>
+                    <td>${pin.initialAmount} pts</td>
+                    <td style="font-weight:bold; color:${pin.remainingAmount > 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${pin.remainingAmount} pts</td>
+                    <td><span class="status-badge status-${pin.status}">${pin.status}</span></td>
+                    <td>${pin.usedBy}</td>
+                    <td>${pin.usedAt}</td>
+                    <td><button style="background:var(--secondary); color:white; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" onclick="copyPinCode('${pin.code}')">Copiar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.copyPinCode = function(code) { navigator.clipboard.writeText(code); alert(`📋 Código ${code} copiado.`); };
+
+        window.generateTicket = function() {
+            const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
+            const codeInput = document.getElementById('slipCodeInput').value.trim();
+            if (stake <= 0) { alert('Ingrese un monto válido.'); return; }
+            if (codeInput.length !== 11) { alert('⚠️ Debe ingresar un código de 11 caracteres válido.'); return; }
+            const pinObj = ALL_PREPAGO_PINES.find(p => p.code === codeInput);
+            if (!pinObj) { alert('❌ El código no existe.'); return; }
+            if (pinObj.status === 'USADO' || pinObj.remainingAmount <= 0) { alert('⚠️ El código ya agotó su saldo.'); return; }
+            if (stake > pinObj.remainingAmount) { alert(`⚠️ Saldo insuficiente en el código (${pinObj.remainingAmount} Pts).`); return; }
+
+            pinObj.remainingAmount -= stake;
+            pinObj.usedBy = state.playerName;
+            pinObj.usedAt = new Date().toLocaleString('es-DO');
+            if (pinObj.remainingAmount <= 0) pinObj.status = 'USADO';
+
+            const legsCount = state.currentSlip.length;
+            let totalOdds = state.currentSlip.reduce((acc, item) => acc * item.odd, 1.0);
+            const payout = Math.round(stake * totalOdds);
+            const ticketId = '#PT-' + Math.floor(100000 + Math.random() * 900000);
+
+            const ticket = { id: ticketId, date: new Date().toLocaleString('es-DO'), player: state.playerName, usedCode: pinObj.code, remainingBalance: pinObj.remainingAmount, type: legsCount > 1 ? `PARLAY (${legsCount} PATAS)` : 'SENCILLA', stake: stake, odds: totalOdds, payout: payout, legs: [...state.currentSlip], status: 'PENDIENTE' };
+            state.userTickets.unshift(ticket);
+            saveState();
+            updateHistoryTable();
+            showTicketModal(ticket);
+            state.currentSlip = [];
+            document.getElementById('slipCodeInput').value = '';
+            saveState();
+            updateSlipUI();
+            updateOddsButtonsHighlight();
         };
 
         function showTicketModal(ticket) {
@@ -1334,7 +1221,7 @@
             const banner = document.getElementById('liveTickerBanner');
             banner.innerHTML = '';
             const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
-            if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando cartelera de hoy...</span>'; return; }
+            if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">No hay partidos cargados hoy.</span>'; return; }
             todayGames.forEach(game => {
                 const item = document.createElement('div');
                 item.className = 'ticker-item';
