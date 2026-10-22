@@ -114,7 +114,6 @@
         .bg-TE { background-color: #ff6600; }
         .bg-EO { background-color: #006a4e; }
 
-        /* SECCIÓN APUESTAS LAYOUT GRID CON BOLETA */
         .bets-layout-grid { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
         @media (max-width: 1024px) { .bets-layout-grid { grid-template-columns: 1fr; } }
 
@@ -243,13 +242,12 @@
             <div class="filter-pills">
                 <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
                 <button class="filter-pill" id="filterBets" onclick="setFilter('BETS', 'filterBets')">🎯 Apuestas (Sportsbook)</button>
-                <button class="filter-pill" id="filterPassed" onclick="setFilter('PASSED', 'filterPassed')">Resultados / Pasados</button>
             </div>
 
-            <!-- JUEGOS DE HOY / PASADOS EN FORMATO TARJETAS DE CARTELERA -->
+            <!-- JUEGOS DE HOY EN FORMATO TARJETAS -->
             <div class="games-grid" id="gamesContainer"></div>
 
-            <!-- SECCIÓN DE APUESTAS (ESTILO BETCRIS CON LA BOLETA INTEGRADA A LA DERECHA) -->
+            <!-- SECCIÓN DE APUESTAS -->
             <div id="betsSectionContainer" style="display: none;">
                 <div class="bets-layout-grid">
                     <div class="betcris-sportsbook">
@@ -265,7 +263,7 @@
                         <div id="betcrisGamesList"></div>
                     </div>
 
-                    <!-- BOLETA DENTRO DEL ÁREA DE APUESTAS -->
+                    <!-- BOLETA DENTRO DE APUESTAS -->
                     <div class="bet-slip-panel">
                         <div class="slip-header">
                             <div class="slip-title">
@@ -400,7 +398,7 @@
             </div>
 
             <div id="subAdminGames" class="admin-box" style="display:none;">
-                <div class="admin-title">⚾ Control Manual de Partido y Marcador</div>
+                <div class="admin-title">⚾ Control Manual de Partido y Marcador (Juegos de Hoy - Día 21)</div>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; margin-top:1rem;" id="adminGameControlGrid"></div>
             </div>
 
@@ -475,11 +473,11 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
+        // EXCLUSIVAMENTE LOS 3 PARTIDOS DEL DÍA 21
         const INITIAL_GAMES = [
-            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'RETRASADO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POSPUESTO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
             { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 5, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 2, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
-            { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayName: 'Tigres del Licey', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 3, status: 'FINAL', inning: 'Final' }
+            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 2, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 }
         ];
 
         let OFFICIAL_STANDINGS = [
@@ -529,12 +527,12 @@
         let liveGamesData = INITIAL_GAMES;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v25');
+            const saved = localStorage.getItem('pelotard_state_v26');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
-                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames;
+                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames.filter(g => g.date === CURRENT_DATE);
                     if (parsed.savedLeaders && parsed.savedLeaders.length > 0) BATTING_LEADERS = parsed.savedLeaders;
                     if (parsed.savedPitching && parsed.savedPitching.length > 0) PITCHING_LEADERS = parsed.savedPitching;
                     return parsed; 
@@ -557,7 +555,7 @@
             state.savedGames = liveGamesData;
             state.savedLeaders = BATTING_LEADERS;
             state.savedPitching = PITCHING_LEADERS;
-            localStorage.setItem('pelotard_state_v25', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v26', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -621,12 +619,11 @@
             betsContainer.style.display = 'none';
             container.innerHTML = '';
 
-            let filteredGames = liveGamesData;
-            if (state.activeFilter === 'TODAY') filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
-            else if (state.activeFilter === 'PASSED') filteredGames = liveGamesData.filter(g => g.date < CURRENT_DATE || g.status === 'FINAL');
+            // MOSTRAR EXCLUSIVAMENTE LOS JUEGOS DE HOY DÍA 21
+            let filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
 
             if (filteredGames.length === 0) { 
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos programados para esta sección.</div>'; 
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos programados para la jornada de hoy.</div>'; 
                 return; 
             }
 
@@ -641,7 +638,7 @@
 
                 let statusLabel = `<span>ESTADO:</span> <span class="status-text">${game.inning || game.time}</span>`;
                 if (isLive) statusLabel = `<span style="color:#ef4444; font-weight:900;">🔴 EN VIVO:</span> <span class="status-text">${game.inning}</span>`;
-                else if (isPassed) statusLabel = `<span style="color:#10b981; font-weight:900;">🏁 FINALIZADO</span>`;
+                else if (game.inning.includes('POSPUESTO')) statusLabel = `<span style="color:#f59e0b; font-weight:900;">🌧️ POSPUESTO</span>`;
 
                 card.innerHTML = `
                     <div class="game-header"><span>📅 ${game.date} - ${game.time}</span><span class="game-stadium">${game.stadium}</span></div>
@@ -658,9 +655,9 @@
             const list = document.getElementById('betcrisGamesList');
             list.innerHTML = '';
 
-            const todayGames = liveGamesData.filter(g => g.status !== 'FINAL');
+            const todayGames = liveGamesData.filter(g => g.status !== 'FINAL' && !g.inning.includes('POSPUESTO'));
             if (todayGames.length === 0) {
-                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas disponibles para apuestas hoy.</div>';
+                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas hoy.</div>';
                 return;
             }
 
@@ -870,20 +867,23 @@
             `;
         }
 
+        // CONTROL EXCLUSIVO DE LOS 3 JUEGOS DEL DÍA 21 EN ADMINISTRACIÓN
         function renderAdminGameControls() {
             const container = document.getElementById('adminGameControlGrid');
             container.innerHTML = '';
-            liveGamesData.forEach(game => {
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
+            
+            todayGames.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'sim-card';
                 card.innerHTML = `
                     <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
                     <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
                     <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
-                    <div class="admin-form-group"><label>Estado / Inning (ej. BOT 4):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado / Inning (ej. BOT 4 / POSPUESTO POR LLUVIA):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
                     <div class="admin-form-group"><label>Estado de Juego:</label>
                         <select id="status_${game.id}" class="admin-input">
-                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar)</option>
+                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar / Pospuesto)</option>
                             <option value="LIVE" ${game.status==='LIVE'?'selected':''}>LIVE (En Vivo)</option>
                             <option value="FINAL" ${game.status==='FINAL'?'selected':''}>FINAL (Concluido)</option>
                         </select>
@@ -1073,7 +1073,7 @@
         function renderLiveTicker() {
             const banner = document.getElementById('liveTickerBanner');
             banner.innerHTML = '';
-            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE || g.status === 'LIVE');
+            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
             if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Cargando cartelera de hoy...</span>'; return; }
             todayGames.forEach(game => {
                 const item = document.createElement('div');
