@@ -64,11 +64,9 @@
         .ticker-inning { color: #38bdf8; font-weight: bold; font-size: 0.72rem; }
 
         .connection-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 5px; }
-        .connection-dot.offline { background: #ef4444; }
 
         .header-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
         .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
-        .btn-sync:hover { background: var(--accent); }
         .player-input-box { display: flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; border-radius: 8px; }
         .player-input-box label { font-size: 0.8rem; color: var(--gold); font-weight: bold; }
         .player-input-box input { background: transparent; border: none; color: white; font-weight: bold; font-size: 0.95rem; outline: none; width: 130px; }
@@ -130,7 +128,6 @@
         .betcris-odds-cell.disabled { opacity: 0.4; cursor: not-allowed !important; background: #080d1a; }
         .betcris-odd-line { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
         .betcris-odd-val { font-size: 0.88rem; font-weight: 800; color: var(--gold); }
-        .betcris-odds-cell.selected .betcris-odd-val { color: #fff; }
 
         .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; height: fit-content; position: sticky; top: 90px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .slip-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 0.8rem; margin-bottom: 1rem; }
@@ -151,8 +148,6 @@
         .stake-input-group { display: flex; align-items: center; gap: 8px; }
         .stake-input { width: 100%; background: #0f172a; border: 1px solid var(--card-border); color: white; padding: 0.6rem 0.8rem; border-radius: 6px; font-size: 1rem; font-weight: 700; text-align: right; }
         .btn-submit-bet { background: linear-gradient(135deg, var(--green-win) 0%, #059669 100%); color: white; border: none; padding: 0.8rem; border-radius: 8px; font-weight: 800; font-size: 1rem; cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; }
-        .btn-submit-bet:hover { opacity: 0.9; }
-        .btn-submit-bet:disabled { background: #475569; cursor: not-allowed; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: all; }
@@ -244,10 +239,8 @@
                 <button class="filter-pill" id="filterBets" onclick="setFilter('BETS', 'filterBets')">🎯 Apuestas (Sportsbook)</button>
             </div>
 
-            <!-- JUEGOS DE HOY EN FORMATO TARJETAS -->
             <div class="games-grid" id="gamesContainer"></div>
 
-            <!-- SECCIÓN DE APUESTAS -->
             <div id="betsSectionContainer" style="display: none;">
                 <div class="bets-layout-grid">
                     <div class="betcris-sportsbook">
@@ -263,7 +256,6 @@
                         <div id="betcrisGamesList"></div>
                     </div>
 
-                    <!-- BOLETA DENTRO DE APUESTAS -->
                     <div class="bet-slip-panel">
                         <div class="slip-header">
                             <div class="slip-title">
@@ -309,7 +301,7 @@
                     <thead>
                         <tr>
                             <th style="text-align:left;">Equipo</th>
-                            <th>JJ</th><th>G</th><th>P</th><th>PCT</th><th>DIF.</th><th>U10</th><th>RACHA</th><th>CA</th><th>CP</th><th>DIF C</th>
+                            <th>JJ</th><th>G</th><th>P</th><th>PCT</th><th>DIF.</th><th>U10</th><th>RACHA</th><th>CA</th><th>CP</th><th>DIF C</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th>
                         </tr>
                     </thead>
                     <tbody id="standingsTableBody"></tbody>
@@ -398,16 +390,17 @@
             </div>
 
             <div id="subAdminGames" class="admin-box" style="display:none;">
-                <div class="admin-title">⚾ Control Manual de Partido y Marcador (Juegos de Hoy - Día 21)</div>
+                <div class="admin-title">⚾ Control Manual de Partido y Marcador</div>
                 <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; margin-top:1rem;" id="adminGameControlGrid"></div>
             </div>
 
             <div id="subAdminStandings" class="admin-box" style="display:none;">
-                <div class="admin-title">📊 Actualizar Tabla de Posiciones (Standings)</div>
+                <div class="admin-title">📊 Actualizar Tabla de Posiciones Completa (Standings LIDOM)</div>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">Modifique los datos en las casillas y presione Guardar. El PCT y la DIF (Juegos de Ventaja) se recalculan automáticamente.</p>
                 <div class="table-responsive">
                     <table class="styled-table">
                         <thead>
-                            <tr><th>Equipo</th><th>JJ</th><th>G</th><th>P</th><th>DIF</th><th>RACHA</th><th>Acción</th></tr>
+                            <tr><th>Equipo</th><th>JJ</th><th>G</th><th>P</th><th>RACHA</th><th>CA</th><th>CP</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th><th>Acción</th></tr>
                         </thead>
                         <tbody id="adminStandingsEditBody"></tbody>
                     </table>
@@ -427,7 +420,7 @@
 
     </div>
 
-    <!-- MODAL DE IMPRESIÓN DE TICKET -->
+    <!-- MODAL TICKET -->
     <div class="modal-overlay" id="ticketModal">
         <div class="ticket-receipt" id="printableTicket">
             <div class="ticket-header">
@@ -473,20 +466,20 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
-        // EXCLUSIVAMENTE LOS 3 PARTIDOS DEL DÍA 21
         const INITIAL_GAMES = [
-            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POSPUESTO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 5, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 2, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 }
+            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'FINAL', inning: 'POSPUESTO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 6, status: 'FINAL', inning: 'FINAL', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 4, homeRuns: 2, status: 'FINAL', inning: 'FINAL', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 }
         ];
 
+        // STANDING CORREGIDO Y EXACTO CON TODAS LAS 15 COLUMNAS OFICIALES DE LIDOM
         let OFFICIAL_STANDINGS = [
-            { code: 'L',  name: 'Tigres del Licey', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W2', ca: 21, cp: 18, difC: '+3' },
-            { code: 'TE', name: 'Toros del Este', jj: 4, g: 3, p: 1, pct: '.750', dif: '0.00', u10: '3-1', racha: 'W3', ca: 17, cp: 20, difC: '-3' },
-            { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 2, p: 2, pct: '.500', dif: '1.00', u10: '2-2', racha: 'L1', ca: 27, cp: 11, difC: '+16' },
-            { code: 'GC', name: 'Gigantes del Cibao', jj: 4, g: 2, p: 2, pct: '.500', dif: '1.00', u10: '2-2', racha: 'L1', ca: 17, cp: 9, difC: '+8' },
-            { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'L1', ca: 10, cp: 16, difC: '-6' },
-            { code: 'E',  name: 'Leones del Escogido', jj: 4, g: 1, p: 3, pct: '.250', dif: '2.00', u10: '1-3', racha: 'W1', ca: 11, cp: 29, difC: '-18' }
+            { code: 'L',  name: 'Tigres del Licey', jj: 5, g: 4, p: 1, u10: '4-1', racha: 'W3', ca: 35, cp: 14, x1: '4-1', casa: '1-1', visita: '3-0', over500: '2-1' },
+            { code: 'GC', name: 'Gigantes del Cibao', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'W1', ca: 27, cp: 29, x1: '2-3', casa: '2-1', visita: '1-1', over500: '2-1' },
+            { code: 'TE', name: 'Toros del Este', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'L1', ca: 18, cp: 25, x1: '1-8', casa: '2-0', visita: '1-2', over500: '3-2' },
+            { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 2, p: 2, u10: '2-2', racha: 'L2', ca: 26, cp: 14, x1: '3-8', casa: '1-1', visita: '1-1', over500: '1-2' },
+            { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, u10: '1-3', racha: 'L1', ca: 12, cp: 17, x1: '1-7', casa: '0-2', visita: '1-1', over500: '3-3' },
+            { code: 'E',  name: 'Leones del Escogido', jj: 5, g: 1, p: 4, u10: '1-4', racha: 'L1', ca: 23, cp: 42, x1: '1-3', casa: '0-2', visita: '1-2', over500: '1-4' }
         ];
 
         let BATTING_LEADERS = [
@@ -527,14 +520,15 @@
         let liveGamesData = INITIAL_GAMES;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v26');
+            const saved = localStorage.getItem('pelotard_state_v28');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
-                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames.filter(g => g.date === CURRENT_DATE);
+                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames;
                     if (parsed.savedLeaders && parsed.savedLeaders.length > 0) BATTING_LEADERS = parsed.savedLeaders;
                     if (parsed.savedPitching && parsed.savedPitching.length > 0) PITCHING_LEADERS = parsed.savedPitching;
+                    if (parsed.savedStandings && parsed.savedStandings.length > 0) OFFICIAL_STANDINGS = parsed.savedStandings;
                     return parsed; 
                 } catch(e){}
             }
@@ -555,7 +549,8 @@
             state.savedGames = liveGamesData;
             state.savedLeaders = BATTING_LEADERS;
             state.savedPitching = PITCHING_LEADERS;
-            localStorage.setItem('pelotard_state_v26', JSON.stringify(state)); 
+            state.savedStandings = OFFICIAL_STANDINGS;
+            localStorage.setItem('pelotard_state_v28', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -619,7 +614,6 @@
             betsContainer.style.display = 'none';
             container.innerHTML = '';
 
-            // MOSTRAR EXCLUSIVAMENTE LOS JUEGOS DE HOY DÍA 21
             let filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
 
             if (filteredGames.length === 0) { 
@@ -639,6 +633,7 @@
                 let statusLabel = `<span>ESTADO:</span> <span class="status-text">${game.inning || game.time}</span>`;
                 if (isLive) statusLabel = `<span style="color:#ef4444; font-weight:900;">🔴 EN VIVO:</span> <span class="status-text">${game.inning}</span>`;
                 else if (game.inning.includes('POSPUESTO')) statusLabel = `<span style="color:#f59e0b; font-weight:900;">🌧️ POSPUESTO</span>`;
+                else if (isPassed) statusLabel = `<span style="color:#10b981; font-weight:900;">🏁 FINALIZADO</span>`;
 
                 card.innerHTML = `
                     <div class="game-header"><span>📅 ${game.date} - ${game.time}</span><span class="game-stadium">${game.stadium}</span></div>
@@ -657,7 +652,7 @@
 
             const todayGames = liveGamesData.filter(g => g.status !== 'FINAL' && !g.inning.includes('POSPUESTO'));
             if (todayGames.length === 0) {
-                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas hoy.</div>';
+                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas hoy (Juegos Concluidos o Pospuestos).</div>';
                 return;
             }
 
@@ -787,12 +782,51 @@
             });
         }
 
+        // CÁLCULO DINÁMICO DE STANDING CON 15 COLUMNAS
         function renderStandings() {
             const tbody = document.getElementById('standingsTableBody');
             tbody.innerHTML = '';
-            OFFICIAL_STANDINGS.forEach(team => {
+
+            OFFICIAL_STANDINGS.sort((a, b) => {
+                const pctA = a.jj > 0 ? a.g / a.jj : 0;
+                const pctB = b.jj > 0 ? b.g / b.jj : 0;
+                return pctB - pctA;
+            });
+
+            const leader = OFFICIAL_STANDINGS[0];
+
+            OFFICIAL_STANDINGS.forEach((team, idx) => {
+                const totalJuegos = team.g + team.p;
+                team.jj = totalJuegos;
+                const pctVal = totalJuegos > 0 ? (team.g / totalJuegos).toFixed(3).replace('0.', '.') : '.000';
+                
+                let difVal = '-';
+                if (idx > 0 && leader) {
+                    const diffCalc = ((leader.g - team.g) + (team.p - leader.p)) / 2;
+                    difVal = diffCalc.toFixed(1);
+                }
+
+                const diffCarreras = team.ca - team.cp;
+                const difCStr = diffCarreras > 0 ? `+${diffCarreras}` : `${diffCarreras}`;
+
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td style="text-align:left;"><strong>${team.name}</strong></td><td><strong>${team.jj}</strong></td><td style="color:var(--green-win); font-weight:bold;">${team.g}</td><td style="color:var(--red-loss); font-weight:bold;">${team.p}</td><td><strong>${team.pct}</strong></td><td style="color:var(--gold); font-weight:bold;">${team.dif}</td><td>${team.u10}</td><td><strong>${team.racha}</strong></td><td>${team.ca}</td><td>${team.cp}</td><td style="font-weight:bold; color:${team.difC.includes('+') ? 'var(--green-win)' : 'var(--red-loss)'};">${team.difC}</td>`;
+                tr.innerHTML = `
+                    <td style="text-align:left;"><strong>${team.name}</strong></td>
+                    <td><strong>${team.jj}</strong></td>
+                    <td style="color:var(--green-win); font-weight:bold;">${team.g}</td>
+                    <td style="color:var(--red-loss); font-weight:bold;">${team.p}</td>
+                    <td><strong style="color:var(--gold);">${pctVal}</strong></td>
+                    <td><strong style="color:var(--gold);">${difVal}</strong></td>
+                    <td>${team.u10 || `${team.g}-${team.p}`}</td>
+                    <td><strong>${team.racha || 'W1'}</strong></td>
+                    <td>${team.ca}</td>
+                    <td>${team.cp}</td>
+                    <td style="font-weight:bold; color:${diffCarreras >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${difCStr}</td>
+                    <td>${team.x1 || '0-0'}</td>
+                    <td>${team.casa || '0-0'}</td>
+                    <td>${team.visita || '0-0'}</td>
+                    <td>${team.over500 || '0-0'}</td>
+                `;
                 tbody.appendChild(tr);
             });
         }
@@ -867,7 +901,6 @@
             `;
         }
 
-        // CONTROL EXCLUSIVO DE LOS 3 JUEGOS DEL DÍA 21 EN ADMINISTRACIÓN
         function renderAdminGameControls() {
             const container = document.getElementById('adminGameControlGrid');
             container.innerHTML = '';
@@ -880,7 +913,7 @@
                     <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
                     <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
                     <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
-                    <div class="admin-form-group"><label>Estado / Inning (ej. BOT 4 / POSPUESTO POR LLUVIA):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <div class="admin-form-group"><label>Estado / Inning (ej. FINAL / POSPUESTO POR LLUVIA):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
                     <div class="admin-form-group"><label>Estado de Juego:</label>
                         <select id="status_${game.id}" class="admin-input">
                             <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar / Pospuesto)</option>
@@ -912,25 +945,36 @@
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="text-align:left;"><strong>${t.name}</strong></td>
-                    <td><input type="number" id="st_jj_${index}" value="${t.jj}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="text" id="st_dif_${index}" value="${t.dif}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="text" id="st_racha_${index}" value="${t.racha}" class="admin-input" style="width:50px;"></td>
-                    <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾</button></td>
+                    <td><strong>${t.g + t.p}</strong></td>
+                    <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="text" id="st_racha_${index}" value="${t.racha || 'W1'}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_ca_${index}" value="${t.ca}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="number" id="st_cp_${index}" value="${t.cp}" class="admin-input" style="width:45px;"></td>
+                    <td><input type="text" id="st_x1_${index}" value="${t.x1 || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_casa_${index}" value="${t.casa || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_visita_${index}" value="${t.visita || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><input type="text" id="st_over500_${index}" value="${t.over500 || '0-0'}" class="admin-input" style="width:50px;"></td>
+                    <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾 Guardar</button></td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
         window.saveStandingRow = function(idx) {
-            OFFICIAL_STANDINGS[idx].jj = parseInt(document.getElementById(`st_jj_${idx}`).value) || 0;
             OFFICIAL_STANDINGS[idx].g = parseInt(document.getElementById(`st_g_${idx}`).value) || 0;
             OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
-            OFFICIAL_STANDINGS[idx].dif = document.getElementById(`st_dif_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].jj = OFFICIAL_STANDINGS[idx].g + OFFICIAL_STANDINGS[idx].p;
             OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
-            renderStandings();
-            alert('📊 Standing actualizado.');
+            OFFICIAL_STANDINGS[idx].ca = parseInt(document.getElementById(`st_ca_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].cp = parseInt(document.getElementById(`st_cp_${idx}`).value) || 0;
+            OFFICIAL_STANDINGS[idx].x1 = document.getElementById(`st_x1_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].casa = document.getElementById(`st_casa_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].visita = document.getElementById(`st_visita_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].over500 = document.getElementById(`st_over500_${idx}`).value;
+            OFFICIAL_STANDINGS[idx].u10 = `${OFFICIAL_STANDINGS[idx].g}-${OFFICIAL_STANDINGS[idx].p}`;
+            saveState(); renderStandings();
+            alert('📊 Standing actualizado y recalculado.');
         };
 
         window.processTextLineup = function() {
