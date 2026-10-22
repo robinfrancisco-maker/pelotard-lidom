@@ -92,7 +92,7 @@
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.2rem; }
         .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transition: transform 0.2s, border-color 0.2s; }
         .game-card.finished-card { border-color: #334155; background-color: #172033; }
-        .game-card.live-card { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        .game-card.live-card { border-color: #b45309; }
         .game-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
         .game-stadium { font-weight: 600; color: var(--gold); }
         
@@ -127,10 +127,15 @@
         .odds-btn * { pointer-events: none; }
         .odds-btn:hover { border-color: var(--accent); background: #1e293b; }
         .odds-btn.selected { background: var(--accent) !important; border-color: var(--gold) !important; color: white !important; }
+        .odds-btn.disabled-btn { opacity: 0.45; cursor: not-allowed !important; background: #0b1329; border-color: #1e293b; }
         .odds-type { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
         .odds-btn.selected .odds-type { color: #fef08a !important; }
         .odds-val { font-size: 0.85rem; font-weight: 800; color: var(--gold); }
         .odds-btn.selected .odds-val { color: white !important; }
+
+        .closed-game-banner {
+            background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #f87171; text-align: center; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; margin-top: 10px; letter-spacing: 1px;
+        }
 
         .final-result-box { background: #0f172a; border: 1px solid var(--card-border); border-radius: 8px; padding: 0.8rem; margin-top: 0.8rem; text-align: center; }
         .final-result-title { font-size: 0.75rem; color: var(--green-win); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
@@ -481,11 +486,10 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
-        // VALORES OFICIALES Y FIJOS PARA LA JORNADA EN VIVO
         const INITIAL_GAMES = [
-            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'LIVE', inning: 'RETRASADO (07:15 PM)', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 1, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
-            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 1, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
+            { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'RETRASADO POR LLUVIA', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
+            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 5, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 2, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
             { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayName: 'Tigres del Licey', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 3, status: 'FINAL', inning: 'Final' }
         ];
 
@@ -537,11 +541,12 @@
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v18');
+            const saved = localStorage.getItem('pelotard_state_v20');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
+                    if (parsed.savedGames && parsed.savedGames.length > 0) liveGamesData = parsed.savedGames;
                     return parsed; 
                 } catch(e){}
             }
@@ -552,14 +557,16 @@
                 currentSlip: [],
                 userTickets: [],
                 activeFilter: 'TODAY',
-                selectedLineupTeam: 'L'
+                selectedLineupTeam: 'L',
+                savedGames: INITIAL_GAMES
             };
         }
 
         let state = loadState();
         function saveState() { 
             state.customLineups = DETAILED_LINEUPS;
-            localStorage.setItem('pelotard_state_v18', JSON.stringify(state)); 
+            state.savedGames = liveGamesData;
+            localStorage.setItem('pelotard_state_v20', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -674,8 +681,8 @@
             game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
             game.inning = document.getElementById(`inning_${gameId}`).value;
             game.status = document.getElementById(`status_${gameId}`).value;
-            renderGames(); renderLiveTicker();
-            alert('⚾ Marcador actualizado.');
+            saveState(); renderGames(); renderLiveTicker();
+            alert('⚾ Marcador actualizado y guardado permanentemente.');
         };
 
         function renderAdminStandingsControls() {
@@ -721,7 +728,10 @@
                 socket.on('lidom_update', (data) => {
                     if (data) {
                         if (data.date) CURRENT_DATE = data.date;
-                        if (data.games && data.games.length > 0) liveGamesData = data.games;
+                        if (data.games && data.games.length > 0) {
+                            liveGamesData = data.games;
+                            saveState();
+                        }
                         renderLiveTicker(); renderGames(); renderStandings();
                     }
                 });
@@ -759,12 +769,12 @@
                 const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home, class: 'bg-EO' };
                 const isPassed = game.status === 'FINAL';
                 const isLive = game.status === 'LIVE';
+                const isLocked = isLive || isPassed; // BLOQUEAR SI YA INICIÓ O FINALIZÓ
+
                 const card = document.createElement('div');
                 card.className = `game-card ${isPassed ? 'finished-card' : ''} ${isLive ? 'live-card' : ''}`;
 
                 let headerStatus = `<span class="game-stadium">${game.stadium}</span>`;
-                if (isLive) headerStatus = `<span class="ticker-badge-live">EN VIVO</span>`;
-                else if (isPassed) headerStatus = '<span class="status-badge status-GANADOR">FINAL</span>';
 
                 const rlLine = game.rlLine || 1.5;
                 const awayMl = (game.awayMl || 1.85).toFixed(2);
@@ -789,19 +799,20 @@
                         <div class="market-section">
                             <span class="market-label">🎯 QUIÉN GANA (MONEYLINE)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></div>
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'ML', '${game.home}', ${homeMl})"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'ML', '${game.away}', ${awayMl})`}"><span class="odds-type">${awayTeam.code} ML</span><span class="odds-val">${awayMl}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'ML', '${game.home}', ${homeMl})`}"><span class="odds-type">${homeTeam.code} ML</span><span class="odds-val">${homeMl}</span></div>
                             </div>
                             <span class="market-label">⚾ LÍNEA DE CARRERAS (RUN LINE)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></div>
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'RL', '${game.away} +${rlLine}', ${awayRl})`}"><span class="odds-type">${awayTeam.code} +${rlLine}</span><span class="odds-val">${awayRl}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'RL', '${game.home} -${rlLine}', ${homeRl})`}"><span class="odds-type">${homeTeam.code} -${rlLine}</span><span class="odds-val">${homeRl}</span></div>
                             </div>
                             <span class="market-label">📊 TOTAL DE CARRERAS (ALTAS / BAJAS)</span>
                             <div class="odds-grid-3">
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></div>
-                                <div class="odds-btn" onclick="toggleSelection(${game.id}, 'OU', 'MENOS DE ${total}', ${under})"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'OU', 'MÁS DE ${total}', ${over})`}"><span class="odds-type">Más de ${total}</span><span class="odds-val">${over}</span></div>
+                                <div class="odds-btn ${isLocked ? 'disabled-btn' : ''}" onclick="${isLocked ? '' : `toggleSelection(${game.id}, 'OU', 'MENOS DE ${total}', ${under})`}"><span class="odds-type">Menos de ${total}</span><span class="odds-val">${under}</span></div>
                             </div>
+                            ${isLive ? `<div class="closed-game-banner">🔒 APUESTAS CERRADAS (JUEGO EN VIVO)</div>` : ''}
                         </div>
                     ` : `
                         <div class="final-result-box">
@@ -817,7 +828,7 @@
 
         window.toggleSelection = function(gameId, market, pick, odd) {
             const game = liveGamesData.find(g => g.id === gameId);
-            if (!game) return;
+            if (!game || game.status === 'LIVE' || game.status === 'FINAL') return; // PROTECCIÓN EXTRA AL SELECCIONAR
             const idx = state.currentSlip.findIndex(i => i.gameId === gameId && i.market === market);
             if (idx > -1) state.currentSlip.splice(idx, 1);
             else state.currentSlip.push({ gameId, gameTitle: `${game.away} @ ${game.home}`, market, pick, odd });
@@ -924,6 +935,17 @@
         }
 
         window.generateTicket = function() {
+            // VERIFICAR QUE NINGÚN JUEGO DE LA BOLETA ESTÉ EN VIVO O FINALIZADO
+            const hasInvalidLeg = state.currentSlip.some(item => {
+                const game = liveGamesData.find(g => g.id === item.gameId);
+                return !game || game.status === 'LIVE' || game.status === 'FINAL';
+            });
+
+            if (hasInvalidLeg) {
+                alert('⚠️ No se puede generar el boleto: uno o más partidos seleccionados ya están EN VIVO o han finalizado.');
+                return;
+            }
+
             const stake = parseFloat(document.getElementById('slipStakeInput').value) || 0;
             if (stake > state.userBalance) { alert('Puntos insuficientes.'); return; }
             const legsCount = state.currentSlip.length;
