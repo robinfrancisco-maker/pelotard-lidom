@@ -481,10 +481,10 @@
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO' }
         };
 
-        // DATOS ACTUALIZADOS EN TIEMPO REAL SEGÚN LIDOM (21 OCTUBRE 2026)
+        // VALORES OFICIALES Y FIJOS PARA LA JORNADA EN VIVO
         const INITIAL_GAMES = [
             { id: 301, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Tetelo Vargas (SPM)', away: 'EO', home: 'AC', awayName: 'Estrellas Orientales', homeName: 'Águilas Cibaeñas', awayRuns: 0, homeRuns: 0, status: 'LIVE', inning: 'RETRASADO (07:15 PM)', awayPitcher: 'Óscar de la Cruz', homePitcher: 'Tyler Alexander', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 2.25, homeRl: 1.60, total: 8.5, over: 1.90, under: 1.90 },
-            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'GC', home: 'E', awayName: 'Gigantes del Cibao', homeName: 'Leones del Escogido', awayRuns: 1, homeRuns: 6, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Cristopher Molina', homePitcher: 'Ariel Miranda', awayMl: 1.75, homeMl: 2.05, rlLine: 1.5, awayRl: 2.10, homeRl: 1.70, total: 8.5, over: 1.85, under: 1.95 },
+            { id: 302, date: '2026-10-21', time: '07:15 PM', stadium: 'Estadio Julián Javier (SFM)', away: 'E', home: 'GC', awayName: 'Leones del Escogido', homeName: 'Gigantes del Cibao', awayRuns: 6, homeRuns: 1, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'Ariel Miranda', homePitcher: 'Cristopher Molina', awayMl: 2.05, homeMl: 1.75, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.5, over: 1.85, under: 1.95 },
             { id: 303, date: '2026-10-21', time: '07:30 PM', stadium: 'Estadio Francisco Micheli (LRN)', away: 'L', home: 'TE', awayName: 'Tigres del Licey', homeName: 'Toros del Este', awayRuns: 1, homeRuns: 0, status: 'LIVE', inning: 'BOT 4', awayPitcher: 'L. Gil', homePitcher: 'Esmil Rogers', awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.0, over: 1.90, under: 1.90 },
             { id: 101, date: '2026-10-20', stadium: 'Estadio Julián Javier (SFM)', time: '07:00 PM', away: 'L', home: 'GC', awayName: 'Tigres del Licey', homeName: 'Gigantes del Cibao', awayRuns: 5, homeRuns: 3, status: 'FINAL', inning: 'Final' }
         ];
@@ -533,17 +533,16 @@
             'AC': { pitcher: 'Tyler Alexander (LHP)', bullpen: 'R. Osuna, N. Feliz', batters: [{ pos: '1. SS', name: 'Angel Genao' }, { pos: '2. CF', name: 'Leody Taveras' }, { pos: '3. LF', name: 'Luis Liberato' }, { pos: '4. 1B', name: 'Aderlin Rodríguez' }, { pos: '5. DH', name: 'Jasson Domínguez' }, { pos: '6. 3B', name: 'Christopher Morel' }, { pos: '7. 2B', name: 'Adael Amador' }, { pos: '8. C', name: 'Webster Rivas' }, { pos: '9. RF', name: 'Steward Berroa' }] }
         };
 
+        // SIEMPRE REINICIAR CON LOS DATOS MÁS RECIENTES (EVITA REVERTIR A 0-0 CON F5)
         let liveGamesData = INITIAL_GAMES;
         let socket = null;
 
         function loadState() {
-            const saved = localStorage.getItem('pelotard_state_v16');
+            const saved = localStorage.getItem('pelotard_state_v17');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
-                    if (parsed.customGames) liveGamesData = parsed.customGames;
-                    if (parsed.customStandings) OFFICIAL_STANDINGS = parsed.customStandings;
                     return parsed; 
                 } catch(e){}
             }
@@ -561,9 +560,7 @@
         let state = loadState();
         function saveState() { 
             state.customLineups = DETAILED_LINEUPS;
-            state.customGames = liveGamesData;
-            state.customStandings = OFFICIAL_STANDINGS;
-            localStorage.setItem('pelotard_state_v16', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v17', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -678,7 +675,7 @@
             game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
             game.inning = document.getElementById(`inning_${gameId}`).value;
             game.status = document.getElementById(`status_${gameId}`).value;
-            saveState(); renderGames(); renderLiveTicker();
+            renderGames(); renderLiveTicker();
             alert('⚾ Marcador actualizado.');
         };
 
@@ -706,7 +703,7 @@
             OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
             OFFICIAL_STANDINGS[idx].dif = document.getElementById(`st_dif_${idx}`).value;
             OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
-            saveState(); renderStandings();
+            renderStandings();
             alert('📊 Standing actualizado.');
         };
 
