@@ -13,9 +13,16 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('public'));
 
+// Cartelera base predeterminada para evitar pantallas en blanco
+const defaultSchedule = [
+    { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao' },
+    { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya' },
+    { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli' }
+];
+
 let memoryDb = {
     standings: [],
-    schedule: []
+    schedule: defaultSchedule
 };
 
 function parseLidomCode(teamName, teamAbbr) {
@@ -31,7 +38,7 @@ function parseLidomCode(teamName, teamAbbr) {
     return abbr.toUpperCase() || 'LIDOM';
 }
 
-// 1. ENDPOINT POSICIONES
+// 1. ENDPOINT STANDINGS
 app.post('/api/update-lidom', (req, res) => {
     try {
         if (req.body && req.body.records) {
@@ -56,9 +63,10 @@ app.post('/api/update-lidom', (req, res) => {
                 }
             });
 
-            memoryDb.standings = receivedStandings;
-            io.emit('update-standings', memoryDb.standings);
-            console.log("Standings de LIDOM actualizados.");
+            if (receivedStandings.length > 0) {
+                memoryDb.standings = receivedStandings;
+                io.emit('update-standings', memoryDb.standings);
+            }
             return res.json({ status: 'ok', count: memoryDb.standings.length });
         }
         res.status(400).json({ status: 'error', message: 'Estructura de Standings no válida' });
@@ -67,7 +75,7 @@ app.post('/api/update-lidom', (req, res) => {
     }
 });
 
-// 2. ENDPOINT CARTELERA (SCHEDULE CON RESPALDO DE JORNADA)
+// 2. ENDPOINT CARTELERA PERSISTENTE
 app.post('/api/update-schedule', (req, res) => {
     try {
         let gamesList = [];
@@ -93,18 +101,14 @@ app.post('/api/update-schedule', (req, res) => {
             });
         }
 
-        // Respaldo para asegurar visualización de partidos si la API no devuelve fechas activas
-        if (gamesList.length === 0) {
-            gamesList = [
-                { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao' },
-                { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya' },
-                { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli' }
-            ];
+        // Si la API trae juegos válidos los actualiza, si viene vacía MANTIENE la cartelera actual
+        if (gamesList.length > 0) {
+            memoryDb.schedule = gamesList;
+        } else if (memoryDb.schedule.length === 0) {
+            memoryDb.schedule = defaultSchedule;
         }
 
-        memoryDb.schedule = gamesList;
         io.emit('update-schedule', memoryDb.schedule);
-        console.log(`Cartelera de LIDOM actualizada con ${gamesList.length} juegos.`);
         return res.json({ status: 'ok', count: memoryDb.schedule.length });
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message });
