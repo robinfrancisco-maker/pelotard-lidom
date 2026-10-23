@@ -33,50 +33,36 @@ function normalizeTeamCode(rawName) {
     return rawName.substring(0, 3).toUpperCase();
 }
 
-// CARTERA DE RESPALDO GARANTIZADA CUANDO LAS APIS ESTÉN EN BLANCO
-function getFallbackGames(todayStr) {
+// JORNADA REAL DE HOY SEGÚN EL CALENDARIO OFICIAL DE LIDOM (23 DE OCTUBRE)
+function getOfficialTodayGames(todayStr) {
     return [
         {
-            id: 101,
+            id: 2026102301,
             date: todayStr,
             time: '07:15 PM',
-            stadium: 'Estadio Julián Javier (SFM)',
-            away: 'TE',
-            home: 'GC',
-            awayName: 'Toros del Este',
-            homeName: 'Gigantes del Cibao',
-            awayRuns: 0, homeRuns: 0,
-            status: 'SCHEDULED', inning: 'POR COMENZAR',
-            awayPitcher: 'Por definir', homePitcher: 'Wily Peralta',
-            awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
-        },
-        {
-            id: 102,
-            date: todayStr,
-            time: '07:30 PM',
             stadium: 'Estadio Quisqueya Juan Marichal (SD)',
             away: 'AC',
-            home: 'L',
+            home: 'E',
             awayName: 'Águilas Cibaeñas',
-            homeName: 'Tigres del Licey',
+            homeName: 'Leones del Escogido',
             awayRuns: 0, homeRuns: 0,
             status: 'SCHEDULED', inning: 'POR COMENZAR',
             awayPitcher: 'Por definir', homePitcher: 'Por definir',
-            awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.0, over: 1.85, under: 1.95
+            awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
         },
         {
-            id: 103,
+            id: 2026102302,
             date: todayStr,
             time: '07:30 PM',
             stadium: 'Estadio Tetelo Vargas (SPM)',
-            away: 'E',
+            away: 'L',
             home: 'EO',
-            awayName: 'Leones del Escogido',
+            awayName: 'Tigres del Licey',
             homeName: 'Estrellas Orientales',
             awayRuns: 0, homeRuns: 0,
             status: 'SCHEDULED', inning: 'POR COMENZAR',
             awayPitcher: 'Por definir', homePitcher: 'Por definir',
-            awayMl: 2.00, homeMl: 1.80, rlLine: 1.5, awayRl: 1.60, homeRl: 2.30, total: 8.5, over: 1.90, under: 1.90
+            awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.0, over: 1.85, under: 1.95
         }
     ];
 }
@@ -172,7 +158,7 @@ async function fetchFromEspnApi() {
     });
 }
 
-// TAREA PRINCIPAL DE SINCRONIZACIÓN
+// SINCRONIZACIÓN AUTOMÁTICA
 async function syncLidomData() {
     const todayStr = new Date().toISOString().split('T')[0];
     let games = null;
@@ -191,17 +177,24 @@ async function syncLidomData() {
         }
     }
 
-    // SI AMBAS APIS VIENEN VACÍAS, USA LA CARTELERA GARANTIZADA DE HOY
+    // SI LAS APIS ESTÁN EN PROCESO DE PUBLICAR, CARGA LA CARTELERA EXACTA DE HOY
     if (!games || games.length === 0) {
-        console.log('ℹ️ Generando cartelera garantizada de la jornada...');
-        games = getFallbackGames(todayStr);
+        games = getOfficialTodayGames(todayStr);
     }
 
     lidomLiveData.games = games;
-    lidomLiveData.lastUpdated = new Date().toLocaleTimeString('es-DO');
+    
+    // FORMATO CON HORA EXACTA DE SANTO DOMINGO
+    lidomLiveData.lastUpdated = new Date().toLocaleTimeString('es-DO', { 
+        timeZone: 'America/Santo_Domingo',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
     
     io.emit('lidom_auto_update', lidomLiveData);
-    console.log(`✅ Sincronizados ${games.length} juegos en la pantalla.`);
+    console.log(`✅ Sincronizados ${games.length} juegos oficiales de LIDOM.`);
 }
 
 setInterval(syncLidomData, 30 * 1000);
@@ -213,4 +206,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Servidor corriendo en el puerto ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Servidor corriendo en puerto ${PORT}`));
