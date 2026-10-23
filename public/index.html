@@ -8,182 +8,140 @@
     <script src="/socket.io/socket.io.js"></script>
     <style>
         :root {
-            --primary: #0a192f;
-            --secondary: #1e3a8a;
-            --accent: #d97706;
-            --accent-hover: #b45309;
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --green-win: #10b981;
-            --red-loss: #ef4444;
-            --gold: #fbbf24;
+            --primary: #0a192f; --secondary: #1e3a8a; --accent: #d97706; --accent-hover: #b45309;
+            --bg-dark: #0f172a; --card-bg: #1e293b; --card-border: #334155; --text-main: #f8fafc;
+            --text-muted: #94a3b8; --green-win: #10b981; --red-loss: #ef4444; --gold: #fbbf24;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
-
-        header {
-            background: linear-gradient(135deg, #020617 0%, #1e1b4b 100%);
-            border-bottom: 2px solid var(--accent);
-            padding: 0.8rem 1.5rem;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 12px;
-        }
-        .brand-logo { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-        .brand-logo .ball-icon { font-size: 2rem; }
-        .brand-logo h1 {
-            font-size: 1.8rem; font-weight: 900; letter-spacing: 1.5px;
-            background: linear-gradient(to right, #f59e0b, #ef4444);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase;
-        }
-        .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-
-        .live-ticker-banner {
-            flex: 1; display: flex; align-items: center; gap: 12px;
-            background: rgba(15, 23, 42, 0.85); border: 1px solid var(--card-border);
-            border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 550px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-        
-        .ticker-item {
-            display: flex; align-items: center; gap: 8px; background: #1e293b;
-            border: 1px solid #334155; padding: 4px 10px; border-radius: 6px;
-            white-space: nowrap; font-size: 0.78rem;
-        }
-        .ticker-badge-live { background: #ef4444; color: white; font-size: 0.65rem; font-weight: 900; padding: 1px 5px; border-radius: 4px; animation: pulse 1.5s infinite; }
-        .ticker-badge-final { background: #64748b; color: white; font-size: 0.65rem; font-weight: 900; padding: 1px 5px; border-radius: 4px; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        .ticker-teams { font-weight: bold; color: var(--text-main); }
-        .ticker-score { color: var(--gold); font-weight: 900; }
-        .ticker-inning { color: #38bdf8; font-weight: bold; font-size: 0.72rem; }
-
+        header { background: linear-gradient(135deg, #020617 0%, #1e1b4b 100%); border-bottom: 2px solid var(--accent); padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; flex-wrap: wrap; gap: 12px; }
+        .brand-logo h1 { font-size: 1.8rem; font-weight: 900; background: linear-gradient(to right, #f59e0b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; }
+        .live-ticker-banner { flex: 1; display: flex; align-items: center; gap: 12px; background: rgba(15, 23, 42, 0.85); border: 1px solid var(--card-border); border-radius: 10px; padding: 6px 12px; overflow-x: auto; max-width: 550px; }
+        .ticker-item { display: flex; align-items: center; gap: 8px; background: #1e293b; border: 1px solid #334155; padding: 4px 10px; border-radius: 6px; white-space: nowrap; font-size: 0.78rem; }
         .connection-dot { width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block; margin-right: 5px; }
-
-        .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex-shrink: 0; }
-        .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
-        
+        .btn-sync { background: var(--secondary); border: 1px solid var(--gold); color: white; padding: 0.4rem 0.8rem; border-radius: 8px; font-weight: bold; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
         .player-input-box { display: flex; align-items: center; gap: 6px; background: rgba(30, 41, 59, 0.8); border: 1px solid var(--card-border); padding: 0.4rem 0.8rem; border-radius: 8px; }
-        .player-input-box label { font-size: 0.8rem; color: var(--gold); font-weight: bold; }
         .player-input-box input { background: transparent; border: none; color: white; font-weight: bold; font-size: 0.9rem; outline: none; width: 130px; }
-
         .main-container { padding: 1.5rem 2rem; flex: 1; max-width: 1600px; margin: 0 auto; width: 100%; }
-
         .nav-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; border-bottom: 2px solid var(--card-border); padding-bottom: 0.6rem; overflow-x: auto; }
-        .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer !important; border-radius: 8px; transition: all 0.2s ease; white-space: nowrap; user-select: none; }
-        .tab-btn.active { color: #fff !important; background: var(--accent) !important; border-color: var(--gold) !important; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4); }
-        
+        .tab-btn { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 0.6rem 1.2rem; font-weight: 700; font-size: 0.9rem; cursor: pointer; border-radius: 8px; white-space: nowrap; }
+        .tab-btn.active { color: #fff; background: var(--accent); border-color: var(--gold); }
         .filter-pills { display: flex; gap: 8px; margin-bottom: 1.2rem; flex-wrap: wrap; }
-        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer !important; user-select: none; }
-        .filter-pill.active { background: var(--secondary) !important; color: white !important; border-color: var(--gold) !important; }
-
+        .filter-pill { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
+        .filter-pill.active { background: var(--secondary); color: white; border-color: var(--gold); }
         .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.2rem; }
-        .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
-        .game-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
-        .game-stadium { font-weight: 600; color: var(--gold); }
-        
-        .live-status-bar { background: #0f172a; border: 1px solid var(--card-border); border-radius: 6px; padding: 8px 12px; margin: 8px 0 10px 0; font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center; }
-        .live-status-bar .status-text { font-weight: 800; color: #38bdf8; }
-        .live-status-bar .live-score-badge { background: var(--primary); color: var(--gold); padding: 2px 8px; border-radius: 4px; font-weight: 900; border: 1px solid var(--card-border); }
-
+        .game-card { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1rem; }
+        .game-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem; border-bottom: 1px dashed var(--card-border); padding-bottom: 0.4rem; }
         .team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; }
         .team-info { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1rem; }
         .team-score { font-size: 1.2rem; font-weight: 900; color: var(--gold); background: #0f172a; padding: 2px 10px; border-radius: 6px; }
-        .team-badge { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }
-
-        .bg-L { background-color: #002d62; }
-        .bg-E { background-color: #ce1126; }
-        .bg-AC { background-color: #fdb827; color: #000 !important; }
-        .bg-GC { background-color: #4b0082; }
-        .bg-TE { background-color: #ff6600; }
-        .bg-EO { background-color: #006a4e; }
-
+        .team-badge { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 900; color: white; }
+        .bg-L { background-color: #002d62; } .bg-E { background-color: #ce1126; } .bg-AC { background-color: #fdb827; color: #000; }
+        .bg-GC { background-color: #4b0082; } .bg-TE { background-color: #ff6600; } .bg-EO { background-color: #006a4e; }
+        .bets-layout-grid { display: grid; grid-template-columns: 1fr 370px; gap: 1.5rem; }
+        .betcris-sportsbook { background: #1e293b; border: 1px solid var(--card-border); border-radius: 10px; overflow: hidden; }
+        .betcris-header-bar { background: #0f172a; padding: 10px 16px; border-bottom: 2px solid var(--card-border); display: flex; justify-content: space-between; font-weight: bold; font-size: 0.85rem; color: var(--text-muted); }
+        .betcris-col-headers { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; text-align: center; font-size: 0.75rem; }
+        .betcris-game-row { border-bottom: 1px solid var(--card-border); padding: 12px 16px; }
+        .betcris-row-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; align-items: center; }
+        .betcris-odds-cell { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .betcris-odds-cell.selected { background: var(--accent) !important; border-color: var(--gold) !important; }
+        .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; }
         .table-responsive { overflow-x: auto; border-radius: 8px; border: 1px solid var(--card-border); }
         .styled-table { width: 100%; border-collapse: collapse; background: var(--card-bg); font-size: 0.81rem; }
-        .styled-table th, .styled-table td { padding: 0.6rem 0.5rem; text-align: center; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
-        .styled-table th { background: #0f172a; color: var(--gold); font-weight: 800; text-transform: uppercase; font-size: 0.75rem; }
-
-        .admin-box { background: var(--card-bg); border: 1px dashed var(--accent); padding: 1.2rem; border-radius: 10px; margin-bottom: 1.5rem; }
-        .admin-title { font-size: 0.95rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
-        
-        .code-display-box { background: #020617; border: 2px dashed var(--gold); border-radius: 8px; padding: 1rem; text-align: center; margin-top: 1rem; display: none; }
-        .code-display-value { font-family: monospace; font-size: 1.8rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; }
+        .styled-table th, .styled-table td { padding: 0.6rem 0.5rem; text-align: center; border-bottom: 1px solid var(--card-border); }
+        .styled-table th { background: #0f172a; color: var(--gold); font-weight: 800; text-transform: uppercase; }
+        .admin-box { background: var(--card-bg); border: 1px dashed var(--accent); padding: 1.5rem; border-radius: 10px; margin-bottom: 1.5rem; }
+        .admin-title { font-size: 1.1rem; font-weight: bold; color: var(--gold); margin-bottom: 0.8rem; }
+        .admin-input { background: #1e293b; border: 1px solid var(--card-border); color: white; padding: 8px 12px; border-radius: 6px; font-size: 0.95rem; outline: none; font-weight: bold; }
+        .code-display-box { background: #020617; border: 2px dashed var(--gold); border-radius: 8px; padding: 1.2rem; text-align: center; margin-top: 1.2rem; display: none; }
+        .code-display-value { font-family: monospace; font-size: 2rem; font-weight: 900; color: var(--gold); letter-spacing: 2px; }
     </style>
 </head>
 <body>
-
     <header>
         <div class="brand-logo">
-            <span class="ball-icon">⚾</span>
             <div>
                 <h1>PELOTARD</h1>
-                <div class="brand-subtitle">LIDOM AUTOMÁTICO</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">LIDOM AUTOMÁTICO</div>
             </div>
         </div>
-
         <div class="live-ticker-banner" id="liveTickerBanner"></div>
-
-        <div class="header-controls">
-            <button class="btn-sync" id="btnSyncLidom">
-                <span class="connection-dot" id="connDot"></span>
-                <span id="btnSyncText">Sincronizado</span>
-            </button>
-
-            <div class="player-input-box">
-                <label for="playerNameInput">👤 Jugador:</label>
-                <input type="text" id="playerNameInput" value="Robin Francisco" placeholder="Nombre">
-            </div>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn-sync"><span class="connection-dot"></span><span id="btnSyncText">Sincronizado</span></button>
+            <div class="player-input-box"><label>👤 Jugador:</label><input type="text" id="playerNameInput" value="Robin Francisco"></div>
         </div>
     </header>
 
     <div class="main-container">
-
-        <!-- PESTAÑAS PRINCIPALES -->
         <div class="nav-tabs">
             <button class="tab-btn active" id="btnTabGames" onclick="switchTab('viewGames', 'btnTabGames')">1. ⚾ Cartelera</button>
             <button class="tab-btn" id="btnTabLineups" onclick="switchTab('viewLineups', 'btnTabLineups')">2. 🧢 Lineups / Pitcheo</button>
             <button class="tab-btn" id="btnTabStandings" onclick="switchTab('viewStandings', 'btnTabStandings')">3. 📊 Standings</button>
             <button class="tab-btn" id="btnTabTopLeaders" onclick="switchTab('viewTopLeaders', 'btnTabTopLeaders')">4. ⭐ Top 10 Líderes</button>
             <button class="tab-btn" id="btnTabHistory" onclick="switchTab('viewHistory', 'btnTabHistory')">5. 📋 Mis Boletos (<span id="ticketCountHeader">0</span>)</button>
-            <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Generador de Códigos</button>
+            <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Administración (Códigos)</button>
         </div>
 
-        <!-- VISTA 1: CARTELERA Y APUESTAS -->
+        <!-- VISTA 1: CARTELERA Y APUESTAS (SPORTSBOOK RESTAURADO) -->
         <div id="viewGames">
+            <div class="filter-pills">
+                <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
+                <button class="filter-pill" id="filterBets" onclick="setFilter('BETS', 'filterBets')">🎯 Apuestas (Sportsbook)</button>
+            </div>
             <div class="games-grid" id="gamesContainer"></div>
-        </div>
-
-        <!-- VISTA 2: LINEUPS -->
-        <div id="viewLineups" style="display: none;">
-            <div class="admin-box">
-                <div class="admin-title">🧢 ALINEACIONES Y LANZADORES REGISTRADOS</div>
-                <div style="color:var(--text-muted); padding:1rem; text-align:center;">Cargando alineaciones desde la LIDOM...</div>
+            <div id="betsSectionContainer" style="display: none;">
+                <div class="bets-layout-grid">
+                    <div class="betcris-sportsbook">
+                        <div class="betcris-header-bar">
+                            <span>LIDOM - APUESTAS EN VIVO</span>
+                            <div class="betcris-col-headers"><span>PARTIDO</span><span>MONEYLINE</span><span>TOTAL</span><span>RUN LINE</span></div>
+                        </div>
+                        <div id="betcrisGamesList"></div>
+                    </div>
+                    <div class="bet-slip-panel">
+                        <h3 style="color:var(--gold); margin-bottom:10px;">🎟️ Boleta de Apuestas</h3>
+                        <div id="slipItemsList"><p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Seleccione logros en las líneas.</p></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- VISTA 3: STANDINGS OFICIALES AUTOMÁTICOS -->
+        <!-- VISTA 2: LINEUPS AUTOMÁTICOS -->
+        <div id="viewLineups" style="display: none;">
+            <div class="admin-box" style="text-align:center;">
+                <div class="admin-title">🧢 LINEUPS Y LANZADORES DESDE LA LIDOM</div>
+                <p style="color:var(--text-muted); padding:1rem;">Cargando alineaciones oficiales en tiempo real...</p>
+            </div>
+        </div>
+
+        <!-- VISTA 3: STANDINGS OFICIALES FIXTURE LIDOM (6 PARTIDOS) -->
         <div id="viewStandings" style="display: none;">
             <div class="table-responsive">
                 <table class="styled-table">
                     <thead>
-                        <tr>
-                            <th style="text-align:left;">Equipo</th>
-                            <th>JJ</th><th>G</th><th>P</th><th>PCT</th><th>DIF.</th><th>U10</th><th>RACHA</th><th>CA</th><th>CP</th><th>DIF C</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th>
-                        </tr>
+                        <tr><th style="text-align:left;">Equipo</th><th>JJ</th><th>G</th><th>P</th><th>PCT</th><th>DIF.</th><th>U10</th><th>RACHA</th><th>CA</th><th>CP</th><th>DIF C</th><th>X-1</th><th>CASA</th><th>VISITANTE</th><th>>.500</th></tr>
                     </thead>
                     <tbody id="standingsTableBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- VISTA 4: TOP LÍDERES -->
+        <!-- VISTA 4: LÍDERES OFICIALES -->
         <div id="viewTopLeaders" style="display: none;">
             <div class="admin-box">
                 <div class="admin-title">🔥 LÍDERES Y ESTADÍSTICAS OFICIALES LIDOM</div>
-                <p style="font-size:0.85rem; color:var(--text-muted); padding:1rem 0;">Esperando sincronización de compilación de datos oficiales del torneo...</p>
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead>
+                            <tr><th style="text-align:left;">JUGADOR</th><th>EQ</th><th>J</th><th>TB</th><th>C</th><th>H</th><th>HR</th><th>CI</th><th>PRO</th><th>OPS</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td style="text-align:left;">Kevin Alcántara</td><td>L</td><td>3</td><td>11</td><td>4</td><td>6</td><td>2</td><td>5</td><td>.545</td><td>1.797</td></tr>
+                            <tr><td style="text-align:left;">Yairo Muñoz</td><td>TE</td><td>3</td><td>11</td><td>1</td><td>7</td><td>0</td><td>2</td><td>.636</td><td>1.485</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -192,30 +150,42 @@
             <div class="table-responsive">
                 <table class="styled-table">
                     <thead>
-                        <tr>
-                            <th>Ticket ID</th><th>Fecha</th><th>Jugador</th><th>Código Usado</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th>
-                        </tr>
+                        <tr><th>Ticket ID</th><th>Fecha</th><th>Jugador</th><th>Código Usado</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th></tr>
                     </thead>
-                    <tbody id="historyTableBody"></tbody>
+                    <tbody id="historyTableBody"><tr><td colspan="8">No hay boletos registrados.</td></tr></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- VISTA 6: GENERADOR DE CÓDIGOS -->
+        <!-- VISTA 6: ADMINISTRACIÓN ÚNICA (GENERADOR DE CÓDIGOS DE PUNTOS DE 50 A 500 PTS) -->
         <div id="viewAdmin" style="display: none;">
             <div class="admin-box">
-                <div class="admin-title">🎟️ Generador de Códigos de Puntos para Apuestas</div>
-                <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Seleccione el valor en puntos para generar un código único listo para usar.</p>
-                <div style="display:flex; gap:12px; align-items:center;">
-                    <select id="singlePinAmountSelect" style="background:#1e293b; border:1px solid var(--card-border); color:white; padding:8px; border-radius:6px; font-weight:bold;">
+                <div class="admin-title">🎟️ GENERADOR DE CÓDIGOS PREPAGO DE PUNTOS</div>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Seleccione la cantidad de puntos a emitir (de 50 a 500 Pts). El sistema generará un código único listo para copiar y vender.</p>
+                
+                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+                    <label style="color:var(--gold); font-weight:bold;">Valor en Puntos:</label>
+                    <select id="pinAmountSelect" class="admin-input">
+                        <option value="50">50 Puntos</option>
                         <option value="100">100 Puntos</option>
+                        <option value="150">150 Puntos</option>
+                        <option value="200">200 Puntos</option>
                         <option value="250">250 Puntos</option>
+                        <option value="300">300 Puntos</option>
+                        <option value="350">350 Puntos</option>
+                        <option value="400">400 Puntos</option>
+                        <option value="450">450 Puntos</option>
                         <option value="500" selected>500 Puntos</option>
                     </select>
-                    <button style="background:var(--accent); color:white; border:none; padding:8px 16px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="generateSingleCustomPin()">⚡ GENERAR CÓDIGO</button>
+
+                    <button style="background:var(--accent); color:white; border:none; padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.9rem;" onclick="generateUniquePin()">⚡ GENERAR CÓDIGO ÚNICO</button>
                 </div>
+
                 <div class="code-display-box" id="latestCodeBox">
+                    <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">¡Código Emitido Exitosamente!</div>
                     <div class="code-display-value" id="latestCodeValue">--</div>
+                    <div style="font-size:0.85rem; color:white; margin-top:4px;">Valor: <strong id="latestCodeAmount" style="color:var(--gold);">500 Pts</strong></div>
+                    <button style="margin-top:10px; background:var(--secondary); color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="copyGeneratedCode()">📋 Copiar Código para Cliente</button>
                 </div>
             </div>
         </div>
@@ -226,6 +196,8 @@
         const socket = io();
         let liveGamesData = [];
         let liveStandingsData = [];
+        let activeFilter = 'TODAY';
+        let currentGeneratedCode = '';
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
@@ -240,70 +212,83 @@
             if (data) {
                 if (data.games) liveGamesData = data.games;
                 if (data.standings) liveStandingsData = data.standings;
-
                 renderGames();
                 renderStandings();
                 renderLiveTicker();
-
-                const syncText = document.getElementById('btnSyncText');
-                if (syncText) {
-                    syncText.textContent = `Auto-sincronizado (${data.lastUpdated || 'En vivo'})`;
-                }
+                document.getElementById('btnSyncText').textContent = `Auto-sincronizado (${data.lastUpdated || 'En vivo'})`;
             }
         });
 
         window.switchTab = function(viewId, btnId) {
-            ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => { 
-                const el = document.getElementById(v);
-                if (el) el.style.display = 'none'; 
+            ['viewGames', 'viewLineups', 'viewStandings', 'viewTopLeaders', 'viewHistory', 'viewAdmin'].forEach(v => {
+                const el = document.getElementById(v); if (el) el.style.display = 'none';
             });
-            document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
-            
-            const target = document.getElementById(viewId);
-            if (target) target.style.display = 'block';
-            const btn = document.getElementById(btnId);
-            if (btn) btn.classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(viewId).style.display = 'block';
+            document.getElementById(btnId).classList.add('active');
+        };
+
+        window.setFilter = function(filterType, btnId) {
+            activeFilter = filterType;
+            document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById(btnId).classList.add('active');
+            renderGames();
         };
 
         function renderGames() {
             const container = document.getElementById('gamesContainer');
-            container.innerHTML = '';
+            const betsContainer = document.getElementById('betsSectionContainer');
 
-            if (!liveGamesData || liveGamesData.length === 0) { 
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:var(--text-muted);">Sincronizando partidos con LIDOM...</div>'; 
-                return; 
+            if (activeFilter === 'BETS') {
+                container.style.display = 'none';
+                betsContainer.style.display = 'block';
+                renderBetcrisSportsbook();
+                return;
             }
+
+            container.style.display = 'grid';
+            betsContainer.style.display = 'none';
+            container.innerHTML = '';
 
             liveGamesData.forEach(game => {
                 const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName, class: 'bg-AC' };
                 const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName, class: 'bg-EO' };
-
                 const card = document.createElement('div');
                 card.className = 'game-card';
                 card.innerHTML = `
-                    <div class="game-header"><span>📅 ${game.date} - ${game.time}</span><span class="game-stadium">${game.stadium}</span></div>
+                    <div class="game-header"><span>📅 ${game.date} - ${game.time}</span><span>${game.stadium}</span></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${awayTeam.class}">${awayTeam.code}</div><span>${awayTeam.name}</span></div><div class="team-score">${game.awayRuns}</div></div>
                     <div class="team-row"><div class="team-info"><div class="team-badge ${homeTeam.class}">${homeTeam.code}</div><span>${homeTeam.name}</span></div><div class="team-score">${game.homeRuns}</div></div>
-                    <div class="live-status-bar"><div>ESTADO: <span class="status-text">${game.inning}</span></div><div class="live-score-badge">${game.awayRuns} - ${game.homeRuns}</div></div>
+                    <div style="background:#0f172a; padding:6px; border-radius:6px; text-align:center; font-size:0.8rem; font-weight:bold; color:#38bdf8;">ESTADO: ${game.inning}</div>
                 `;
                 container.appendChild(card);
+            });
+        }
+
+        function renderBetcrisSportsbook() {
+            const list = document.getElementById('betcrisGamesList');
+            list.innerHTML = '';
+            liveGamesData.forEach(game => {
+                const row = document.createElement('div');
+                row.className = 'betcris-game-row';
+                row.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:4px;">⏰ ${game.time} | ${game.stadium}</div>
+                    <div class="betcris-row-grid">
+                        <div><strong>${game.away}</strong> vs <strong>${game.home}</strong></div>
+                        <div class="betcris-odds-cell"><span>ML</span><strong>1.90</strong></div>
+                        <div class="betcris-odds-cell"><span>O/U 8.5</span><strong>1.90</strong></div>
+                        <div class="betcris-odds-cell"><span>RL +1.5</span><strong>1.65</strong></div>
+                    </div>
+                `;
+                list.appendChild(row);
             });
         }
 
         function renderStandings() {
             const tbody = document.getElementById('standingsTableBody');
             tbody.innerHTML = '';
-
-            if (!liveStandingsData || liveStandingsData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="15">Conectando con standings de LIDOM...</td></tr>';
-                return;
-            }
-
             liveStandingsData.forEach((team) => {
                 const tr = document.createElement('tr');
-                const diffCarreras = team.difC || (team.ca - team.cp);
-                const difCStr = diffCarreras > 0 ? `+${diffCarreras}` : `${diffCarreras}`;
-
                 tr.innerHTML = `
                     <td style="text-align:left;"><strong>${team.name}</strong></td>
                     <td><strong>${team.jj}</strong></td>
@@ -311,15 +296,10 @@
                     <td style="color:var(--red-loss); font-weight:bold;">${team.p}</td>
                     <td><strong style="color:var(--gold);">${team.pct}</strong></td>
                     <td><strong style="color:var(--gold);">${team.dif}</strong></td>
-                    <td>${team.u10 || '0-0'}</td>
-                    <td><strong>${team.racha || '-'}</strong></td>
-                    <td>${team.ca}</td>
-                    <td>${team.cp}</td>
-                    <td style="font-weight:bold; color:${diffCarreras >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${difCStr}</td>
-                    <td>${team.x1 || '0-0'}</td>
-                    <td>${team.casa || '0-0'}</td>
-                    <td>${team.visita || '0-0'}</td>
-                    <td>${team.over500 || '0-0'}</td>
+                    <td>${team.u10}</td><td><strong>${team.racha}</strong></td>
+                    <td>${team.ca}</td><td>${team.cp}</td>
+                    <td style="font-weight:bold; color:${team.difC >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${team.difC > 0 ? '+' + team.difC : team.difC}</td>
+                    <td>${team.x1}</td><td>${team.casa}</td><td>${team.visita}</td><td>${team.over500}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -331,15 +311,28 @@
             liveGamesData.forEach(game => {
                 const item = document.createElement('div');
                 item.className = 'ticker-item';
-                item.innerHTML = `<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span> <span class="ticker-teams">${game.away} vs ${game.home}</span> <span class="ticker-score">${game.awayRuns} - ${game.homeRuns}</span> <span class="ticker-inning">${game.inning}</span>`;
+                item.innerHTML = `<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span> <span>${game.away} vs ${game.home}</span> <strong style="color:var(--gold);">${game.awayRuns} - ${game.homeRuns}</strong>`;
                 banner.appendChild(item);
             });
         }
 
-        function generateSingleCustomPin() {
-            const code = 'PLT-' + Math.floor(100000 + Math.random() * 900000);
+        function generateUniquePin() {
+            const amount = document.getElementById('pinAmountSelect').value;
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'PLT-';
+            for (let i = 0; i < 7; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            
+            currentGeneratedCode = code;
             document.getElementById('latestCodeValue').textContent = code;
+            document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
             document.getElementById('latestCodeBox').style.display = 'block';
+        }
+
+        function copyGeneratedCode() {
+            if (currentGeneratedCode) {
+                navigator.clipboard.writeText(currentGeneratedCode);
+                alert(`📋 Código ${currentGeneratedCode} copiado al portapapeles.`);
+            }
         }
     </script>
 </body>
