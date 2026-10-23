@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PELOTARD - Plataforma Recreativa LIDOM</title>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --panel-bg: #1e293b;
+            --bg-dark: #0b1329;
+            --panel-bg: #142242;
             --accent-orange: #f97316;
             --accent-blue: #0284c7;
             --text-light: #f8fafc;
-            --border-color: #334155;
+            --border-color: #23355e;
         }
 
         body {
@@ -37,6 +36,7 @@
             margin: 0;
             color: var(--accent-orange);
             letter-spacing: 1px;
+            font-size: 1.8rem;
         }
 
         .logo p {
@@ -48,34 +48,54 @@
         .status-badge {
             background-color: #16a34a;
             color: white;
-            padding: 5px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: bold;
         }
 
+        /* NAVEGACIÓN COMPLETA ORIGINAL */
         .nav-tabs {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-bottom: 20px;
             overflow-x: auto;
+            padding-bottom: 5px;
         }
 
         .tab-btn {
             background-color: var(--panel-bg);
             border: 1px solid var(--border-color);
             color: var(--text-light);
-            padding: 10px 18px;
+            padding: 10px 16px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            white-space: nowrap;
+            transition: all 0.2s ease;
         }
 
         .tab-btn.active, .tab-btn:hover {
             background-color: var(--accent-orange);
             border-color: var(--accent-orange);
             color: white;
+        }
+
+        .sub-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .sub-btn {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .tab-content {
@@ -90,10 +110,10 @@
             display: block;
         }
 
-        /* Cartelera Grid Styles */
+        /* CARTELERA */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 15px;
         }
 
@@ -128,7 +148,7 @@
         }
 
         .team-code {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: var(--accent-blue);
         }
@@ -140,10 +160,10 @@
         }
 
         .team-score {
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-top: 5px;
+            margin-top: 4px;
         }
 
         .vs {
@@ -155,10 +175,10 @@
             text-align: center;
             color: #94a3b8;
             padding: 30px;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
-        /* Standings Table Styles */
+        /* TABLA POSICIONES */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -175,10 +195,6 @@
             color: #94a3b8;
             font-size: 0.85rem;
         }
-
-        td {
-            font-size: 0.95rem;
-        }
     </style>
 </head>
 <body>
@@ -188,23 +204,37 @@
             <h1>PELOTARD</h1>
             <p>LIDOM AUTOMÁTICO</p>
         </div>
-        <div class="status-badge" id="sync-status">● Auto-sincronizado (En vivo)</div>
+        <div class="status-badge">● Auto-sincronizado (En vivo)</div>
     </div>
 
+    <!-- NAVEGACIÓN COMPLETA DE 6 BOTONES -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('cartelera', this)">1. ⚾ Cartelera</button>
+        <button class="tab-btn" onclick="switchTab('lineups', this)">2. 🧢 Lineups / Pitcheo</button>
         <button class="tab-btn" onclick="switchTab('standings', this)">3. 📊 Standings</button>
+        <button class="tab-btn" onclick="switchTab('lideres', this)">4. ⭐ Top 10 Líderes</button>
+        <button class="tab-btn" onclick="switchTab('boletos', this)">5. 🎫 Mis Boletos (0)</button>
+        <button class="tab-btn" onclick="switchTab('admin', this)">6. ⚙️ Administración (Códigos)</button>
     </div>
 
-    <!-- TAB 1: CARTELERA DE JUEGOS -->
+    <!-- 1. CARTELERA -->
     <div id="tab-cartelera" class="tab-content active">
-        <h3>Juegos de Hoy</h3>
+        <div class="sub-nav">
+            <button class="sub-btn">Juegos de Hoy</button>
+            <button class="sub-btn" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">Apuestas (Sportsbook)</button>
+        </div>
         <div id="contenedor-cartelera" class="games-grid">
             <div class="empty-msg">Cargando cartelera de LIDOM...</div>
         </div>
     </div>
 
-    <!-- TAB 3: POSICIONES / STANDINGS -->
+    <!-- 2. LINEUPS -->
+    <div id="tab-lineups" class="tab-content">
+        <h3>Lineups y Lanzadores Designados</h3>
+        <div class="empty-msg">Información de pitcheo disponible horas antes del partido.</div>
+    </div>
+
+    <!-- 3. STANDINGS -->
     <div id="tab-standings" class="tab-content">
         <h3>Tabla de Posiciones</h3>
         <div style="overflow-x: auto;">
@@ -227,11 +257,27 @@
         </div>
     </div>
 
+    <!-- 4. LÍDERES -->
+    <div id="tab-lideres" class="tab-content">
+        <h3>Líderes de Bateo y Pitcheo</h3>
+        <div class="empty-msg">Estadísticas de líderes en proceso de sincronización.</div>
+    </div>
+
+    <!-- 5. BOLETOS -->
+    <div id="tab-boletos" class="tab-content">
+        <h3>Mis Boletos de Apuestas</h3>
+        <div class="empty-msg">No tienes boletos registrados activamente.</div>
+    </div>
+
+    <!-- 6. ADMIN -->
+    <div id="tab-admin" class="tab-content">
+        <h3>Administración de Códigos y Ajustes</h3>
+        <div class="empty-msg">Módulo de administración activo.</div>
+    </div>
+
     <script>
-        // Inicializar conexión con el servidor
         const socket = io();
 
-        // Cambiar entre pestañas
         function switchTab(tabName, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -240,7 +286,6 @@
             btn.classList.add('active');
         }
 
-        // Renderizar Cartelera
         function renderCartelera(games) {
             const container = document.getElementById('contenedor-cartelera');
             if (!games || games.length === 0) {
@@ -275,7 +320,6 @@
             container.innerHTML = html;
         }
 
-        // Renderizar Tabla de Posiciones
         function renderStandings(teams) {
             const container = document.getElementById('contenedor-standings');
             if (!teams || teams.length === 0) {
@@ -300,18 +344,9 @@
             container.innerHTML = html;
         }
 
-        // Escuchar Socket.io
-        socket.on('update-schedule', (data) => {
-            console.log("Cartelera actualizada:", data);
-            renderCartelera(data);
-        });
+        socket.on('update-schedule', (data) => renderCartelera(data));
+        socket.on('update-standings', (data) => renderStandings(data));
 
-        socket.on('update-standings', (data) => {
-            console.log("Standings actualizados:", data);
-            renderStandings(data);
-        });
-
-        // Consultar API REST inicial por si Socket.io se conecta después
         async function fetchInicial() {
             try {
                 const [resSchedule, resStandings] = await Promise.all([
@@ -319,16 +354,10 @@
                     fetch('/api/standings')
                 ]);
 
-                if (resSchedule.ok) {
-                    const schedule = await resSchedule.json();
-                    renderCartelera(schedule);
-                }
-                if (resStandings.ok) {
-                    const standings = await resStandings.json();
-                    renderStandings(standings);
-                }
+                if (resSchedule.ok) renderCartelera(await resSchedule.json());
+                if (resStandings.ok) renderStandings(await resStandings.json());
             } catch (err) {
-                console.error("Error cargando datos iniciales:", err);
+                console.error("Error al cargar datos iniciales:", err);
             }
         }
 
