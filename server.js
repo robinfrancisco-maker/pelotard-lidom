@@ -1,131 +1,110 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+const io = new Server(server);
+
+// Servir la carpeta publica con el index.html
+app.use(express.static('public'));
+
+let lidomLiveData = {
+    games: [],
+    lastUpdated: null
+};
+
+// MÓDULO DE AUTOCONEXIÓN A LA API OFICIAL DE LIDOM / MLB
+async function syncLidomGames() {
+    try {
+        console.log('🔄 Conectando a la API de LIDOM...');
+        
+        // Fecha actual en formato YYYY-MM-DD
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        // ID de la Liga Dominicana en la API Stats de MLB: 132
+        const apiUrl = `https://statsapi.mlb.com/api/v1/schedule?sportId=132&date=${todayStr}&hydrate=team,linescore,flags`;
+
+        const response = await axios.get(apiUrl, { timeout: 10000 });
+        const dates = response.data.dates;
+
+        let fetchedGames = [];
+
+        if (dates && dates.length > 0) {
+            const gamesList = dates[0].games;
+
+            gamesList.forEach((g) => {
+                const awayAbbr = g.teams.away.team.abbreviation || 'VIS';
+                const homeAbbr = g.teams.home.team.abbreviation || 'LOC';
+                const awayRuns = g.linescore ? (g.linescore.teams.away.runs || 0) : 0;
+                const homeRuns = g.linescore ? (g.linescore.teams.home.runs || 0) : 0;
+                
+                // Determinación del estado e inning
+                let statusStr = 'SCHEDULED';
+                let inningStr = 'POR COMENZAR';
+
+                if (g.status.abstractGameState === 'Live') {
+                    statusStr = 'LIVE';
+                    const currentInning = g.linescore ? g.linescore.currentInning : 1;
+                    const isTop = g.linescore ? g.linescore.isTopInning : true;
+                    inningStr = `${isTop ? 'Alta' : 'Baja'} ${currentInning}º`;
+                } else if (g.status.abstractGameState === 'Final') {
+                    statusStr = 'FINAL';
+                    inningStr = 'FINALIZADO';
+                }
+
+                // Hora local formateada
+                const gameDate = new Date(g.gameDate);
+                const timeStr = gameDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+
+                fetchedGames.push({
+                    id: g.gamePk,
+                    date: todayStr,
+                    time: timeStr,
+                    stadium: g.venue ? g.venue.name : 'Estadio LIDOM',
+                    away: awayAbbr,
+                    home: homeAbbr,
+                    awayName: g.teams.away.team.name,
+                    homeName: g.teams.home.team.name,
+                    awayRuns: awayRuns,
+                    homeRuns: homeRuns,
+                    status: statusStr,
+                    inning: inningStr,
+                    awayPitcher: 'Por definir',
+                    homePitcher: 'Por definir',
+                    awayMl: 1.90,
+                    homeMl: 1.90,
+                    total: 8.5,
+                    over: 1.90,
+                    under: 1.90
+                });
+            });
+        }
+
+        if (fetchedGames.length > 0) {
+            lidomLiveData.games = fetchedGames;
+            lidomLiveData.lastUpdated = new Date().toLocaleTimeString('es-DO');
+            
+            // Emitir evento a todos los navegadores conectados
+            io.emit('lidom_auto_update', lidomLiveData);
+            console.log(`✅ Sincronizados ${fetchedGames.length} juegos de LIDOM a las ${lidomLiveData.lastUpdated}`);
+        }
+    } catch (error) {
+        console.error('⚠️ Error consultando la API de LIDOM:', error.message);
     }
+}
+
+// Consultar la API cada 60 segundos
+setInterval(syncLidomGames, 60 * 1000);
+
+// Primera sincronización al arrancar el servidor
+syncLidomGames();
+
+io.on('connection', (socket) => {
+    console.log('⚡ Usuario conectado al servidor:', socket.id);
+    socket.emit('lidom_auto_update', lidomLiveData);
 });
 
 const PORT = process.env.PORT || 3000;
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.json());
-
-// MARCADORES EN VIVO OFICIALES EN EL SERVIDOR
-let lidomData = {
-    date: '2026-10-21',
-    games: [
-        {
-            id: 301,
-            date: '2026-10-21',
-            time: '07:15 PM',
-            stadium: 'Estadio Tetelo Vargas (SPM)',
-            away: 'EO',
-            home: 'AC',
-            awayName: 'Estrellas Orientales',
-            homeName: 'Águilas Cibaeñas',
-            awayRuns: 0,
-            homeRuns: 0,
-            status: 'LIVE',
-            inning: 'RETRASADO POR LLUVIA',
-            awayPitcher: 'Óscar de la Cruz',
-            homePitcher: 'Tyler Alexander',
-            awayMl: 1.85,
-            homeMl: 1.95,
-            rlLine: 1.5,
-            awayRl: 2.25,
-            homeRl: 1.60,
-            total: 8.5,
-            over: 1.90,
-            under: 1.90
-        },
-        {
-            id: 302,
-            date: '2026-10-21',
-            time: '07:15 PM',
-            stadium: 'Estadio Julián Javier (SFM)',
-            away: 'E',
-            home: 'GC',
-            awayName: 'Leones del Escogido',
-            homeName: 'Gigantes del Cibao',
-            awayRuns: 6,
-            homeRuns: 1,
-            status: 'LIVE',
-            inning: 'BOT 4',
-            awayPitcher: 'Ariel Miranda',
-            homePitcher: 'Cristopher Molina',
-            awayMl: 2.05,
-            homeMl: 1.75,
-            rlLine: 1.5,
-            awayRl: 1.70,
-            homeRl: 2.10,
-            total: 8.5,
-            over: 1.85,
-            under: 1.95
-        },
-        {
-            id: 303,
-            date: '2026-10-21',
-            time: '07:30 PM',
-            stadium: 'Estadio Francisco Micheli (LRN)',
-            away: 'L',
-            home: 'TE',
-            awayName: 'Tigres del Licey',
-            homeName: 'Toros del Este',
-            awayRuns: 1,
-            homeRuns: 0,
-            status: 'LIVE',
-            inning: 'BOT 4',
-            awayPitcher: 'L. Gil',
-            homePitcher: 'Esmil Rogers',
-            awayMl: 1.85,
-            homeMl: 1.95,
-            rlLine: 1.5,
-            awayRl: 1.65,
-            homeRl: 2.20,
-            total: 8.0,
-            over: 1.90,
-            under: 1.90
-        },
-        {
-            id: 101,
-            date: '2026-10-20',
-            stadium: 'Estadio Julián Javier (SFM)',
-            time: '07:00 PM',
-            away: 'L',
-            home: 'GC',
-            awayName: 'Tigres del Licey',
-            homeName: 'Gigantes del Cibao',
-            awayRuns: 5,
-            homeRuns: 3,
-            status: 'FINAL',
-            inning: 'Final'
-        }
-    ]
-};
-
-io.on('connection', (socket) => {
-    socket.emit('lidom_update', lidomData);
-
-    socket.on('update_game_admin', (updatedGame) => {
-        const index = lidomData.games.findIndex(g => g.id === updatedGame.id);
-        if (index !== -1) {
-            lidomData.games[index] = { ...lidomData.games[index], ...updatedGame };
-            io.emit('lidom_update', lidomData);
-        }
-    });
-});
-
-app.get('/api/games', (req, res) => {
-    res.json(lidomData);
-});
-
-server.listen(PORT, () => {
-    console.log(`Servidor Pelotard ejecutándose en el puerto ${PORT}`);
-});
+server.listen(PORT, () => console.log(`🚀 Servidor corriendo en el puerto ${PORT}`));
