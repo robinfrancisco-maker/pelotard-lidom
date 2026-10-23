@@ -31,7 +31,7 @@ function parseLidomCode(teamName, teamAbbr) {
     return abbr.toUpperCase() || 'LIDOM';
 }
 
-// 1. ENDPOINT STANDINGS
+// 1. ENDPOINT POSICIONES
 app.post('/api/update-lidom', (req, res) => {
     try {
         if (req.body && req.body.records) {
@@ -58,7 +58,7 @@ app.post('/api/update-lidom', (req, res) => {
 
             memoryDb.standings = receivedStandings;
             io.emit('update-standings', memoryDb.standings);
-            console.log("Standings de LIDOM actualizados exitosamente.");
+            console.log("Standings de LIDOM actualizados.");
             return res.json({ status: 'ok', count: memoryDb.standings.length });
         }
         res.status(400).json({ status: 'error', message: 'Estructura de Standings no válida' });
@@ -67,7 +67,7 @@ app.post('/api/update-lidom', (req, res) => {
     }
 });
 
-// ENDPOINT CARTELERA (SCHEDULE)
+// 2. ENDPOINT CARTELERA (SCHEDULE CON RESPALDO DE JORNADA)
 app.post('/api/update-schedule', (req, res) => {
     try {
         let gamesList = [];
@@ -93,7 +93,7 @@ app.post('/api/update-schedule', (req, res) => {
             });
         }
 
-        // Si la API de la MLB no devuelve juegos para el rango actual, cargar partidos de la jornada LIDOM
+        // Respaldo para asegurar visualización de partidos si la API no devuelve fechas activas
         if (gamesList.length === 0) {
             gamesList = [
                 { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao' },
@@ -104,7 +104,7 @@ app.post('/api/update-schedule', (req, res) => {
 
         memoryDb.schedule = gamesList;
         io.emit('update-schedule', memoryDb.schedule);
-        console.log(`Cartelera de LIDOM cargada con ${gamesList.length} partidos.`);
+        console.log(`Cartelera de LIDOM actualizada con ${gamesList.length} juegos.`);
         return res.json({ status: 'ok', count: memoryDb.schedule.length });
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message });
