@@ -202,7 +202,7 @@
         <div class="header-controls">
             <button class="btn-sync" id="btnSyncLidom">
                 <span class="connection-dot" id="connDot"></span>
-                <span id="btnSyncText">Sincronizado</span>
+                <span id="btnSyncText">Conectando...</span>
             </button>
 
             <div class="player-input-box">
@@ -538,25 +538,27 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
     </div>
 
     <script>
-        // CONEXIÓN SOCKET.IO CON RECEPCIÓN AUTOMÁTICA DE FECHA Y JUEGOS
+        // CONEXIÓN EN TIEMPO REAL VÍA SOCKET.IO
         const socket = io();
         let CURRENT_DATE = new Date().toISOString().split('T')[0];
+        let liveGamesData = []; // INICIALIZACIÓN VACÍA: SE LLENA SOLO DESDE EL SERVIDOR
 
+        // RECEPCIÓN AUTOMÁTICA DESDE SERVER.JS
         socket.on('lidom_auto_update', (data) => {
             if (data && data.games && data.games.length > 0) {
-                // Sincroniza la fecha global con la fecha que trae la API del servidor
                 CURRENT_DATE = data.games[0].date;
                 liveGamesData = data.games;
                 
-                saveState();
                 renderGames();
                 renderLiveTicker();
 
-                // Actualiza el indicador visual en la cabecera
                 const syncText = document.getElementById('btnSyncText');
                 if (syncText) {
                     syncText.textContent = `Auto-sincronizado (${data.lastUpdated || 'En vivo'})`;
                 }
+            } else {
+                const syncText = document.getElementById('btnSyncText');
+                if (syncText) syncText.textContent = 'Buscando jornada de hoy...';
             }
         });
 
@@ -569,69 +571,41 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             'EO': { code: 'EO', name: 'Estrellas Orientales', class: 'bg-EO', stadium: 'Estadio Tetelo Vargas (SPM)' }
         };
 
-        const INITIAL_GAMES = [
-            { id: 301, date: CURRENT_DATE, time: '07:15 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Wily Peralta', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
-        ];
-
         let OFFICIAL_STANDINGS = [
-            { code: 'L',  name: 'Tigres del Licey', jj: 5, g: 4, p: 1, u10: '4-1', racha: 'W3', ca: 35, cp: 14, x1: '4-1', casa: '1-1', visita: '3-0', over500: '2-1' },
-            { code: 'TE', name: 'Toros del Este', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'L1', ca: 18, cp: 25, x1: '1-8', casa: '2-0', visita: '1-2', over500: '3-2' },
-            { code: 'GC', name: 'Gigantes del Cibao', jj: 5, g: 3, p: 2, u10: '3-2', racha: 'W1', ca: 27, cp: 29, x1: '2-3', casa: '2-1', visita: '1-1', over500: '2-1' },
-            { code: 'EO', name: 'Estrellas Orientales', jj: 4, g: 2, p: 2, u10: '2-2', racha: 'L2', ca: 26, cp: 14, x1: '3-8', casa: '1-1', visita: '1-1', over500: '1-2' },
-            { code: 'AC', name: 'Águilas Cibaeñas', jj: 4, g: 1, p: 3, u10: '1-3', racha: 'L1', ca: 12, cp: 17, x1: '1-7', casa: '0-2', visita: '1-1', over500: '3-3' },
-            { code: 'E',  name: 'Leones del Escogido', jj: 5, g: 1, p: 4, u10: '1-4', racha: 'L1', ca: 23, cp: 42, x1: '1-3', casa: '0-2', visita: '1-2', over500: '1-4' }
+            { code: 'L',  name: 'Tigres del Licey', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' },
+            { code: 'TE', name: 'Toros del Este', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' },
+            { code: 'GC', name: 'Gigantes del Cibao', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' },
+            { code: 'EO', name: 'Estrellas Orientales', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' },
+            { code: 'AC', name: 'Águilas Cibaeñas', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' },
+            { code: 'E',  name: 'Leones del Escogido', jj: 0, g: 0, p: 0, u10: '0-0', racha: '-', ca: 0, cp: 0, x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0' }
         ];
 
-        let BATTING_LEADERS = [
-            { name: 'Kevin Alcántara (CF)', team: 'L', j: 3, tb: 11, c: 4, h: 6, h2: 1, h3: 0, hr: 2, ci: 5, bb: 2, p: 2, br: 0, pro: '.545', obp: '.615', slg: '1.182', ops: '1.797' },
-            { name: 'Yairo Muñoz (2B)', team: 'TE', j: 3, tb: 11, c: 1, h: 7, h2: 2, h3: 0, hr: 0, ci: 2, bb: 1, p: 2, br: 0, pro: '.636', obp: '.667', slg: '.818', ops: '1.485' },
-            { name: 'Jefferson Rojas (3B)', team: 'GC', j: 4, tb: 14, c: 5, h: 5, h2: 1, h3: 0, hr: 2, ci: 3, bb: 1, p: 2, br: 1, pro: '.357', obp: '.400', slg: '.857', ops: '1.257' }
-        ];
-
-        let PITCHING_LEADERS = [
-            { name: 'Carlos Peña (P)', team: 'AC', jg: 0, jp: 1, efe: '10.80', j: 2, a: 0, jc: 0, sho: 0, js: 0, os: 0, il: '3.1', h: 7, c: 4, cl: 4, hr: 2, gp: 0, bb: 0, p: 3, whip: '2.10', pro: '.389' }
-        ];
+        let BATTING_LEADERS = [];
+        let PITCHING_LEADERS = [];
 
         let DETAILED_LINEUPS = {
             'L': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
             'TE': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
             'E': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
-            'GC': { 
-                pitcher: 'Wily Peralta', 
-                bullpen: 'Roster activo', 
-                batters: [
-                    { pos: '1º', name: 'Roldy Brito - CF' },
-                    { pos: '2º', name: 'Noelvi Marte - RF' },
-                    { pos: '3º', name: 'Nomar Mazara - LF' },
-                    { pos: '4º', name: 'Marcell Ozuna - DH' },
-                    { pos: '5º', name: 'Agustin Ramirez - C' },
-                    { pos: '6º', name: 'Eddinson Paulino - 2B' },
-                    { pos: '7º', name: 'Deyvison De Los Santos - 1B' },
-                    { pos: '8º', name: 'Jefferson Rojas - 3B' },
-                    { pos: '9º', name: 'Pablo Reyes - SS' }
-                ] 
-            },
+            'GC': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
             'EO': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] },
             'AC': { pitcher: 'Por definir', bullpen: 'Roster activo', batters: [] }
         };
 
-        let liveGamesData = INITIAL_GAMES;
         let ALL_PREPAGO_PINES = [];
         let latestGeneratedCode = '';
 
         function loadState() {
+            // LIMPIEZA DE MEMORIA LOCAL VIEJA PARA EVITAR CONFLICTOS
             localStorage.removeItem('pelotard_state_v38');
             localStorage.removeItem('pelotard_state_v39');
+            localStorage.removeItem('pelotard_state_v40');
             
-            const saved = localStorage.getItem('pelotard_state_v40');
+            const saved = localStorage.getItem('pelotard_state_v41');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
                     if (parsed.customLineups) DETAILED_LINEUPS = parsed.customLineups;
-                    if (parsed.savedGames) liveGamesData = parsed.savedGames;
-                    if (parsed.savedLeaders) BATTING_LEADERS = parsed.savedLeaders;
-                    if (parsed.savedPitching) PITCHING_LEADERS = parsed.savedPitching;
-                    if (parsed.savedStandings) OFFICIAL_STANDINGS = parsed.savedStandings;
                     if (parsed.savedPines) ALL_PREPAGO_PINES = parsed.savedPines;
                     return parsed; 
                 } catch(e){}
@@ -649,12 +623,8 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         let state = loadState();
         function saveState() { 
             state.customLineups = DETAILED_LINEUPS;
-            state.savedGames = liveGamesData;
-            state.savedLeaders = BATTING_LEADERS;
-            state.savedPitching = PITCHING_LEADERS;
-            state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v40', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v41', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -741,16 +711,14 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             };
 
             liveGamesData.push(newGame);
-            saveState();
             renderGames();
             renderLiveTicker();
-            alert(`✅ Partido ${TEAMS[away].code} vs ${TEAMS[home].code} publicado en ${autoStadium}.`);
+            alert(`✅ Partido ${TEAMS[away].code} vs ${TEAMS[home].code} agregado localmente.`);
         };
 
         window.clearAllTodayGames = function() {
-            if (confirm('¿Está seguro de borrar todos los partidos de hoy para cargarlos desde cero?')) {
+            if (confirm('¿Está seguro de borrar todos los partidos en pantalla?')) {
                 liveGamesData = [];
-                saveState();
                 renderGames();
                 renderLiveTicker();
             }
@@ -807,7 +775,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             }
 
             if (parsedBatters.length === 0) {
-                alert('⚠️ No se pudo procesar la lista. Verifique el formato.');
+                alert('⚠️ No se pudo procesar la lista.');
                 return;
             }
 
@@ -817,18 +785,13 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
                 batters: parsedBatters
             };
 
-            liveGamesData.forEach(game => {
-                if (game.away === teamCode) game.awayPitcher = pitcherName;
-                if (game.home === teamCode) game.homePitcher = pitcherName;
-            });
-
             state.selectedLineupTeam = teamCode;
             saveState();
             renderLineups();
             renderGames();
 
             document.getElementById('adminLineupText').value = '';
-            alert(`✅ Lineup procesado correctamente con ${parsedBatters.length} bateadores.`);
+            alert(`✅ Lineup cargado correctamente con ${parsedBatters.length} bateadores.`);
         };
 
         function renderGames() {
@@ -846,14 +809,12 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             betsContainer.style.display = 'none';
             container.innerHTML = '';
 
-            let filteredGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
-
-            if (filteredGames.length === 0) { 
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:2rem; color:var(--text-muted);">No hay juegos cargados para hoy. Vaya a Administración para agregar partidos.</div>'; 
+            if (!liveGamesData || liveGamesData.length === 0) { 
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:3rem; color:var(--text-muted);">🔄 Conectando a la API de LIDOM... Esperando partidos automáticos.</div>'; 
                 return; 
             }
 
-            filteredGames.forEach(game => {
+            liveGamesData.forEach(game => {
                 const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName || game.away, class: 'bg-AC' };
                 const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home, class: 'bg-EO' };
                 const isPassed = game.status === 'FINAL';
@@ -882,16 +843,15 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             const list = document.getElementById('betcrisGamesList');
             list.innerHTML = '';
 
-            const todayGames = liveGamesData.filter(g => g.status !== 'FINAL' && !g.inning.includes('POSPUESTO'));
-            if (todayGames.length === 0) {
-                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas activas disponibles para apuestas.</div>';
+            if (!liveGamesData || liveGamesData.length === 0) {
+                list.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">No hay líneas automáticas disponibles en este momento.</div>';
                 return;
             }
 
-            todayGames.forEach(game => {
+            liveGamesData.forEach(game => {
                 const awayTeam = TEAMS[game.away] || { code: game.away, name: game.awayName || game.away };
                 const homeTeam = TEAMS[game.home] || { code: game.home, name: game.homeName || game.home };
-                const isLocked = game.status === 'LIVE';
+                const isLocked = game.status === 'LIVE' || game.status === 'FINAL';
 
                 const row = document.createElement('div');
                 row.className = 'betcris-game-row';
@@ -907,7 +867,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
 
                 row.innerHTML = `
                     <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:6px;">
-                        ⏰ ${game.time} | ${game.stadium} ${isLocked ? '<span style="color:#ef4444;">(🔴 EN VIVO - BLOQUEADO)</span>' : ''}
+                        ⏰ ${game.time} | ${game.stadium} ${isLocked ? '<span style="color:#ef4444;">(BLOQUEADO)</span>' : ''}
                     </div>
                     <div class="betcris-row-grid">
                         <div class="betcris-team-box">
@@ -1019,46 +979,17 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         function renderStandings() {
             const tbody = document.getElementById('standingsTableBody');
             tbody.innerHTML = '';
-
-            OFFICIAL_STANDINGS.sort((a, b) => {
-                const pctA = a.jj > 0 ? a.g / a.jj : 0;
-                const pctB = b.jj > 0 ? b.g / b.jj : 0;
-                return pctB - pctA;
-            });
-
-            const leader = OFFICIAL_STANDINGS[0];
-
-            OFFICIAL_STANDINGS.forEach((team, idx) => {
-                const totalJuegos = team.g + team.p;
-                team.jj = totalJuegos;
-                const pctVal = totalJuegos > 0 ? (team.g / totalJuegos).toFixed(3).replace('0.', '.') : '.000';
-                
-                let difVal = '-';
-                if (idx > 0 && leader) {
-                    const diffCalc = ((leader.g - team.g) + (team.p - leader.p)) / 2;
-                    difVal = diffCalc.toFixed(1);
-                }
-
-                const diffCarreras = team.ca - team.cp;
-                const difCStr = diffCarreras > 0 ? `+${diffCarreras}` : `${diffCarreras}`;
-
+            OFFICIAL_STANDINGS.forEach((team) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="text-align:left;"><strong>${team.name}</strong></td>
                     <td><strong>${team.jj}</strong></td>
                     <td style="color:var(--green-win); font-weight:bold;">${team.g}</td>
                     <td style="color:var(--red-loss); font-weight:bold;">${team.p}</td>
-                    <td><strong style="color:var(--gold);">${pctVal}</strong></td>
-                    <td><strong style="color:var(--gold);">${difVal}</strong></td>
-                    <td>${team.u10 || `${team.g}-${team.p}`}</td>
-                    <td><strong>${team.racha || 'W1'}</strong></td>
-                    <td>${team.ca}</td>
-                    <td>${team.cp}</td>
-                    <td style="font-weight:bold; color:${diffCarreras >= 0 ? 'var(--green-win)' : 'var(--red-loss)'};">${difCStr}</td>
-                    <td>${team.x1 || '0-0'}</td>
-                    <td>${team.casa || '0-0'}</td>
-                    <td>${team.visita || '0-0'}</td>
-                    <td>${team.over500 || '0-0'}</td>
+                    <td><strong style="color:var(--gold);">.000</strong></td>
+                    <td><strong style="color:var(--gold);">-</strong></td>
+                    <td>0-0</td><td><strong>-</strong></td>
+                    <td>0</td><td>0</td><td>0</td><td>0-0</td><td>0-0</td><td>0-0</td><td>0-0</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -1066,44 +997,12 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
 
         function renderBattingLeaders() {
             const tbody = document.getElementById('battingLeadersTableBody');
-            tbody.innerHTML = '';
-            BATTING_LEADERS.forEach(player => {
-                const tr = document.createElement('tr');
-                const teamClass = TEAMS[player.team] ? TEAMS[player.team].class : 'bg-L';
-                tr.innerHTML = `
-                    <td style="text-align:left; font-weight:bold; color:white;">${player.name}</td>
-                    <td><span class="status-badge ${teamClass}">${player.team}</span></td>
-                    <td>${player.j}</td><td>${player.tb}</td><td>${player.c}</td><td>${player.h}</td>
-                    <td>${player.h2}</td><td>${player.h3}</td><td>${player.hr}</td><td>${player.ci}</td>
-                    <td>${player.bb}</td><td>${player.p}</td><td>${player.br}</td>
-                    <td style="color:var(--gold); font-weight:bold;">${player.pro}</td>
-                    <td>${player.obp}</td><td>${player.slg}</td>
-                    <td style="color:var(--green-win); font-weight:bold;">${player.ops}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            tbody.innerHTML = '<tr><td colspan="17">Sin datos registrados</td></tr>';
         }
 
         function renderPitchingLeaders() {
             const tbody = document.getElementById('pitchingLeadersTableBody');
-            tbody.innerHTML = '';
-            PITCHING_LEADERS.forEach(p => {
-                const tr = document.createElement('tr');
-                const teamClass = TEAMS[p.team] ? TEAMS[p.team].class : 'bg-L';
-                tr.innerHTML = `
-                    <td style="text-align:left; font-weight:bold; color:white;">${p.name}</td>
-                    <td><span class="status-badge ${teamClass}">${p.team}</span></td>
-                    <td>${p.jg}</td><td>${p.jp}</td>
-                    <td style="color:var(--green-win); font-weight:bold;">${p.efe}</td>
-                    <td>${p.j}</td><td>${p.a}</td><td>${p.jc}</td><td>${p.sho}</td>
-                    <td>${p.js}</td><td>${p.os}</td><td>${p.il}</td><td>${p.h}</td>
-                    <td>${p.c}</td><td>${p.cl}</td><td>${p.hr}</td><td>${p.gp}</td>
-                    <td>${p.bb}</td><td>${p.p}</td>
-                    <td style="color:var(--gold); font-weight:bold;">${p.whip}</td>
-                    <td>${p.pro}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            tbody.innerHTML = '<tr><td colspan="21">Sin datos registrados</td></tr>';
         }
 
         function renderLineups() {
@@ -1132,7 +1031,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
                     `;
                 });
             } else {
-                verticalRowsHtml = '<div style="color:var(--text-muted); padding:1rem; text-align:center;">No hay lineup registrado para este equipo. Cargue la alineación desde el panel de Administración.</div>';
+                verticalRowsHtml = '<div style="color:var(--text-muted); padding:1rem; text-align:center;">No hay lineup cargado. Use el panel de Administración para ingresarlo.</div>';
             }
 
             card.innerHTML = `
@@ -1141,7 +1040,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
                         <div class="team-badge ${TEAMS[teamCode].class}">${teamCode}</div>
                         <div>
                             <h2 style="font-size:1.2rem; color:white;">${TEAMS[teamCode].name}</h2>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Alineación Oficial (Vertical)</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Alineación Oficial</div>
                         </div>
                     </div>
                 </div>
@@ -1159,24 +1058,19 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         function renderAdminGameControls() {
             const container = document.getElementById('adminGameControlGrid');
             container.innerHTML = '';
-            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
-            
-            todayGames.forEach(game => {
+            if (!liveGamesData || liveGamesData.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-muted);">No hay juegos activos para editar.</div>';
+                return;
+            }
+            liveGamesData.forEach(game => {
                 const card = document.createElement('div');
                 card.className = 'sim-card';
                 card.innerHTML = `
                     <div style="font-weight:bold; color:var(--gold);">${game.away} @ ${game.home} (${game.date})</div>
                     <div class="admin-form-group"><label>Carreras Visitante (${game.away}):</label><input type="number" id="awayR_${game.id}" value="${game.awayRuns}" class="admin-input"></div>
                     <div class="admin-form-group"><label>Carreras Home (${game.home}):</label><input type="number" id="homeR_${game.id}" value="${game.homeRuns}" class="admin-input"></div>
-                    <div class="admin-form-group"><label>Estado / Inning (ej. FINAL / POSPUESTO POR LLUVIA):</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
-                    <div class="admin-form-group"><label>Estado de Juego:</label>
-                        <select id="status_${game.id}" class="admin-input">
-                            <option value="SCHEDULED" ${game.status==='SCHEDULED'?'selected':''}>SCHEDULED (Por comenzar / Pospuesto)</option>
-                            <option value="LIVE" ${game.status==='LIVE'?'selected':''}>LIVE (En Vivo)</option>
-                            <option value="FINAL" ${game.status==='FINAL'?'selected':''}>FINAL (Concluido)</option>
-                        </select>
-                    </div>
-                    <button class="btn-load-lineup" style="margin-top:6px; padding:4px;" onclick="saveGameResult(${game.id})">💾 Guardar Partido</button>
+                    <div class="admin-form-group"><label>Estado / Inning:</label><input type="text" id="inning_${game.id}" value="${game.inning}" class="admin-input"></div>
+                    <button class="btn-load-lineup" style="margin-top:6px; padding:4px;" onclick="saveGameResult(${game.id})">💾 Guardar Localmente</button>
                 `;
                 container.appendChild(card);
             });
@@ -1188,9 +1082,8 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             game.awayRuns = parseInt(document.getElementById(`awayR_${gameId}`).value) || 0;
             game.homeRuns = parseInt(document.getElementById(`homeR_${gameId}`).value) || 0;
             game.inning = document.getElementById(`inning_${gameId}`).value;
-            game.status = document.getElementById(`status_${gameId}`).value;
-            saveState(); renderGames(); renderLiveTicker();
-            alert('⚾ Marcador actualizado y guardado permanentemente.');
+            renderGames(); renderLiveTicker();
+            alert('⚾ Ajuste manual realizado.');
         };
 
         function renderAdminStandingsControls() {
@@ -1203,13 +1096,6 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
                     <td><strong>${t.g + t.p}</strong></td>
                     <td><input type="number" id="st_g_${index}" value="${t.g}" class="admin-input" style="width:45px;"></td>
                     <td><input type="number" id="st_p_${index}" value="${t.p}" class="admin-input" style="width:45px;"></td>
-                    <td><input type="text" id="st_racha_${index}" value="${t.racha || 'W1'}" class="admin-input" style="width:45px;"></td>
-                    <td><input type="number" id="st_ca_${index}" value="${t.ca}" class="admin-input" style="width:45px;"></td>
-                    <td><input type="number" id="st_cp_${index}" value="${t.cp}" class="admin-input" style="width:45px;"></td>
-                    <td><input type="text" id="st_x1_${index}" value="${t.x1 || '0-0'}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="text" id="st_casa_${index}" value="${t.casa || '0-0'}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="text" id="st_visita_${index}" value="${t.visita || '0-0'}" class="admin-input" style="width:50px;"></td>
-                    <td><input type="text" id="st_over500_${index}" value="${t.over500 || '0-0'}" class="admin-input" style="width:50px;"></td>
                     <td><button class="btn-load-lineup" style="padding:2px 8px;" onclick="saveStandingRow(${index})">💾 Guardar</button></td>
                 `;
                 tbody.appendChild(tr);
@@ -1219,17 +1105,8 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         window.saveStandingRow = function(idx) {
             OFFICIAL_STANDINGS[idx].g = parseInt(document.getElementById(`st_g_${idx}`).value) || 0;
             OFFICIAL_STANDINGS[idx].p = parseInt(document.getElementById(`st_p_${idx}`).value) || 0;
-            OFFICIAL_STANDINGS[idx].jj = OFFICIAL_STANDINGS[idx].g + OFFICIAL_STANDINGS[idx].p;
-            OFFICIAL_STANDINGS[idx].racha = document.getElementById(`st_racha_${idx}`).value;
-            OFFICIAL_STANDINGS[idx].ca = parseInt(document.getElementById(`st_ca_${idx}`).value) || 0;
-            OFFICIAL_STANDINGS[idx].cp = parseInt(document.getElementById(`st_cp_${idx}`).value) || 0;
-            OFFICIAL_STANDINGS[idx].x1 = document.getElementById(`st_x1_${idx}`).value;
-            OFFICIAL_STANDINGS[idx].casa = document.getElementById(`st_casa_${idx}`).value;
-            OFFICIAL_STANDINGS[idx].visita = document.getElementById(`st_visita_${idx}`).value;
-            OFFICIAL_STANDINGS[idx].over500 = document.getElementById(`st_over500_${idx}`).value;
-            OFFICIAL_STANDINGS[idx].u10 = `${OFFICIAL_STANDINGS[idx].g}-${OFFICIAL_STANDINGS[idx].p}`;
-            saveState(); renderStandings();
-            alert('📊 Standing actualizado y recalculado.');
+            renderStandings();
+            alert('📊 Standings guardados.');
         };
 
         function generateUniquePin11() {
@@ -1356,9 +1233,11 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         function renderLiveTicker() {
             const banner = document.getElementById('liveTickerBanner');
             banner.innerHTML = '';
-            const todayGames = liveGamesData.filter(g => g.date === CURRENT_DATE);
-            if (todayGames.length === 0) { banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">No hay partidos cargados hoy.</span>'; return; }
-            todayGames.forEach(game => {
+            if (!liveGamesData || liveGamesData.length === 0) { 
+                banner.innerHTML = '<span style="font-size:0.75rem; color:var(--text-muted);">Sincronizando partidos con LIDOM/ESPN...</span>'; 
+                return; 
+            }
+            liveGamesData.forEach(game => {
                 const item = document.createElement('div');
                 item.className = 'ticker-item';
                 let badge = `<span style="color:var(--text-muted); font-size:0.65rem;">HOY</span>`;
