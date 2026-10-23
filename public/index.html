@@ -44,8 +44,9 @@
         .betcris-col-headers { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; text-align: center; font-size: 0.75rem; }
         .betcris-game-row { border-bottom: 1px solid var(--card-border); padding: 12px 16px; }
         .betcris-row-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; align-items: center; }
-        .betcris-odds-cell { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-        .betcris-odds-cell.selected { background: var(--accent) !important; border-color: var(--gold) !important; }
+        .betcris-odds-cell { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: all 0.2s; }
+        .betcris-odds-cell:hover { border-color: var(--gold); background: #1e293b; }
+        .betcris-odds-cell.selected { background: var(--accent) !important; border-color: var(--gold) !important; color: white !important; }
         .bet-slip-panel { background-color: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; }
         .table-responsive { overflow-x: auto; border-radius: 8px; border: 1px solid var(--card-border); }
         .styled-table { width: 100%; border-collapse: collapse; background: var(--card-bg); font-size: 0.81rem; }
@@ -83,7 +84,7 @@
             <button class="tab-btn" id="btnTabAdmin" onclick="switchTab('viewAdmin', 'btnTabAdmin')">6. ⚙️ Administración (Códigos)</button>
         </div>
 
-        <!-- VISTA 1: CARTELERA Y APUESTAS (SPORTSBOOK RESTAURADO) -->
+        <!-- CARTELERA Y SPORTSBOOK INTERACTIVO -->
         <div id="viewGames">
             <div class="filter-pills">
                 <button class="filter-pill active" id="filterToday" onclick="setFilter('TODAY', 'filterToday')">Juegos de Hoy</button>
@@ -94,28 +95,39 @@
                 <div class="bets-layout-grid">
                     <div class="betcris-sportsbook">
                         <div class="betcris-header-bar">
-                            <span>LIDOM - APUESTAS EN VIVO</span>
+                            <span>LIDOM - LÍNEAS DE APUESTAS</span>
                             <div class="betcris-col-headers"><span>PARTIDO</span><span>MONEYLINE</span><span>TOTAL</span><span>RUN LINE</span></div>
                         </div>
                         <div id="betcrisGamesList"></div>
                     </div>
                     <div class="bet-slip-panel">
                         <h3 style="color:var(--gold); margin-bottom:10px;">🎟️ Boleta de Apuestas</h3>
-                        <div id="slipItemsList"><p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Seleccione logros en las líneas.</p></div>
+                        <div id="slipItemsList"><p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Seleccione sus logros para apostar.</p></div>
+                        <div id="slipFooter" style="display:none; margin-top:15px; border-top:1px dashed var(--card-border); padding-top:10px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:bold; margin-bottom:8px;">
+                                <span>PUNTOS A APOSTAR:</span>
+                                <input type="number" id="betPointsInput" value="100" min="50" max="500" style="width:70px; background:#0f172a; border:1px solid var(--gold); color:white; text-align:center; border-radius:4px; font-weight:bold;" onchange="updateBetCalculation()">
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:bold; color:var(--green-win); margin-bottom:12px;">
+                                <span>PAGO POTENCIAL:</span>
+                                <span id="potentialPayoutText">190 Pts</span>
+                            </div>
+                            <button style="width:100%; background:var(--accent); color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="submitBetTicket()">🚀 PROCESAR APUESTA</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 2: LINEUPS AUTOMÁTICOS -->
+        <!-- LINEUPS / PITCHEO -->
         <div id="viewLineups" style="display: none;">
             <div class="admin-box" style="text-align:center;">
-                <div class="admin-title">🧢 LINEUPS Y LANZADORES DESDE LA LIDOM</div>
-                <p style="color:var(--text-muted); padding:1rem;">Cargando alineaciones oficiales en tiempo real...</p>
+                <div class="admin-title">🧢 ABRIDORES CONFIRMADOS HOY</div>
+                <div class="games-grid" id="lineupsContainer"></div>
             </div>
         </div>
 
-        <!-- VISTA 3: STANDINGS OFICIALES FIXTURE LIDOM (6 PARTIDOS) -->
+        <!-- STANDINGS -->
         <div id="viewStandings" style="display: none;">
             <div class="table-responsive">
                 <table class="styled-table">
@@ -127,77 +139,63 @@
             </div>
         </div>
 
-        <!-- VISTA 4: LÍDERES OFICIALES -->
+        <!-- TOP 10 LÍDERES -->
         <div id="viewTopLeaders" style="display: none;">
-            <div class="admin-box">
-                <div class="admin-title">🔥 LÍDERES Y ESTADÍSTICAS OFICIALES LIDOM</div>
+            <div class="filter-pills" style="margin-bottom: 1rem;">
+                <button class="filter-pill active" id="subBtnBatters" onclick="switchSubLeaders('batters')">🔥 Top 10 Bateadores</button>
+                <button class="filter-pill" id="subBtnPitchers" onclick="switchSubLeaders('pitchers')">🎯 Top 10 Lanzadores</button>
+            </div>
+            <div id="subViewBatters" class="admin-box">
+                <div class="admin-title">🔥 LÍDERES DE BATEO LIDOM</div>
                 <div class="table-responsive">
                     <table class="styled-table">
-                        <thead>
-                            <tr><th style="text-align:left;">JUGADOR</th><th>EQ</th><th>J</th><th>TB</th><th>C</th><th>H</th><th>HR</th><th>CI</th><th>PRO</th><th>OPS</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td style="text-align:left;">Kevin Alcántara</td><td>L</td><td>3</td><td>11</td><td>4</td><td>6</td><td>2</td><td>5</td><td>.545</td><td>1.797</td></tr>
-                            <tr><td style="text-align:left;">Yairo Muñoz</td><td>TE</td><td>3</td><td>11</td><td>1</td><td>7</td><td>0</td><td>2</td><td>.636</td><td>1.485</td></tr>
-                        </tbody>
+                        <thead><tr><th style="text-align:left;">JUGADOR</th><th>EQ</th><th>JJ</th><th>TB</th><th>C</th><th>H</th><th>HR</th><th>CI</th><th>PRO</th><th>OPS</th></tr></thead>
+                        <tbody id="battingLeadersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="subViewPitchers" class="admin-box" style="display: none;">
+                <div class="admin-title">🎯 LÍDERES DE PITCHEO LIDOM</div>
+                <div class="table-responsive">
+                    <table class="styled-table">
+                        <thead><tr><th style="text-align:left;">JUGADOR</th><th>EQ</th><th>G</th><th>P</th><th>EFE</th><th>JJ</th><th>IL</th><th>K</th><th>WHIP</th></tr></thead>
+                        <tbody id="pitchingLeadersTableBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 5: MIS BOLETOS -->
+        <!-- MIS BOLETOS -->
         <div id="viewHistory" style="display: none;">
             <div class="table-responsive">
                 <table class="styled-table">
-                    <thead>
-                        <tr><th>Ticket ID</th><th>Fecha</th><th>Jugador</th><th>Código Usado</th><th>Tipo</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th></tr>
-                    </thead>
-                    <tbody id="historyTableBody"><tr><td colspan="8">No hay boletos registrados.</td></tr></tbody>
+                    <thead><tr><th>Ticket ID</th><th>Fecha</th><th>Jugador</th><th>Detalle</th><th>Puntos</th><th>Pago Potencial</th><th>Estado</th></tr></thead>
+                    <tbody id="historyTableBody"><tr><td colspan="7">No hay boletos jugados.</td></tr></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- VISTA 6: ADMINISTRACIÓN ÚNICA (GENERADOR DE CÓDIGOS DE PUNTOS DE 50 A 500 PTS) -->
+        <!-- ADMINISTRACIÓN -->
         <div id="viewAdmin" style="display: none;">
             <div class="admin-box">
-                <div class="admin-title">🎟️ GENERADOR DE CÓDIGOS PREPAGO DE PUNTOS</div>
-                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">Seleccione la cantidad de puntos a emitir (de 50 a 500 Pts). El sistema generará un código único listo para copiar y vender.</p>
-                
-                <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                    <label style="color:var(--gold); font-weight:bold;">Valor en Puntos:</label>
+                <div class="admin-title">🎟️ GENERADOR DE CÓDIGOS DE PUNTOS</div>
+                <div style="display:flex; gap:12px; align-items:center;">
                     <select id="pinAmountSelect" class="admin-input">
-                        <option value="50">50 Puntos</option>
-                        <option value="100">100 Puntos</option>
-                        <option value="150">150 Puntos</option>
-                        <option value="200">200 Puntos</option>
-                        <option value="250">250 Puntos</option>
-                        <option value="300">300 Puntos</option>
-                        <option value="350">350 Puntos</option>
-                        <option value="400">400 Puntos</option>
-                        <option value="450">450 Puntos</option>
-                        <option value="500" selected>500 Puntos</option>
+                        <option value="50">50 Puntos</option><option value="100">100 Puntos</option><option value="200">200 Puntos</option><option value="500" selected>500 Puntos</option>
                     </select>
-
-                    <button style="background:var(--accent); color:white; border:none; padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.9rem;" onclick="generateUniquePin()">⚡ GENERAR CÓDIGO ÚNICO</button>
+                    <button style="background:var(--accent); color:white; border:none; padding:8px 18px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="generateUniquePin()">⚡ GENERAR CÓDIGO</button>
                 </div>
-
-                <div class="code-display-box" id="latestCodeBox">
-                    <div style="font-size:0.8rem; color:var(--text-muted); text-transform:uppercase;">¡Código Emitido Exitosamente!</div>
-                    <div class="code-display-value" id="latestCodeValue">--</div>
-                    <div style="font-size:0.85rem; color:white; margin-top:4px;">Valor: <strong id="latestCodeAmount" style="color:var(--gold);">500 Pts</strong></div>
-                    <button style="margin-top:10px; background:var(--secondary); color:white; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="copyGeneratedCode()">📋 Copiar Código para Cliente</button>
-                </div>
+                <div class="code-display-box" id="latestCodeBox"><div class="code-display-value" id="latestCodeValue">--</div></div>
             </div>
         </div>
-
     </div>
 
     <script>
         const socket = io();
-        let liveGamesData = [];
-        let liveStandingsData = [];
+        let liveGamesData = [], liveStandingsData = [], liveBattingData = [], livePitchingData = [];
         let activeFilter = 'TODAY';
-        let currentGeneratedCode = '';
+        let selectedBets = [];
+        let ticketsList = [];
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L' },
@@ -212,8 +210,14 @@
             if (data) {
                 if (data.games) liveGamesData = data.games;
                 if (data.standings) liveStandingsData = data.standings;
+                if (data.battingLeaders) liveBattingData = data.battingLeaders;
+                if (data.pitchingLeaders) livePitchingData = data.pitchingLeaders;
+
                 renderGames();
+                renderLineups();
                 renderStandings();
+                renderBattingLeaders();
+                renderPitchingLeaders();
                 renderLiveTicker();
                 document.getElementById('btnSyncText').textContent = `Auto-sincronizado (${data.lastUpdated || 'En vivo'})`;
             }
@@ -228,12 +232,124 @@
             document.getElementById(btnId).classList.add('active');
         };
 
+        window.switchSubLeaders = function(type) {
+            if (type === 'batters') {
+                document.getElementById('subViewBatters').style.display = 'block';
+                document.getElementById('subViewPitchers').style.display = 'none';
+                document.getElementById('subBtnBatters').classList.add('active');
+                document.getElementById('subBtnPitchers').classList.remove('active');
+            } else {
+                document.getElementById('subViewBatters').style.display = 'none';
+                document.getElementById('subViewPitchers').style.display = 'block';
+                document.getElementById('subBtnBatters').classList.remove('active');
+                document.getElementById('subBtnPitchers').classList.add('active');
+            }
+        };
+
         window.setFilter = function(filterType, btnId) {
             activeFilter = filterType;
             document.querySelectorAll('#viewGames .filter-pill').forEach(b => b.classList.remove('active'));
             document.getElementById(btnId).classList.add('active');
             renderGames();
         };
+
+        function toggleBetSelection(gameId, pickName, odds) {
+            const index = selectedBets.findIndex(b => b.gameId === gameId && b.pickName === pickName);
+            if (index > -1) {
+                selectedBets.splice(index, 1);
+            } else {
+                selectedBets = selectedBets.filter(b => b.gameId !== gameId); // un logro por juego
+                selectedBets.push({ gameId, pickName, odds });
+            }
+            renderBetcrisSportsbook();
+            renderSlip();
+        }
+
+        function renderBetcrisSportsbook() {
+            const list = document.getElementById('betcrisGamesList');
+            list.innerHTML = '';
+            liveGamesData.forEach(game => {
+                const row = document.createElement('div');
+                row.className = 'betcris-game-row';
+                
+                const isMlSel = selectedBets.some(b => b.gameId === game.id && b.pickName === `${game.away} ML`);
+                const isOuSel = selectedBets.some(b => b.gameId === game.id && b.pickName === `Over 8.5 (${game.away}/${game.home})`);
+                const isRlSel = selectedBets.some(b => b.gameId === game.id && b.pickName === `${game.away} +1.5`);
+
+                row.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:4px;">⏰ ${game.time} | ${game.stadium}</div>
+                    <div class="betcris-row-grid">
+                        <div><strong>${game.away}</strong> vs <strong>${game.home}</strong></div>
+                        <div class="betcris-odds-cell ${isMlSel ? 'selected' : ''}" onclick="toggleBetSelection(${game.id}, '${game.away} ML', 1.90)"><span>ML</span><strong>1.90</strong></div>
+                        <div class="betcris-odds-cell ${isOuSel ? 'selected' : ''}" onclick="toggleBetSelection(${game.id}, 'Over 8.5 (${game.away}/${game.home})', 1.90)"><span>O/U 8.5</span><strong>1.90</strong></div>
+                        <div class="betcris-odds-cell ${isRlSel ? 'selected' : ''}" onclick="toggleBetSelection(${game.id}, '${game.away} +1.5', 1.65)"><span>RL +1.5</span><strong>1.65</strong></div>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function renderSlip() {
+            const slipList = document.getElementById('slipItemsList');
+            const slipFooter = document.getElementById('slipFooter');
+            
+            if (selectedBets.length === 0) {
+                slipList.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Seleccione sus logros para apostar.</p>';
+                slipFooter.style.display = 'none';
+                return;
+            }
+
+            slipList.innerHTML = '';
+            selectedBets.forEach(b => {
+                const item = document.createElement('div');
+                item.style.cssText = 'background:#0f172a; border:1px solid #334155; padding:8px; border-radius:6px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;';
+                item.innerHTML = `<div><strong style="color:var(--gold); font-size:0.85rem;">${b.pickName}</strong></div><span style="font-weight:900; color:var(--green-win);">${b.odds}</span>`;
+                slipList.appendChild(item);
+            });
+
+            slipFooter.style.display = 'block';
+            updateBetCalculation();
+        }
+
+        function updateBetCalculation() {
+            const pts = parseFloat(document.getElementById('betPointsInput').value) || 0;
+            let totalOdds = 1.0;
+            selectedBets.forEach(b => totalOdds *= b.odds);
+            const payout = Math.round(pts * totalOdds);
+            document.getElementById('potentialPayoutText').textContent = `${payout} Pts`;
+        }
+
+        function submitBetTicket() {
+            if (selectedBets.length === 0) return;
+            const player = document.getElementById('playerNameInput').value || 'Jugador';
+            const pts = document.getElementById('betPointsInput').value;
+            const payout = document.getElementById('potentialPayoutText').textContent;
+            const ticketId = 'TK-' + Math.floor(10000 + Math.random() * 90000);
+            
+            const picksText = selectedBets.map(b => b.pickName).join(', ');
+            ticketsList.push({ id: ticketId, date: 'Hoy', player, detail: picksText, pts, payout, status: 'PENDIENTE' });
+            
+            selectedBets = [];
+            renderBetcrisSportsbook();
+            renderSlip();
+            renderHistory();
+            document.getElementById('ticketCountHeader').textContent = ticketsList.length;
+            alert(`✅ ¡Boleto ${ticketId} registrado con éxito!`);
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+            if (ticketsList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7">No hay boletos jugados.</td></tr>';
+                return;
+            }
+            ticketsList.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${t.id}</strong></td><td>${t.date}</td><td>${t.player}</td><td>${t.detail}</td><td>${t.pts} Pts</td><td style="color:var(--green-win); font-weight:bold;">${t.payout}</td><td><span style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:0.75rem;">${t.status}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        }
 
         function renderGames() {
             const container = document.getElementById('gamesContainer');
@@ -265,22 +381,18 @@
             });
         }
 
-        function renderBetcrisSportsbook() {
-            const list = document.getElementById('betcrisGamesList');
-            list.innerHTML = '';
+        function renderLineups() {
+            const container = document.getElementById('lineupsContainer');
+            container.innerHTML = '';
             liveGamesData.forEach(game => {
-                const row = document.createElement('div');
-                row.className = 'betcris-game-row';
-                row.innerHTML = `
-                    <div style="font-size:0.75rem; color:var(--gold); font-weight:bold; margin-bottom:4px;">⏰ ${game.time} | ${game.stadium}</div>
-                    <div class="betcris-row-grid">
-                        <div><strong>${game.away}</strong> vs <strong>${game.home}</strong></div>
-                        <div class="betcris-odds-cell"><span>ML</span><strong>1.90</strong></div>
-                        <div class="betcris-odds-cell"><span>O/U 8.5</span><strong>1.90</strong></div>
-                        <div class="betcris-odds-cell"><span>RL +1.5</span><strong>1.65</strong></div>
-                    </div>
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.innerHTML = `
+                    <div class="game-header"><span> stadium: ${game.stadium}</span></div>
+                    <div style="font-size:0.9rem; margin-bottom:8px;"><strong>${game.awayName}:</strong> ${game.awayPitcher}</div>
+                    <div style="font-size:0.9rem;"><strong>${game.homeName}:</strong> ${game.homePitcher}</div>
                 `;
-                list.appendChild(row);
+                container.appendChild(card);
             });
         }
 
@@ -305,6 +417,26 @@
             });
         }
 
+        function renderBattingLeaders() {
+            const tbody = document.getElementById('battingLeadersTableBody');
+            tbody.innerHTML = '';
+            liveBattingData.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td style="text-align:left;"><strong>${p.name}</strong></td><td>${p.team}</td><td>${p.j}</td><td>${p.tb}</td><td>${p.c}</td><td>${p.h}</td><td>${p.hr}</td><td>${p.ci}</td><td style="color:var(--gold); font-weight:bold;">${p.avg}</td><td style="color:var(--green-win); font-weight:bold;">${p.ops}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPitchingLeaders() {
+            const tbody = document.getElementById('pitchingLeadersTableBody');
+            tbody.innerHTML = '';
+            livePitchingData.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td style="text-align:left;"><strong>${p.name}</strong></td><td>${p.team}</td><td style="color:var(--green-win);">${p.g}</td><td style="color:var(--red-loss);">${p.p}</td><td style="color:var(--gold); font-weight:bold;">${p.efe}</td><td>${p.j}</td><td>${p.il}</td><td>${p.k}</td><td>${p.whip}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
         function renderLiveTicker() {
             const banner = document.getElementById('liveTickerBanner');
             banner.innerHTML = '';
@@ -317,22 +449,9 @@
         }
 
         function generateUniquePin() {
-            const amount = document.getElementById('pinAmountSelect').value;
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-            let code = 'PLT-';
-            for (let i = 0; i < 7; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-            
-            currentGeneratedCode = code;
+            const code = 'PLT-' + Math.floor(100000 + Math.random() * 900000);
             document.getElementById('latestCodeValue').textContent = code;
-            document.getElementById('latestCodeAmount').textContent = `${amount} Pts`;
             document.getElementById('latestCodeBox').style.display = 'block';
-        }
-
-        function copyGeneratedCode() {
-            if (currentGeneratedCode) {
-                navigator.clipboard.writeText(currentGeneratedCode);
-                alert(`📋 Código ${currentGeneratedCode} copiado al portapapeles.`);
-            }
         }
     </script>
 </body>
