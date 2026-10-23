@@ -1,14 +1,15 @@
 {
-  "name": "pelotard-backend",
+  "name": "pelotard-lidom",
   "version": "1.0.0",
-  "description": "Servidor backend de sincronización en tiempo real para PELOTARD - LIDOM",
+  "description": "Sistema Recreativo de Apuestas de Béisbol LIDOM Automático",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "axios": "^1.6.8",
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
