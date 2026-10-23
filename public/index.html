@@ -199,6 +199,17 @@
             font-size: 0.85rem;
         }
 
+        .odds-badge {
+            background-color: var(--accent-blue);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 4px;
+        }
+
         input, select, button.action-btn {
             background-color: var(--bg-dark);
             border: 1px solid var(--border-color);
@@ -226,7 +237,7 @@
         <div class="status-badge">● Auto-sincronizado (En vivo)</div>
     </div>
 
-    <!-- NAVEGACIÓN DE PESTAÑAS -->
+    <!-- MENU PRINCIPAL -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('cartelera', this)">1. ⚾ Cartelera</button>
         <button class="tab-btn" onclick="switchTab('lineups', this)">2. 🧢 Lineups / Pitcheo</button>
@@ -236,7 +247,7 @@
         <button class="tab-btn" onclick="switchTab('admin', this)">6. ⚙️ Administración (Códigos)</button>
     </div>
 
-    <!-- 1. CARTELERA -->
+    <!-- 1. CARTELERA & SPORTSBOOK -->
     <div id="tab-cartelera" class="tab-content active">
         <div class="sub-nav">
             <button class="sub-btn active" id="btn-juegos-hoy" onclick="switchCarteleraSub('juegos', this)">Juegos de Hoy</button>
@@ -251,15 +262,17 @@
 
         <div id="sub-view-sportsbook" style="display: none;">
             <h3>Líneas de Apuestas y Momios (Sportsbook LIDOM)</h3>
-            <div class="empty-msg">Las líneas de logros y apuestas se habilitan cuando los lanzadores abridores son confirmados.</div>
+            <div id="contenedor-sportsbook" class="games-grid">
+                <div class="empty-msg">Cargando momios de apuestas...</div>
+            </div>
         </div>
     </div>
 
     <!-- 2. LINEUPS -->
     <div id="tab-lineups" class="tab-content">
-        <h3>Lanzadores Designados y Alineaciones de Hoy</h3>
+        <h3>Lanzadores Designados de Hoy</h3>
         <div id="contenedor-lineups" class="games-grid">
-            <div class="empty-msg">Sincronizando rotaciones de pitcheo y lanzadores anunciados...</div>
+            <div class="empty-msg">Sincronizando abridores anunciados...</div>
         </div>
     </div>
 
@@ -289,11 +302,46 @@
     <!-- 4. LÍDERES -->
     <div id="tab-lideres" class="tab-content">
         <h3>Líderes de la Temporada LIDOM</h3>
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="sub-btn active" onclick="this.classList.add('active')">Bateo (AVG, HR, RBI)</button>
-            <button class="sub-btn" onclick="this.classList.add('active')">Pitcheo (EFE, SO, SV)</button>
+        <div class="sub-nav">
+            <button class="sub-btn active" id="btn-sub-bateo" onclick="switchLideresSub('bateo', this)">Bateo (AVG, HR, RBI)</button>
+            <button class="sub-btn" id="btn-sub-pitcheo" onclick="switchLideresSub('pitcheo', this)">Pitcheo (EFE, SO, SV)</button>
         </div>
-        <div class="empty-msg">Tabla de líderes en proceso de consolidación de estadísticas de la liga.</div>
+
+        <div id="sub-view-bateo" style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>POS</th>
+                        <th>JUGADOR</th>
+                        <th>EQUIPO</th>
+                        <th>AVG</th>
+                        <th>HR</th>
+                        <th>RBI</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedor-lideres-bateo">
+                    <tr><td colspan="6" class="empty-msg">Cargando líderes de bateo...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="sub-view-pitcheo" style="display: none; overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>POS</th>
+                        <th>JUGADOR</th>
+                        <th>EQUIPO</th>
+                        <th>EFE</th>
+                        <th>SO</th>
+                        <th>SV</th>
+                    </tr>
+                </thead>
+                <tbody id="contenedor-lideres-pitcheo">
+                    <tr><td colspan="6" class="empty-msg">Cargando líderes de pitcheo...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- 5. BOLETOS -->
@@ -324,7 +372,7 @@
         }
 
         function switchCarteleraSub(subType, btn) {
-            document.querySelectorAll('.sub-nav .sub-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('#tab-cartelera .sub-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
 
             if (subType === 'juegos') {
@@ -336,16 +384,32 @@
             }
         }
 
+        function switchLideresSub(subType, btn) {
+            document.querySelectorAll('#tab-lideres .sub-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (subType === 'bateo') {
+                document.getElementById('sub-view-bateo').style.display = 'block';
+                document.getElementById('sub-view-pitcheo').style.display = 'none';
+            } else {
+                document.getElementById('sub-view-bateo').style.display = 'none';
+                document.getElementById('sub-view-pitcheo').style.display = 'block';
+            }
+        }
+
         function renderCartelera(games) {
             const container = document.getElementById('contenedor-cartelera');
-            if (!games || games.length === 0) {
-                container.innerHTML = '<div class="empty-msg">No hay partidos de LIDOM programados para la fecha seleccionada.</div>';
-                return;
-            }
+            const containerSportsbook = document.getElementById('contenedor-sportsbook');
+            const containerLineups = document.getElementById('contenedor-lineups');
 
-            let html = '';
+            if (!games || games.length === 0) return;
+
+            let htmlJuegos = '';
+            let htmlSportsbook = '';
+            let htmlLineups = '';
+
             games.forEach(g => {
-                html += `
+                htmlJuegos += `
                     <div class="game-card">
                         <div class="game-header">
                             <span>${g.status || 'Programado'}</span>
@@ -366,16 +430,56 @@
                         </div>
                     </div>
                 `;
+
+                htmlSportsbook += `
+                    <div class="game-card">
+                        <div class="game-header">
+                            <span>Logros / Línea de Juego</span>
+                            <span>Total: ${g.total || '8.5'}</span>
+                        </div>
+                        <div class="game-body">
+                            <div class="team">
+                                <span class="team-code">${g.awayTeam}</span>
+                                <span class="odds-badge">ML: ${g.lineAway || '-110'}</span>
+                            </div>
+                            <div class="vs">VS</div>
+                            <div class="team">
+                                <span class="team-code">${g.homeTeam}</span>
+                                <span class="odds-badge">ML: ${g.lineHome || '-110'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                htmlLineups += `
+                    <div class="game-card">
+                        <div class="game-header">
+                            <span>${g.venue || 'Estadio LIDOM'}</span>
+                            <span>${g.status || 'Programado'}</span>
+                        </div>
+                        <div class="game-body">
+                            <div class="team">
+                                <span class="team-code">${g.awayTeam}</span>
+                                <span class="team-name">Por anunciar</span>
+                            </div>
+                            <div class="vs">VS</div>
+                            <div class="team">
+                                <span class="team-code">${g.homeTeam}</span>
+                                <span class="team-name">Por anunciar</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
-            container.innerHTML = html;
+
+            container.innerHTML = htmlJuegos;
+            containerSportsbook.innerHTML = htmlSportsbook;
+            containerLineups.innerHTML = htmlLineups;
         }
 
         function renderStandings(teams) {
             const container = document.getElementById('contenedor-standings');
-            if (!teams || teams.length === 0) {
-                container.innerHTML = '<tr><td colspan="7" class="empty-msg">Sin datos de posiciones disponibles.</td></tr>';
-                return;
-            }
+            if (!teams || teams.length === 0) return;
 
             let html = '';
             teams.forEach(t => {
@@ -394,18 +498,62 @@
             container.innerHTML = html;
         }
 
+        function renderLideres(lideres) {
+            const containerBateo = document.getElementById('contenedor-lideres-bateo');
+            const containerPitcheo = document.getElementById('contenedor-lideres-pitcheo');
+
+            if (!lideres) return;
+
+            if (lideres.bateo) {
+                let htmlBateo = '';
+                lideres.bateo.forEach(b => {
+                    htmlBateo += `
+                        <tr>
+                            <td>${b.pos}</td>
+                            <td><strong>${b.jugador}</strong></td>
+                            <td>${b.equipo}</td>
+                            <td>${b.avg}</td>
+                            <td>${b.hr}</td>
+                            <td>${b.rbi}</td>
+                        </tr>
+                    `;
+                });
+                containerBateo.innerHTML = htmlBateo;
+            }
+
+            if (lideres.pitcheo) {
+                let htmlPitcheo = '';
+                lideres.pitcheo.forEach(p => {
+                    htmlPitcheo += `
+                        <tr>
+                            <td>${p.pos}</td>
+                            <td><strong>${p.jugador}</strong></td>
+                            <td>${p.equipo}</td>
+                            <td>${p.efe}</td>
+                            <td>${p.so}</td>
+                            <td>${p.sv}</td>
+                        </tr>
+                    `;
+                });
+                containerPitcheo.innerHTML = htmlPitcheo;
+            }
+        }
+
         socket.on('update-schedule', (data) => renderCartelera(data));
         socket.on('update-standings', (data) => renderStandings(data));
+        socket.on('update-lideres', (data) => renderLideres(data));
 
         async function fetchInicial() {
             try {
-                const [resSchedule, resStandings] = await Promise.all([
+                const [resSchedule, resStandings, resLideres] = await Promise.all([
                     fetch('/api/schedule'),
-                    fetch('/api/standings')
+                    fetch('/api/standings'),
+                    fetch('/api/lideres')
                 ]);
 
                 if (resSchedule.ok) renderCartelera(await resSchedule.json());
                 if (resStandings.ok) renderStandings(await resStandings.json());
+                if (resLideres.ok) renderLideres(await resLideres.json());
             } catch (err) {
                 console.error("Error al cargar datos iniciales:", err);
             }
