@@ -1,6 +1,42 @@
-app.post('/api/update-lidom', express.json(), (req, res) => {
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+    cors: { origin: "*" }
+});
+
+const PORT = process.env.PORT || 3000;
+
+// Configuración de límites y CORS
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+app.use(express.static('public'));
+
+// Memoria temporal del servidor
+let memoryDb = {
+    standings: [],
+    schedule: []
+};
+
+// Mapeo de códigos de equipos de LIDOM
+function parseLidomCode(teamName, teamAbbr) {
+    const name = (teamName || '').toLowerCase();
+    const abbr = (teamAbbr || '').toLowerCase();
+
+    if (name.includes('licey') || abbr.includes('tl')) return 'TL';
+    if (name.includes('aguilas') || name.includes('águilas') || abbr.includes('ac')) return 'AC';
+    if (name.includes('escogido') || abbr.includes('e')) return 'E';
+    if (name.includes('estrellas') || abbr.includes('eo')) return 'EO';
+    if (name.includes('toros') || abbr.includes('te')) return 'TE';
+    if (name.includes('gigantes') || abbr.includes('gc')) return 'GC';
+    return abbr.toUpperCase() || 'LIDOM';
+}
+
+// 1. ENDPOINT PARA STANDINGS (TABLA DE POSICIONES)
+app.post('/api/update-lidom', (req, res) => {
     try {
-        // 1. Procesar Standings si vienen en el body
         if (req.body && req.body.records) {
             let receivedStandings = [];
             req.body.records.forEach(record => {
@@ -20,7 +56,7 @@ app.post('/api/update-lidom', express.json(), (req, res) => {
                                 racha: tr.streak?.streakCode || '-',
                                 ca: tr.runsScored || 0,
                                 cp: tr.runsAllowed || 0,
-                                difC: (tr.runsScored || 0) - (tr.runsAllowed || 0),
+                                difc: (tr.runsScored || 0) - (tr.runsAllowed || 0),
                                 x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0'
                             });
                         }
@@ -28,55 +64,65 @@ app.post('/api/update-lidom', express.json(), (req, res) => {
                 }
             });
 
-            if (receivedStandings.length > 0) {
-                lidomFullData.standings = receivedStandings;
-            }
+            memoryDb.standings = receivedStandings;
+            io.emit('update-standings', memoryDb.standings);
+            console.log(" Standings de LIDOM actualizados correctamente.");
+            return res.json({ status: 'ok', count: memoryDb.standings.length });
         }
+        res.status(400).json({ status: 'error', message: 'Estructura de Standings no válida' });
+    } catch (error) {
+        console.error("Error en update-lidom:", error);
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
 
-        // 2. Procesar Cartelera si vienen eventos/fechas
-        if (req.body && req.body.dates && req.body.dates[0]?.games) {
-            let receivedGames = [];
-            req.body.dates[0].games.forEach(g => {
-                const awayCode = parseLidomCode(g.teams.away.team.name, g.teams.away.team.abbreviation);
-                const homeCode = parseLidomCode(g.teams.home.team.name, g.teams.home.team.abbreviation);
-
-                if (awayCode && homeCode) {
-                    receivedGames.push({
-                        id: g.gamePk,
-                        date: g.gameDate.split('T')[0],
-                        time: new Date(g.gameDate).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Santo_Domingo' }),
-                        stadium: g.venue?.name || 'Estadio LIDOM',
-                        away: awayCode,
-                        home: homeCode,
-                        awayName: g.teams.away.team.name,
-                        homeName: g.teams.home.team.name,
-                        awayRuns: g.teams.away.score || 0,
-                        homeRuns: g.teams.home.score || 0,
-                        status: g.status.abstractGameState.toUpperCase(),
-                        inning: g.status.detailedState || 'POR COMENZAR',
-                        awayPitcher: 'Por definir',
-                        homePitcher: 'Por definir',
-                        awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
+// 2. ENDPOINT PARA CARTELERA (SCHEDULE / JUEGOS DE HOY)
+app.post('/api/update-schedule', (req, res) => {
+    try {
+        if (req.body && req.body.dates) {
+            let gamesList = [];
+            req.body.dates.forEach(dateGroup => {
+                if (dateGroup.games) {
+                    dateGroup.games.forEach(game => {
+                        gamesList.push({
+                            gamePk: game.gamePk,
+                            gameDate: game.gameDate,
+                            status: game.status?.detailedState || 'Programado',
+                            awayTeam: parseLidomCode(game.teams?.away?.team?.name, ''),
+                            homeTeam: parseLidomCode(game.teams?.home?.team?.name, ''),
+                            awayName: game.teams?.away?.team?.name,
+                            homeName: game.teams?.home?.team?.name,
+                            awayScore: game.teams?.away?.score || 0,
+                            homeScore: game.teams?.home?.score || 0,
+                            venue: game.venue?.name || ''
+                        });
                     });
                 }
             });
 
-            if (receivedGames.length > 0) {
-                lidomFullData.games = receivedGames;
-            }
+            memoryDb.schedule = gamesList;
+            io.emit('update-schedule', memoryDb.schedule);
+            console.log(" Cartelera de juegos actualizada correctamente.");
+            return res.json({ status: 'ok', count: memoryDb.schedule.length });
         }
-
-        lidomFullData.lastUpdated = new Date().toLocaleTimeString('es-DO', { 
-            timeZone: 'America/Santo_Domingo',
-            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-        });
-
-        // Guardar en disco y emitir a todos los navegadores conectados
-        fs.writeFileSync(DATA_FILE, JSON.stringify(lidomFullData, null, 2));
-        io.emit('lidom_auto_update', lidomFullData);
-
-        res.status(200).json({ status: 'success' });
+        res.status(400).json({ status: 'error', message: 'Estructura de Cartelera no válida' });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Error en update-schedule:", error);
+        res.status(500).json({ status: 'error', error: error.message });
     }
+});
+
+// GETters para el Frontend (para consultar datos al cargar la página)
+app.get('/api/standings', (req, res) => res.json(memoryDb.standings));
+app.get('/api/schedule', (req, res) => res.json(memoryDb.schedule));
+
+// Manejo de conexiones con Socket.io
+io.on('connection', (socket) => {
+    console.log('Cliente conectado vía Socket.io');
+    socket.emit('update-standings', memoryDb.standings);
+    socket.emit('update-schedule', memoryDb.schedule);
+});
+
+http.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
