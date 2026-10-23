@@ -1,4 +1,4 @@
-name: Sincronizador Automatico LIDOM
+name: Sincronizador Automático LIDOM
 
 on:
   schedule:
@@ -9,12 +9,23 @@ jobs:
   sync-lidom:
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar Standings de LIDOM
+      - name: Sincronizar Standings y Schedule con el Servidor
         run: |
-          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=132" -o standings.json
-          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" --data-binary @standings.json
+          # 1. Asegurar que Render esté activo antes de enviar datos
+          curl -s https://pelotard-lidom.onrender.com/ > /dev/null
 
-      - name: Descargar Cartelera de LIDOM
-        run: |
+          # 2. Descargar Standings desde la API MLB
+          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=132" -o standings.json
+
+          # 3. Descargar Cartelera (Schedule) desde la API MLB
           curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=132&leagueId=132" -o schedule.json
-          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" --data-binary @schedule.json
+
+          # 4. Enviar Standings a Render en formato JSON válido
+          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom \
+            -H "Content-Type: application/json" \
+            -d @standings.json
+
+          # 5. Enviar Schedule al endpoint correspondiente en Render
+          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-schedule \
+            -H "Content-Type: application/json" \
+            -d @schedule.json
