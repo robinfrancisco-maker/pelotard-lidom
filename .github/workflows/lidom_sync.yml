@@ -9,10 +9,12 @@ jobs:
   sync-lidom:
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar datos de LIDOM
+      - name: Descargar Standings de LIDOM
         run: |
           curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=132" -o standings.json
-
-      - name: Enviar datos a Render
-        run: |
           curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" --data-binary @standings.json
+
+      - name: Descargar Cartelera de LIDOM
+        run: |
+          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=132&leagueId=132" -o schedule.json
+          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" --data-binary @schedule.json
