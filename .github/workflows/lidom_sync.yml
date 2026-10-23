@@ -11,14 +11,14 @@ jobs:
     steps:
       - name: Sincronizar Standings y Schedule de LIDOM
         run: |
-          # 1. Despertar la instancia en Render
+          # 1. Despertar el servidor en Render
           curl -s https://pelotard-lidom.onrender.com/ > /dev/null
 
-          # 2. Descargar Posiciones de LIDOM (Liga 131)
+          # 2. Descargar Posiciones de LIDOM (League 131)
           curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=131" -o standings.json
 
-          # 3. Descargar Cartelera de la temporada LIDOM (Liga 131, Sport 1)
-          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=1&leagueId=131&season=2026" -o schedule.json
+          # 3. Descargar Cartelera de la temporada actual de LIDOM
+          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=1&leagueId=131" -o schedule.json
 
           # 4. Enviar Posiciones a Render
           curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom \
