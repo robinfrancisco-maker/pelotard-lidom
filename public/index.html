@@ -54,7 +54,6 @@
             font-weight: bold;
         }
 
-        /* NAVEGACIÓN COMPLETA ORIGINAL */
         .nav-tabs {
             display: flex;
             gap: 8px;
@@ -88,14 +87,20 @@
         }
 
         .sub-btn {
-            background-color: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 6px 14px;
+            background-color: var(--panel-bg);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
             border-radius: 6px;
             font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .sub-btn.active {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
         }
 
         .tab-content {
@@ -110,7 +115,6 @@
             display: block;
         }
 
-        /* CARTELERA */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -178,7 +182,6 @@
             font-size: 1rem;
         }
 
-        /* TABLA POSICIONES */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -195,6 +198,22 @@
             color: #94a3b8;
             font-size: 0.85rem;
         }
+
+        input, select, button.action-btn {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 5px;
+        }
+
+        button.action-btn {
+            background-color: var(--accent-orange);
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -207,7 +226,7 @@
         <div class="status-badge">● Auto-sincronizado (En vivo)</div>
     </div>
 
-    <!-- NAVEGACIÓN COMPLETA DE 6 BOTONES -->
+    <!-- MENU PRINCIPAL -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('cartelera', this)">1. ⚾ Cartelera</button>
         <button class="tab-btn" onclick="switchTab('lineups', this)">2. 🧢 Lineups / Pitcheo</button>
@@ -220,18 +239,28 @@
     <!-- 1. CARTELERA -->
     <div id="tab-cartelera" class="tab-content active">
         <div class="sub-nav">
-            <button class="sub-btn">Juegos de Hoy</button>
-            <button class="sub-btn" style="background-color: var(--panel-bg); border: 1px solid var(--border-color);">Apuestas (Sportsbook)</button>
+            <button class="sub-btn active" id="btn-juegos-hoy" onclick="switchCarteleraSub('juegos', this)">Juegos de Hoy</button>
+            <button class="sub-btn" id="btn-sportsbook" onclick="switchCarteleraSub('sportsbook', this)">Apuestas (Sportsbook)</button>
         </div>
-        <div id="contenedor-cartelera" class="games-grid">
-            <div class="empty-msg">Cargando cartelera de LIDOM...</div>
+
+        <div id="sub-view-juegos">
+            <div id="contenedor-cartelera" class="games-grid">
+                <div class="empty-msg">Cargando cartelera de LIDOM...</div>
+            </div>
+        </div>
+
+        <div id="sub-view-sportsbook" style="display: none;">
+            <h3>Líneas de Apuestas y Momios (Sportsbook LIDOM)</h3>
+            <div class="empty-msg">Las líneas de logros y apuestas se habilitan cuando los lanzadores abridores son confirmados.</div>
         </div>
     </div>
 
     <!-- 2. LINEUPS -->
     <div id="tab-lineups" class="tab-content">
-        <h3>Lineups y Lanzadores Designados</h3>
-        <div class="empty-msg">Información de pitcheo disponible horas antes del partido.</div>
+        <h3>Lanzadores Designados y Alineaciones de Hoy</h3>
+        <div id="contenedor-lineups" class="games-grid">
+            <div class="empty-msg">Sincronizando rotaciones de pitcheo y lanzadores anunciados...</div>
+        </div>
     </div>
 
     <!-- 3. STANDINGS -->
@@ -259,25 +288,34 @@
 
     <!-- 4. LÍDERES -->
     <div id="tab-lideres" class="tab-content">
-        <h3>Líderes de Bateo y Pitcheo</h3>
-        <div class="empty-msg">Estadísticas de líderes en proceso de sincronización.</div>
+        <h3>Líderes de la Temporada LIDOM</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="sub-btn active" onclick="this.classList.add('active')">Bateo (AVG, HR, RBI)</button>
+            <button class="sub-btn" onclick="this.classList.add('active')">Pitcheo (EFE, SO, SV)</button>
+        </div>
+        <div class="empty-msg">Tabla de líderes en proceso de consolidación de estadísticas de la liga.</div>
     </div>
 
     <!-- 5. BOLETOS -->
     <div id="tab-boletos" class="tab-content">
         <h3>Mis Boletos de Apuestas</h3>
-        <div class="empty-msg">No tienes boletos registrados activamente.</div>
+        <div class="empty-msg">No se registran jugadas activas en tu sesión actual.</div>
     </div>
 
-    <!-- 6. ADMIN -->
+    <!-- 6. ADMIN CÓDIGOS -->
     <div id="tab-admin" class="tab-content">
-        <h3>Administración de Códigos y Ajustes</h3>
-        <div class="empty-msg">Módulo de administración activo.</div>
+        <h3>Administración y Validación de Códigos</h3>
+        <div style="max-width: 400px; display: flex; flex-direction: column; gap: 10px;">
+            <label>Ingrese Código de Billetaje / Licencia:</label>
+            <input type="text" placeholder="Ej: LIDOM-2026-X89">
+            <button class="action-btn" onclick="alert('Código validado con éxito')">Validar Código</button>
+        </div>
     </div>
 
     <script>
         const socket = io();
 
+        // Cambiar pestañas principales
         function switchTab(tabName, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -286,10 +324,24 @@
             btn.classList.add('active');
         }
 
+        // Cambiar sub-vistas de Cartelera (Juegos de Hoy / Sportsbook)
+        function switchCarteleraSub(subType, btn) {
+            document.querySelectorAll('.sub-nav .sub-btn').forEach(el => el.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (subType === 'juegos') {
+                document.getElementById('sub-view-juegos').style.display = 'block';
+                document.getElementById('sub-view-sportsbook').style.display = 'none';
+            } else {
+                document.getElementById('sub-view-juegos').style.display = 'none';
+                document.getElementById('sub-view-sportsbook').style.display = 'block';
+            }
+        }
+
         function renderCartelera(games) {
             const container = document.getElementById('contenedor-cartelera');
             if (!games || games.length === 0) {
-                container.innerHTML = '<div class="empty-msg">No hay juegos programados para hoy.</div>';
+                container.innerHTML = '<div class="empty-msg">No hay partidos de LIDOM programados para la fecha seleccionada.</div>';
                 return;
             }
 
@@ -299,7 +351,7 @@
                     <div class="game-card">
                         <div class="game-header">
                             <span>${g.status || 'Programado'}</span>
-                            <span>${g.venue || ''}</span>
+                            <span>${g.venue || 'Estadio LIDOM'}</span>
                         </div>
                         <div class="game-body">
                             <div class="team">
