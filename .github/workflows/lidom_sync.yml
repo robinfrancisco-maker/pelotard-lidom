@@ -1,4 +1,3 @@
-
 name: Sincronizador Automático LIDOM
 
 on:
@@ -16,6 +15,4 @@ jobs:
 
       - name: Enviar datos limpios a Render
         run: |
-          curl -X POST https://pelotard-lidom.onrender.com/api/update-lidom \
-               -H "Content-Type: application/json" \
-               -d @standings.json
+          curl -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" -d @standings.json
