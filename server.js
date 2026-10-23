@@ -13,16 +13,35 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('public'));
 
-// Cartelera base predeterminada para evitar pantallas en blanco
+// Cartelera base predeterminada
 const defaultSchedule = [
-    { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao' },
-    { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya' },
-    { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli' }
+    { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao', lineAway: '-110', lineHome: '-110', total: '8.5' },
+    { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya', lineAway: '+105', lineHome: '-125', total: '7.5' },
+    { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli', lineAway: '-120', lineHome: '+100', total: '8.0' }
 ];
+
+// Líderes predeterminados de LIDOM
+const defaultLideres = {
+    bateo: [
+        { pos: 1, jugador: 'Emilio Bonifacio', equipo: 'TL', avg: '.348', hr: 3, rbi: 18 },
+        { pos: 2, jugador: 'Yairo Muñoz', equipo: 'AC', avg: '.335', hr: 2, rbi: 15 },
+        { pos: 3, jugador: 'Junior Caminero', equipo: 'E', avg: '.320', hr: 5, rbi: 22 },
+        { pos: 4, jugador: 'Socrates Brito', equipo: 'EO', avg: '.312', hr: 4, rbi: 16 },
+        { pos: 5, jugador: 'Kelvin Gutiérrez', equipo: 'GC', avg: '.305', hr: 3, rbi: 14 }
+    ],
+    pitcheo: [
+        { pos: 1, jugador: 'César Valdez', equipo: 'TL', efe: '1.85', so: 32, sv: 0 },
+        { pos: 2, jugador: 'Tyler Alexander', equipo: 'E', efe: '2.10', so: 28, sv: 0 },
+        { pos: 3, jugador: 'Gerson Garabito', equipo: 'AC', efe: '2.35', so: 30, sv: 0 },
+        { pos: 4, jugador: 'Jefry Yan', equipo: 'EO', efe: '1.15', so: 22, sv: 8 },
+        { pos: 5, jugador: 'Yennsy Díaz', equipo: 'TE', efe: '2.50', so: 25, sv: 0 }
+    ]
+};
 
 let memoryDb = {
     standings: [],
-    schedule: defaultSchedule
+    schedule: defaultSchedule,
+    lideres: defaultLideres
 };
 
 function parseLidomCode(teamName, teamAbbr) {
@@ -69,13 +88,13 @@ app.post('/api/update-lidom', (req, res) => {
             }
             return res.json({ status: 'ok', count: memoryDb.standings.length });
         }
-        res.status(400).json({ status: 'error', message: 'Estructura de Standings no válida' });
+        res.status(400).json({ status: 'error', message: 'Estructura no válida' });
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message });
     }
 });
 
-// 2. ENDPOINT CARTELERA PERSISTENTE
+// 2. ENDPOINT CARTELERA
 app.post('/api/update-schedule', (req, res) => {
     try {
         let gamesList = [];
@@ -94,14 +113,16 @@ app.post('/api/update-schedule', (req, res) => {
                             homeName: game.teams?.home?.team?.name || 'Local',
                             awayScore: game.teams?.away?.score ?? 0,
                             homeScore: game.teams?.home?.score ?? 0,
-                            venue: game.venue?.name || 'Estadio LIDOM'
+                            venue: game.venue?.name || 'Estadio LIDOM',
+                            lineAway: '-110',
+                            lineHome: '-110',
+                            total: '8.5'
                         });
                     });
                 }
             });
         }
 
-        // Si la API trae juegos válidos los actualiza, si viene vacía MANTIENE la cartelera actual
         if (gamesList.length > 0) {
             memoryDb.schedule = gamesList;
         } else if (memoryDb.schedule.length === 0) {
@@ -117,10 +138,12 @@ app.post('/api/update-schedule', (req, res) => {
 
 app.get('/api/standings', (req, res) => res.json(memoryDb.standings));
 app.get('/api/schedule', (req, res) => res.json(memoryDb.schedule));
+app.get('/api/lideres', (req, res) => res.json(memoryDb.lideres));
 
 io.on('connection', (socket) => {
     socket.emit('update-standings', memoryDb.standings);
     socket.emit('update-schedule', memoryDb.schedule);
+    socket.emit('update-lideres', memoryDb.lideres);
 });
 
 http.listen(PORT, () => {
