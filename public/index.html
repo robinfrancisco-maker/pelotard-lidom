@@ -103,7 +103,6 @@
         .bg-TE { background-color: #ff6600; }
         .bg-EO { background-color: #006a4e; }
 
-        /* ESTILOS DE LINEUP VERTICAL */
         .lineup-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
         .lineup-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 0.8rem; }
         .pitching-staff-box { background: #0f172a; border: 1px solid var(--card-border); padding: 12px; border-radius: 8px; font-size: 0.88rem; display: flex; flex-direction: column; gap: 6px; }
@@ -539,7 +538,27 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
     </div>
 
     <script>
-        let CURRENT_DATE = '2026-10-22';
+        // CONEXIÓN SOCKET.IO CON RECEPCIÓN AUTOMÁTICA DE FECHA Y JUEGOS
+        const socket = io();
+        let CURRENT_DATE = new Date().toISOString().split('T')[0];
+
+        socket.on('lidom_auto_update', (data) => {
+            if (data && data.games && data.games.length > 0) {
+                // Sincroniza la fecha global con la fecha que trae la API del servidor
+                CURRENT_DATE = data.games[0].date;
+                liveGamesData = data.games;
+                
+                saveState();
+                renderGames();
+                renderLiveTicker();
+
+                // Actualiza el indicador visual en la cabecera
+                const syncText = document.getElementById('btnSyncText');
+                if (syncText) {
+                    syncText.textContent = `Auto-sincronizado (${data.lastUpdated || 'En vivo'})`;
+                }
+            }
+        });
 
         const TEAMS = {
             'L': { code: 'L', name: 'Tigres del Licey', class: 'bg-L', stadium: 'Estadio Quisqueya Juan Marichal (SD)' },
@@ -551,7 +570,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         };
 
         const INITIAL_GAMES = [
-            { id: 301, date: '2026-10-22', time: '07:15 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Wily Peralta', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
+            { id: 301, date: CURRENT_DATE, time: '07:15 PM', stadium: TEAMS['GC'].stadium, away: 'TE', home: 'GC', awayName: 'Toros del Este', homeName: 'Gigantes del Cibao', awayRuns: 0, homeRuns: 0, status: 'SCHEDULED', inning: 'POR COMENZAR', awayPitcher: 'Por Definir', homePitcher: 'Wily Peralta', awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90 }
         ];
 
         let OFFICIAL_STANDINGS = [
@@ -601,10 +620,10 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
         let latestGeneratedCode = '';
 
         function loadState() {
-            localStorage.removeItem('pelotard_state_v37');
             localStorage.removeItem('pelotard_state_v38');
+            localStorage.removeItem('pelotard_state_v39');
             
-            const saved = localStorage.getItem('pelotard_state_v39');
+            const saved = localStorage.getItem('pelotard_state_v40');
             if (saved) {
                 try { 
                     const parsed = JSON.parse(saved);
@@ -635,7 +654,7 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             state.savedPitching = PITCHING_LEADERS;
             state.savedStandings = OFFICIAL_STANDINGS;
             state.savedPines = ALL_PREPAGO_PINES;
-            localStorage.setItem('pelotard_state_v39', JSON.stringify(state)); 
+            localStorage.setItem('pelotard_state_v40', JSON.stringify(state)); 
         }
 
         window.switchTab = function(viewId, btnId) {
@@ -737,7 +756,6 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             }
         };
 
-        // PARSER UNIVERSAL DE LINEUP COMPLETO (EXTRAE EXACTAMENTE HASTA LOS 9 BATEADORES)
         window.processTextLineup = function() {
             const teamCode = document.getElementById('adminTeamSelect').value;
             const pitcherName = document.getElementById('adminPitcherInput').value.trim() || 'Por definir';
@@ -760,7 +778,6 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
                     });
                 });
             } else {
-                // Algoritmo de extracción por patrones de posiciones de béisbol
                 let tokens = rawText.split(/\s*-\s*/).map(t => t.trim()).filter(Boolean);
                 
                 if (tokens.length > 1) {
@@ -1089,7 +1106,6 @@ Roldy Brito - CF Noelvi Marte - RF Nomar Mazara - LF Marcell Ozuna - DH Agustin 
             });
         }
 
-        // DIBUJO VERTICAL EXACTO TIPO TARJETA DE BÉISBOL
         function renderLineups() {
             const pillsContainer = document.getElementById('lineupTeamPills');
             pillsContainer.innerHTML = '';
