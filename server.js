@@ -36,7 +36,7 @@ function normalizeTeamCode(name) {
     return name.substring(0, 3).toUpperCase();
 }
 
-// 1. OBTENER STANDINGS REALES DE LIDOM DESDE ESPN API
+// 1. OBTENER Y MAPEAR STANDINGS DESDE ESPN API (LIGAS DOM.1)
 async function fetchLidomStandingsESPN() {
     try {
         const url = 'https://site.api.espn.com/apis/v2/sports/baseball/dom.1/standings';
@@ -44,34 +44,37 @@ async function fetchLidomStandingsESPN() {
         
         let fetchedStandings = [];
         if (response.data && response.data.children) {
-            const standingsData = response.data.children[0]?.standings?.entries || [];
+            const standingsEntries = response.data.children[0]?.standings?.entries || [];
             
-            standingsData.forEach(entry => {
-                const teamName = entry.team.displayName;
+            standingsEntries.forEach(entry => {
+                const teamName = entry.team?.displayName || entry.team?.name || 'Equipo';
                 const stats = entry.stats || [];
                 
-                const getStat = (name) => {
-                    const s = stats.find(x => x.name === name || x.type === name);
-                    return s ? s.displayValue : '0';
+                // Función flexible para extraer cada estadística según su clave
+                const findStat = (keys) => {
+                    const match = stats.find(s => keys.includes(s.name) || keys.includes(s.type));
+                    return match ? (match.displayValue || match.value?.toString() || '0') : null;
                 };
 
-                const wins = parseInt(getStat('wins') || '0');
-                const losses = parseInt(getStat('losses') || '0');
-                const gamesPlayed = wins + losses;
+                const wins = parseInt(findStat(['wins', 'W']) || '0');
+                const losses = parseInt(findStat(['losses', 'L']) || '0');
+                const gamesPlayed = wins + losses || parseInt(findStat(['gamesPlayed', 'GP', 'J']) || '0');
+                const pctVal = findStat(['winPercent', 'PCT', 'winpct']) || (gamesPlayed > 0 ? (wins / gamesPlayed).toFixed(3).replace('0.', '.') : '.000');
+                const gbVal = findStat(['gamesBehind', 'GB', 'DIF']) || '-';
 
                 fetchedStandings.push({
                     code: normalizeTeamCode(teamName),
                     name: teamName,
-                    jj: gamesPlayed || getStat('gamesPlayed') || '0',
+                    jj: gamesPlayed,
                     g: wins,
                     p: losses,
-                    pct: getStat('winPercent') || '.000',
-                    dif: getStat('gamesBehind') || '-',
-                    u10: getStat('differential') || '0-0',
-                    racha: getStat('streak') || '-',
-                    ca: getStat('runsFor') || '0',
-                    cp: getStat('runsAgainst') || '0',
-                    difC: (parseInt(getStat('runsFor') || '0') - parseInt(getStat('runsAgainst') || '0')),
+                    pct: pctVal,
+                    dif: gbVal,
+                    u10: findStat(['lastTen', 'L10']) || '0-0',
+                    racha: findStat(['streak', 'STRK']) || '-',
+                    ca: findStat(['runsFor', 'RF', 'RS']) || '0',
+                    cp: findStat(['runsAgainst', 'RA']) || '0',
+                    difC: (parseInt(findStat(['runsFor', 'RF', 'RS']) || '0') - parseInt(findStat(['runsAgainst', 'RA']) || '0')),
                     x1: '0-0', casa: '0-0', visita: '0-0', over500: '0-0'
                 });
             });
@@ -79,14 +82,14 @@ async function fetchLidomStandingsESPN() {
 
         if (fetchedStandings.length > 0) {
             lidomFullData.standings = fetchedStandings;
-            console.log(`✅ Standings de LIDOM actualizados desde ESPN (${fetchedStandings.length} equipos).`);
+            console.log(`✅ Standings de LIDOM procesados correctamente (${fetchedStandings.length} equipos).`);
         }
     } catch (e) {
-        console.log('⚠️ Error al obtener Standings de ESPN:', e.message);
+        console.log('⚠️ Error al procesar Standings de ESPN:', e.message);
     }
 }
 
-// 2. OBTENER JUEGOS Y ABRIDORES DESDE ESPN API
+// 2. OBTENER CARTELERA Y DILIGENCIAR PARTIDOS
 async function fetchLidomGamesESPN() {
     try {
         const url = 'https://site.api.espn.com/apis/site/v2/sports/baseball/dom.1/scoreboard';
@@ -102,7 +105,6 @@ async function fetchLidomGamesESPN() {
                 const awayName = away.team.displayName;
                 const homeName = home.team.displayName;
                 
-                // Abridores si están anunciados
                 const awayProbable = away.probables ? away.probables[0]?.athlete?.displayName : 'Por definir';
                 const homeProbable = home.probables ? home.probables[0]?.athlete?.displayName : 'Por definir';
 
@@ -127,13 +129,13 @@ async function fetchLidomGamesESPN() {
         }
 
         lidomFullData.games = fetchedGames;
-        console.log(`✅ Cartelera de LIDOM actualizada (${fetchedGames.length} partidos).`);
+        console.log(`✅ Cartelera procesada (${fetchedGames.length} partidos).`);
     } catch (e) {
-        console.log('⚠️ Error al obtener Cartelera de ESPN:', e.message);
+        console.log('⚠️ Error al procesar Cartelera de ESPN:', e.message);
     }
 }
 
-// 3. SINCRONIZACIÓN GENERAL
+// 3. EJECUCIÓN CONTINUA
 async function syncLidomData() {
     await fetchLidomStandingsESPN();
     await fetchLidomGamesESPN();
@@ -154,4 +156,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Servidor LIDOM conectado a ESPN en puerto ${PORT}`));
+server.listen(PORT, () => console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`));
