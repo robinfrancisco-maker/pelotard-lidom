@@ -226,7 +226,7 @@
         <div class="status-badge">● Auto-sincronizado (En vivo)</div>
     </div>
 
-    <!-- MENU PRINCIPAL -->
+    <!-- NAVEGACIÓN DE PESTAÑAS -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('cartelera', this)">1. ⚾ Cartelera</button>
         <button class="tab-btn" onclick="switchTab('lineups', this)">2. 🧢 Lineups / Pitcheo</button>
@@ -315,7 +315,6 @@
     <script>
         const socket = io();
 
-        // Cambiar pestañas principales
         function switchTab(tabName, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -324,7 +323,6 @@
             btn.classList.add('active');
         }
 
-        // Cambiar sub-vistas de Cartelera (Juegos de Hoy / Sportsbook)
         function switchCarteleraSub(subType, btn) {
             document.querySelectorAll('.sub-nav .sub-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
