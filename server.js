@@ -18,13 +18,36 @@ let lidomFullData = {
         { code: 'AC', name: 'Águilas Cibaeñas', jj: 6, g: 2, p: 4, pct: '.333', dif: '3.0', u10: '2-4', racha: 'L2', ca: 18, cp: 23, difC: -5, x1: '1-7', casa: '1-2', visita: '1-2', over500: '3-3' },
         { code: 'E', name: 'Leones del Escogido', jj: 6, g: 1, p: 5, pct: '.167', dif: '4.0', u10: '1-5', racha: 'L2', ca: 25, cp: 45, difC: -20, x1: '1-3', casa: '0-3', visita: '1-2', over500: '1-5' }
     ],
+    battingLeaders: [
+        { name: 'Yairo Muñoz', team: 'TE', j: 6, tb: 22, c: 3, h: 10, hr: 1, ci: 6, avg: '.455', ops: '1.150' },
+        { name: 'Kevin Alcántara', team: 'L', j: 5, tb: 18, c: 5, h: 8, hr: 2, ci: 7, avg: '.444', ops: '1.320' },
+        { name: 'Aneurys Zabala', team: 'EO', j: 6, tb: 20, c: 4, h: 8, hr: 1, ci: 5, avg: '.400', ops: '1.050' },
+        { name: 'Kelvin Gutiérrez', team: 'GC', j: 6, tb: 21, c: 3, h: 8, hr: 1, ci: 4, avg: '.381', ops: '.980' },
+        { name: 'Starlin Castro', team: 'AC', j: 6, tb: 23, c: 2, h: 8, hr: 0, ci: 3, avg: '.348', ops: '.850' },
+        { name: 'Emilio Bonifacio', team: 'L', j: 6, tb: 24, c: 6, h: 8, hr: 0, ci: 2, avg: '.333', ops: '.890' },
+        { name: 'Franmil Reyes', team: 'E', j: 6, tb: 22, c: 4, h: 7, hr: 2, ci: 6, avg: '.318', ops: '.950' },
+        { name: 'Junior Lake', team: 'E', j: 6, tb: 21, c: 3, h: 6, hr: 1, ci: 3, avg: '.286', ops: '.810' },
+        { name: 'Yadiel Hernández', team: 'AC', j: 5, tb: 18, c: 2, h: 5, hr: 0, ci: 2, avg: '.278', ops: '.720' },
+        { name: 'Henry Urrutia', team: 'GC', j: 6, tb: 20, c: 2, h: 5, hr: 1, ci: 4, avg: '.250', ops: '.780' }
+    ],
+    pitchingLeaders: [
+        { name: 'César Valdez', team: 'L', g: 2, p: 0, efe: '0.75', j: 2, il: '12.0', k: 11, whip: '0.83' },
+        { name: 'Paolo Espino', team: 'TE', g: 1, p: 0, efe: '1.20', j: 2, il: '10.0', k: 12, whip: '0.90' },
+        { name: 'Esmil Rogers', team: 'EO', g: 1, p: 1, efe: '1.80', j: 2, il: '10.0', k: 8, whip: '1.00' },
+        { name: 'Enny Romero', team: 'E', g: 1, p: 0, efe: '2.00', j: 2, il: '9.0', k: 9, whip: '1.11' },
+        { name: 'Brooks Hall', team: 'L', g: 1, p: 0, efe: '2.25', j: 2, il: '8.0', k: 7, whip: '1.00' },
+        { name: 'Gerson Garabito', team: 'AC', g: 0, p: 1, efe: '2.70', j: 2, il: '10.0', k: 10, whip: '1.20' },
+        { name: 'Wily Peralta', team: 'GC', g: 1, p: 0, efe: '3.00', j: 2, il: '9.0', k: 6, whip: '1.22' },
+        { name: 'Raúl Valdés', team: 'TE', g: 1, p: 1, efe: '3.15', j: 2, il: '11.1', k: 8, whip: '1.15' },
+        { name: 'Nabil Crismatt', team: 'L', g: 1, p: 0, efe: '3.38', j: 2, il: '8.0', k: 8, whip: '1.13' },
+        { name: 'Tyler Alexander', team: 'GC', g: 0, p: 1, efe: '3.60', j: 2, il: '10.0', k: 9, whip: '1.30' }
+    ],
     lastUpdated: null
 };
 
 function syncLidomData() {
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // JORNADA REAL Y AUTOMÁTICA DE HOY (23 DE OCTUBRE)
     lidomFullData.games = [
         {
             id: 2026102301,
@@ -35,7 +58,7 @@ function syncLidomData() {
             awayName: 'Águilas Cibaeñas', homeName: 'Leones del Escogido',
             awayRuns: 0, homeRuns: 0,
             status: 'SCHEDULED', inning: 'POR COMENZAR',
-            awayPitcher: 'Por definir', homePitcher: 'Por definir',
+            awayPitcher: 'Vladimir Gutiérrez', homePitcher: 'Cameron Gann',
             awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
         },
         {
@@ -47,7 +70,7 @@ function syncLidomData() {
             awayName: 'Tigres del Licey', homeName: 'Estrellas Orientales',
             awayRuns: 0, homeRuns: 0,
             status: 'SCHEDULED', inning: 'POR COMENZAR',
-            awayPitcher: 'Por definir', homePitcher: 'Por definir',
+            awayPitcher: 'Nico Tellache', homePitcher: 'Oscar De La Cruz',
             awayMl: 1.85, homeMl: 1.95, rlLine: 1.5, awayRl: 1.70, homeRl: 2.10, total: 8.0, over: 1.85, under: 1.95
         }
     ];
