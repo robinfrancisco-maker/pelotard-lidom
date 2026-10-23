@@ -1,63 +1,6 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const fs = require('fs');
-const path = require('path');
-
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
-
-app.use(express.static('public'));
-
-const DATA_FILE = path.join(__dirname, 'lidom_cache.json');
-
-const VALID_LIDOM_CODES = ['L', 'E', 'AC', 'GC', 'TE', 'EO'];
-
-const LIDOM_TEAMS_MAP = {
-    'licey': 'L', 'tigres': 'L', 'l': 'L',
-    'escogido': 'E', 'leones': 'E', 'e': 'E',
-    'aguilas': 'AC', 'águilas': 'AC', 'ac': 'AC',
-    'gigantes': 'GC', 'gc': 'GC',
-    'toros': 'TE', 'te': 'TE',
-    'estrellas': 'EO', 'eo': 'EO'
-};
-
-function parseLidomCode(name, abbrev) {
-    const cleanAbb = (abbrev || '').toUpperCase();
-    if (VALID_LIDOM_CODES.includes(cleanAbb)) return cleanAbb;
-
-    const cleanName = (name || '').toLowerCase();
-    for (let key in LIDOM_TEAMS_MAP) {
-        if (cleanName.includes(key)) return LIDOM_TEAMS_MAP[key];
-    }
-    return null;
-}
-
-let lidomFullData = {
-    games: [],
-    standings: [],
-    battingLeaders: [],
-    pitchingLeaders: [],
-    lastUpdated: null
-};
-
-if (fs.existsSync(DATA_FILE)) {
-    try {
-        const raw = fs.readFileSync(DATA_FILE, 'utf8');
-        const parsed = JSON.parse(raw);
-        if (parsed.standings && parsed.standings.every(s => VALID_LIDOM_CODES.includes(s.code))) {
-            lidomFullData = parsed;
-        } else {
-            fs.unlinkSync(DATA_FILE);
-        }
-    } catch (e) {
-        if (fs.existsSync(DATA_FILE)) fs.unlinkSync(DATA_FILE);
-    }
-}
-
 app.post('/api/update-lidom', express.json(), (req, res) => {
     try {
+        // 1. Procesar Standings si vienen en el body
         if (req.body && req.body.records) {
             let receivedStandings = [];
             req.body.records.forEach(record => {
@@ -87,25 +30,53 @@ app.post('/api/update-lidom', express.json(), (req, res) => {
 
             if (receivedStandings.length > 0) {
                 lidomFullData.standings = receivedStandings;
-                lidomFullData.lastUpdated = new Date().toLocaleTimeString('es-DO', { 
-                    timeZone: 'America/Santo_Domingo',
-                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
-                });
-                
-                fs.writeFileSync(DATA_FILE, JSON.stringify(lidomFullData, null, 2));
-                io.emit('lidom_auto_update', lidomFullData);
-                console.log('✅ Webhook: Datos de LIDOM actualizados exitosamente');
             }
         }
+
+        // 2. Procesar Cartelera si vienen eventos/fechas
+        if (req.body && req.body.dates && req.body.dates[0]?.games) {
+            let receivedGames = [];
+            req.body.dates[0].games.forEach(g => {
+                const awayCode = parseLidomCode(g.teams.away.team.name, g.teams.away.team.abbreviation);
+                const homeCode = parseLidomCode(g.teams.home.team.name, g.teams.home.team.abbreviation);
+
+                if (awayCode && homeCode) {
+                    receivedGames.push({
+                        id: g.gamePk,
+                        date: g.gameDate.split('T')[0],
+                        time: new Date(g.gameDate).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'America/Santo_Domingo' }),
+                        stadium: g.venue?.name || 'Estadio LIDOM',
+                        away: awayCode,
+                        home: homeCode,
+                        awayName: g.teams.away.team.name,
+                        homeName: g.teams.home.team.name,
+                        awayRuns: g.teams.away.score || 0,
+                        homeRuns: g.teams.home.score || 0,
+                        status: g.status.abstractGameState.toUpperCase(),
+                        inning: g.status.detailedState || 'POR COMENZAR',
+                        awayPitcher: 'Por definir',
+                        homePitcher: 'Por definir',
+                        awayMl: 1.90, homeMl: 1.90, rlLine: 1.5, awayRl: 1.65, homeRl: 2.20, total: 8.5, over: 1.90, under: 1.90
+                    });
+                }
+            });
+
+            if (receivedGames.length > 0) {
+                lidomFullData.games = receivedGames;
+            }
+        }
+
+        lidomFullData.lastUpdated = new Date().toLocaleTimeString('es-DO', { 
+            timeZone: 'America/Santo_Domingo',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+        });
+
+        // Guardar en disco y emitir a todos los navegadores conectados
+        fs.writeFileSync(DATA_FILE, JSON.stringify(lidomFullData, null, 2));
+        io.emit('lidom_auto_update', lidomFullData);
+
         res.status(200).json({ status: 'success' });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 });
-
-io.on('connection', (socket) => {
-    socket.emit('lidom_auto_update', lidomFullData);
-});
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🚀 Servidor ejecutándose en puerto ${PORT}`));
