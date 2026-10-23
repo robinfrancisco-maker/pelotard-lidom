@@ -11,25 +11,21 @@ jobs:
     steps:
       - name: Sincronizar Standings y Schedule de LIDOM
         run: |
-          # 1. Despertar el servidor en Render
+          # 1. Despertar la instancia en Render
           curl -s https://pelotard-lidom.onrender.com/ > /dev/null
 
-          # 2. Calcular ventana de fechas (3 días atrás y 3 días adelante)
-          START_DATE=$(date -d "3 days ago" +'%Y-%m-%d' 2>/dev/null || date -v-3d +'%Y-%m-%d')
-          END_DATE=$(date -d "3 days" +'%Y-%m-%d' 2>/dev/null || date -v+3d +'%Y-%m-%d')
-
-          # 3. Descargar Posiciones de LIDOM (League 131)
+          # 2. Descargar Posiciones de LIDOM (Liga 131)
           curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=131" -o standings.json
 
-          # 4. Descargar Cartelera ampliando la búsqueda con sportId=1 y leagueId=131
-          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=1&leagueId=131&startDate=${START_DATE}&endDate=${END_DATE}" -o schedule.json
+          # 3. Descargar Cartelera de la temporada LIDOM (Liga 131, Sport 1)
+          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/schedule?sportId=1&leagueId=131&season=2026" -o schedule.json
 
-          # 5. Enviar Posiciones a Render
+          # 4. Enviar Posiciones a Render
           curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom \
             -H "Content-Type: application/json" \
             -d @standings.json
 
-          # 6. Enviar Cartelera a Render
+          # 5. Enviar Cartelera a Render
           curl -s -X POST https://pelotard-lidom.onrender.com/api/update-schedule \
             -H "Content-Type: application/json" \
             -d @schedule.json
