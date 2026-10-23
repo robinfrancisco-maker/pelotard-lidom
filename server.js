@@ -31,7 +31,7 @@ function parseLidomCode(teamName, teamAbbr) {
     return abbr.toUpperCase() || 'LIDOM';
 }
 
-// ENDPOINT STANDINGS
+// 1. ENDPOINT STANDINGS
 app.post('/api/update-lidom', (req, res) => {
     try {
         if (req.body && req.body.records) {
@@ -58,6 +58,7 @@ app.post('/api/update-lidom', (req, res) => {
 
             memoryDb.standings = receivedStandings;
             io.emit('update-standings', memoryDb.standings);
+            console.log("Standings de LIDOM actualizados exitosamente.");
             return res.json({ status: 'ok', count: memoryDb.standings.length });
         }
         res.status(400).json({ status: 'error', message: 'Estructura de Standings no válida' });
@@ -66,7 +67,7 @@ app.post('/api/update-lidom', (req, res) => {
     }
 });
 
-// ENDPOINT CARTELERA (SCHEDULE)
+// 2. ENDPOINT CARTELERA (SCHEDULE REFORZADO)
 app.post('/api/update-schedule', (req, res) => {
     try {
         if (req.body && req.body.dates) {
@@ -80,8 +81,8 @@ app.post('/api/update-schedule', (req, res) => {
                             status: game.status?.detailedState || 'Programado',
                             awayTeam: parseLidomCode(game.teams?.away?.team?.name, ''),
                             homeTeam: parseLidomCode(game.teams?.home?.team?.name, ''),
-                            awayName: game.teams?.away?.team?.name,
-                            homeName: game.teams?.home?.team?.name,
+                            awayName: game.teams?.away?.team?.name || 'Visitante',
+                            homeName: game.teams?.home?.team?.name || 'Local',
                             awayScore: game.teams?.away?.score ?? 0,
                             homeScore: game.teams?.home?.score ?? 0,
                             venue: game.venue?.name || 'Estadio LIDOM'
@@ -92,6 +93,7 @@ app.post('/api/update-schedule', (req, res) => {
 
             memoryDb.schedule = gamesList;
             io.emit('update-schedule', memoryDb.schedule);
+            console.log(`Cartelera de LIDOM actualizada con ${gamesList.length} partidos.`);
             return res.json({ status: 'ok', count: memoryDb.schedule.length });
         }
         res.status(400).json({ status: 'error', message: 'Estructura de Cartelera no válida' });
@@ -109,5 +111,5 @@ io.on('connection', (socket) => {
 });
 
 http.listen(PORT, () => {
-    console.log(`Servidor activo en puerto ${PORT}`);
+    console.log(`Servidor activo en el puerto ${PORT}`);
 });
