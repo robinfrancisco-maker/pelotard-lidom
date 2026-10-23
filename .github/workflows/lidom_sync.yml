@@ -1,4 +1,4 @@
-name: Sincronizador Automático LIDOM
+name: Sincronizador Automatico LIDOM
 
 on:
   schedule:
@@ -9,10 +9,10 @@ jobs:
   sync-lidom:
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar datos de la API oficial de LIDOM/MLB
+      - name: Descargar datos de LIDOM
         run: |
-          curl -s "https://statsapi.mlb.com/api/v1/standings?leagueId=132" -o standings.json
+          curl -s -A "Mozilla/5.0" "https://statsapi.mlb.com/api/v1/standings?leagueId=132" -o standings.json
 
-      - name: Enviar datos limpios a Render
+      - name: Enviar datos a Render
         run: |
-          curl -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" -d @standings.json
+          curl -s -X POST https://pelotard-lidom.onrender.com/api/update-lidom -H "Content-Type: application/json" --data-binary @standings.json
