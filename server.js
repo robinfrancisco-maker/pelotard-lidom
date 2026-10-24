@@ -20,7 +20,7 @@ const defaultSchedule = [
     { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli', lineAway: '-120', lineHome: '+100', total: '8.0' }
 ];
 
-// Líderes predeterminados de LIDOM
+// Líderes predeterminados
 const defaultLideres = {
     bateo: [
         { pos: 1, jugador: 'Emilio Bonifacio', equipo: 'TL', avg: '.348', hr: 3, rbi: 18 },
