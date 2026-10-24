@@ -13,35 +13,40 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 app.use(express.static('public'));
 
-// Cartelera base predeterminada
-const defaultSchedule = [
-    { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao', lineAway: '-110', lineHome: '-110', total: '8.5' },
-    { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya', lineAway: '+105', lineHome: '-125', total: '7.5' },
-    { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli', lineAway: '-120', lineHome: '+100', total: '8.0' }
-];
-
-// Líderes predeterminados
-const defaultLideres = {
-    bateo: [
-        { pos: 1, jugador: 'Emilio Bonifacio', equipo: 'TL', avg: '.348', hr: 3, rbi: 18 },
-        { pos: 2, jugador: 'Yairo Muñoz', equipo: 'AC', avg: '.335', hr: 2, rbi: 15 },
-        { pos: 3, jugador: 'Junior Caminero', equipo: 'E', avg: '.320', hr: 5, rbi: 22 },
-        { pos: 4, jugador: 'Socrates Brito', equipo: 'EO', avg: '.312', hr: 4, rbi: 16 },
-        { pos: 5, jugador: 'Kelvin Gutiérrez', equipo: 'GC', avg: '.305', hr: 3, rbi: 14 }
-    ],
-    pitcheo: [
-        { pos: 1, jugador: 'César Valdez', equipo: 'TL', efe: '1.85', so: 32, sv: 0 },
-        { pos: 2, jugador: 'Tyler Alexander', equipo: 'E', efe: '2.10', so: 28, sv: 0 },
-        { pos: 3, jugador: 'Gerson Garabito', equipo: 'AC', efe: '2.35', so: 30, sv: 0 },
-        { pos: 4, jugador: 'Jefry Yan', equipo: 'EO', efe: '1.15', so: 22, sv: 8 },
-        { pos: 5, jugador: 'Yennsy Díaz', equipo: 'TE', efe: '2.50', so: 25, sv: 0 }
-    ]
-};
-
 let memoryDb = {
     standings: [],
-    schedule: defaultSchedule,
-    lideres: defaultLideres
+    schedule: [
+        { gamePk: 101, status: '7:15 PM', awayTeam: 'TL', homeTeam: 'AC', awayName: 'Tigres del Licey', homeName: 'Águilas Cibaeñas', awayScore: 0, homeScore: 0, venue: 'Estadio Cibao', lineAway: '-110', lineHome: '-110', total: '8.5' },
+        { gamePk: 102, status: '7:30 PM', awayTeam: 'EO', homeTeam: 'E', awayName: 'Estrellas Orientales', homeName: 'Leones del Escogido', awayScore: 0, homeScore: 0, venue: 'Estadio Quisqueya', lineAway: '+105', lineHome: '-125', total: '7.5' },
+        { gamePk: 103, status: '7:30 PM', awayTeam: 'GC', homeTeam: 'TE', awayName: 'Gigantes del Cibao', homeName: 'Toros del Este', awayScore: 0, homeScore: 0, venue: 'Estadio Francisco Micheli', lineAway: '-120', lineHome: '+100', total: '8.0' }
+    ],
+    lideres: {
+        bateo: [
+            { pos: 1, jugador: 'Emilio Bonifacio', equipo: 'TL', avg: '.348', hr: 3, rbi: 18, h: 32 },
+            { pos: 2, jugador: 'Yairo Muñoz', equipo: 'AC', avg: '.335', hr: 2, rbi: 15, h: 29 },
+            { pos: 3, jugador: 'Junior Caminero', equipo: 'E', avg: '.320', hr: 5, rbi: 22, h: 28 },
+            { pos: 4, jugador: 'Socrates Brito', equipo: 'EO', avg: '.312', hr: 4, rbi: 16, h: 26 },
+            { pos: 5, jugador: 'Kelvin Gutiérrez', equipo: 'GC', avg: '.305', hr: 3, rbi: 14, h: 25 },
+            { pos: 6, jugador: 'Yairo Muñoz', equipo: 'AC', avg: '.298', hr: 2, rbi: 12, h: 24 },
+            { pos: 7, jugador: 'Gustavo Núñez', equipo: 'TE', avg: '.290', hr: 1, rbi: 10, h: 23 },
+            { pos: 8, jugador: 'Sergio Alcántara', equipo: 'TL', avg: '.285', hr: 2, rbi: 11, h: 22 },
+            { pos: 9, jugador: 'Franmil Reyes', equipo: 'E', avg: '.280', hr: 6, rbi: 20, h: 21 },
+            { pos: 10, jugador: 'Elehuris Montero', equipo: 'AC', avg: '.275', hr: 4, rbi: 15, h: 20 }
+        ],
+        pitcheo: [
+            { pos: 1, jugador: 'César Valdez', equipo: 'TL', efe: '1.85', so: 32, sv: 0, w: 4 },
+            { pos: 2, jugador: 'Tyler Alexander', equipo: 'E', efe: '2.10', so: 28, sv: 0, w: 3 },
+            { pos: 3, jugador: 'Gerson Garabito', equipo: 'AC', efe: '2.35', so: 30, sv: 0, w: 3 },
+            { pos: 4, jugador: 'Jefry Yan', equipo: 'EO', efe: '1.15', so: 22, sv: 8, w: 1 },
+            { pos: 5, jugador: 'Yennsy Díaz', equipo: 'TE', efe: '2.50', so: 25, sv: 0, w: 2 },
+            { pos: 6, jugador: 'Esmil Rogers', equipo: 'EO', efe: '2.65', so: 24, sv: 0, w: 3 },
+            { pos: 7, jugador: 'Raúl Valdés', equipo: 'TE', efe: '2.80', so: 29, sv: 0, w: 2 },
+            { pos: 8, jugador: 'Brooks Hall', equipo: 'TL', efe: '2.95', so: 21, sv: 0, w: 2 },
+            { pos: 9, jugador: 'Enny Romero', equipo: 'E', efe: '3.10', so: 26, sv: 0, w: 2 },
+            { pos: 10, jugador: 'Joe Van Meter', equipo: 'AC', efe: '3.25', so: 20, sv: 0, w: 1 }
+        ]
+    },
+    boletos: []
 };
 
 function parseLidomCode(teamName, teamAbbr) {
@@ -57,7 +62,6 @@ function parseLidomCode(teamName, teamAbbr) {
     return abbr.toUpperCase() || 'LIDOM';
 }
 
-// 1. ENDPOINT STANDINGS
 app.post('/api/update-lidom', (req, res) => {
     try {
         if (req.body && req.body.records) {
@@ -94,7 +98,6 @@ app.post('/api/update-lidom', (req, res) => {
     }
 });
 
-// 2. ENDPOINT CARTELERA
 app.post('/api/update-schedule', (req, res) => {
     try {
         let gamesList = [];
@@ -125,12 +128,30 @@ app.post('/api/update-schedule', (req, res) => {
 
         if (gamesList.length > 0) {
             memoryDb.schedule = gamesList;
-        } else if (memoryDb.schedule.length === 0) {
-            memoryDb.schedule = defaultSchedule;
+            io.emit('update-schedule', memoryDb.schedule);
         }
-
-        io.emit('update-schedule', memoryDb.schedule);
         return res.json({ status: 'ok', count: memoryDb.schedule.length });
+    } catch (error) {
+        res.status(500).json({ status: 'error', error: error.message });
+    }
+});
+
+app.post('/api/crear-boleto', (req, res) => {
+    try {
+        const { jugadas, tipo, monto, pagoPotencial } = req.body;
+        const codigoBoleto = 'TKT-' + Math.floor(100000 + Math.random() * 900000);
+        const nuevoBoleto = {
+            id: codigoBoleto,
+            fecha: new Date().toLocaleString('es-DO'),
+            jugadas,
+            tipo,
+            monto,
+            pagoPotencial,
+            estado: 'Activo'
+        };
+        memoryDb.boletos.unshift(nuevoBoleto);
+        io.emit('update-boletos', memoryDb.boletos);
+        return res.json({ status: 'ok', boleto: nuevoBoleto });
     } catch (error) {
         res.status(500).json({ status: 'error', error: error.message });
     }
@@ -139,11 +160,13 @@ app.post('/api/update-schedule', (req, res) => {
 app.get('/api/standings', (req, res) => res.json(memoryDb.standings));
 app.get('/api/schedule', (req, res) => res.json(memoryDb.schedule));
 app.get('/api/lideres', (req, res) => res.json(memoryDb.lideres));
+app.get('/api/boletos', (req, res) => res.json(memoryDb.boletos));
 
 io.on('connection', (socket) => {
     socket.emit('update-standings', memoryDb.standings);
     socket.emit('update-schedule', memoryDb.schedule);
     socket.emit('update-lideres', memoryDb.lideres);
+    socket.emit('update-boletos', memoryDb.boletos);
 });
 
 http.listen(PORT, () => {
