@@ -35,7 +35,6 @@
         .logo h1 {
             margin: 0;
             color: var(--accent-orange);
-            letter-spacing: 1px;
             font-size: 1.8rem;
         }
 
@@ -71,7 +70,6 @@
             cursor: pointer;
             font-weight: 600;
             white-space: nowrap;
-            transition: all 0.2s ease;
         }
 
         .tab-btn.active, .tab-btn:hover {
@@ -115,9 +113,22 @@
             display: block;
         }
 
+        /* LAYOUT DASHBOARD APUESTAS */
+        .sportsbook-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .sportsbook-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 15px;
         }
 
@@ -148,38 +159,88 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 40%;
+            width: 45%;
         }
 
         .team-code {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: bold;
             color: var(--accent-blue);
         }
 
-        .team-name {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            text-align: center;
-        }
-
         .team-score {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             color: var(--accent-orange);
-            margin-top: 4px;
         }
 
-        .vs {
+        .odds-btn {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--accent-blue);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
             font-weight: bold;
-            color: #64748b;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 100%;
         }
 
-        .empty-msg {
-            text-align: center;
-            color: #94a3b8;
-            padding: 30px;
+        .odds-btn:hover, .odds-btn.selected {
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        /* TICKET PANEL */
+        .ticket-panel {
+            background-color: var(--bg-dark);
+            border: 2px solid var(--accent-orange);
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ticket-header {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--accent-orange);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .ticket-item {
+            background-color: var(--panel-bg);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bet-input {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            background-color: var(--accent-orange);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
             font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
         }
 
         table {
@@ -189,7 +250,7 @@
         }
 
         th, td {
-            padding: 12px 8px;
+            padding: 10px 8px;
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -197,33 +258,6 @@
             background-color: var(--bg-dark);
             color: #94a3b8;
             font-size: 0.85rem;
-        }
-
-        .odds-badge {
-            background-color: var(--accent-blue);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-top: 4px;
-        }
-
-        input, select, button.action-btn {
-            background-color: var(--bg-dark);
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 5px;
-        }
-
-        button.action-btn {
-            background-color: var(--accent-orange);
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
         }
     </style>
 </head>
@@ -237,17 +271,17 @@
         <div class="status-badge">● Auto-sincronizado (En vivo)</div>
     </div>
 
-    <!-- MENU PRINCIPAL -->
+    <!-- NAVEGACIÓN -->
     <div class="nav-tabs">
         <button class="tab-btn active" onclick="switchTab('cartelera', this)">1. ⚾ Cartelera</button>
         <button class="tab-btn" onclick="switchTab('lineups', this)">2. 🧢 Lineups / Pitcheo</button>
         <button class="tab-btn" onclick="switchTab('standings', this)">3. 📊 Standings</button>
         <button class="tab-btn" onclick="switchTab('lideres', this)">4. ⭐ Top 10 Líderes</button>
-        <button class="tab-btn" onclick="switchTab('boletos', this)">5. 🎫 Mis Boletos (0)</button>
-        <button class="tab-btn" onclick="switchTab('admin', this)">6. ⚙️ Administración (Códigos)</button>
+        <button class="tab-btn" id="nav-boletos" onclick="switchTab('boletos', this)">5. 🎫 Mis Boletos (0)</button>
+        <button class="tab-btn" onclick="switchTab('admin', this)">6. ⚙️ Administración</button>
     </div>
 
-    <!-- 1. CARTELERA & SPORTSBOOK -->
+    <!-- 1. CARTELERA Y SPORTSBOOK -->
     <div id="tab-cartelera" class="tab-content active">
         <div class="sub-nav">
             <button class="sub-btn active" id="btn-juegos-hoy" onclick="switchCarteleraSub('juegos', this)">Juegos de Hoy</button>
@@ -261,19 +295,46 @@
         </div>
 
         <div id="sub-view-sportsbook" style="display: none;">
-            <h3>Líneas de Apuestas y Momios (Sportsbook LIDOM)</h3>
-            <div id="contenedor-sportsbook" class="games-grid">
-                <div class="empty-msg">Cargando momios de apuestas...</div>
+            <div class="sportsbook-layout">
+                <div>
+                    <h3>Líneas de Apuestas LIDOM</h3>
+                    <div id="contenedor-sportsbook" class="games-grid"></div>
+                </div>
+
+                <!-- DASHBOARD DE APUESTAS -->
+                <div class="ticket-panel">
+                    <div class="ticket-header">📋 Ticket de Apuesta</div>
+                    <div style="display: flex; gap: 5px;">
+                        <button class="sub-btn active" id="btn-tipo-ind" style="flex:1;" onclick="setTipoApuesta('Directa')">Directa</button>
+                        <button class="sub-btn" id="btn-tipo-parlay" style="flex:1;" onclick="setTipoApuesta('Parlay')">Parlay</button>
+                    </div>
+
+                    <div id="lista-jugadas-ticket">
+                        <div style="text-align: center; color: #94a3b8; padding: 15px; font-size: 0.85rem;">
+                            Haz clic en los logros de un equipo para añadirlo al ticket.
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 0.8rem; color: #94a3b8;">Monto a Apostar (RD$):</label>
+                        <input type="number" id="monto-apuesta" class="bet-input" value="100" oninput="calcularGanancia()">
+                    </div>
+
+                    <div style="font-size: 0.9rem; display: flex; justify-content: space-between;">
+                        <span>Pago Potencial:</span>
+                        <strong id="pago-potencial" style="color: var(--accent-orange);">RD$ 190.00</strong>
+                    </div>
+
+                    <button class="action-btn" onclick="procesarBoleto()">Generar Ticket</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 2. LINEUPS -->
     <div id="tab-lineups" class="tab-content">
-        <h3>Lanzadores Designados de Hoy</h3>
-        <div id="contenedor-lineups" class="games-grid">
-            <div class="empty-msg">Sincronizando abridores anunciados...</div>
-        </div>
+        <h3>Lanzadores Designados</h3>
+        <div id="contenedor-lineups" class="games-grid"></div>
     </div>
 
     <!-- 3. STANDINGS -->
@@ -292,16 +353,14 @@
                         <th>RACHA</th>
                     </tr>
                 </thead>
-                <tbody id="contenedor-standings">
-                    <tr><td colspan="7" class="empty-msg">Cargando posiciones...</td></tr>
-                </tbody>
+                <tbody id="contenedor-standings"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- 4. LÍDERES -->
+    <!-- 4. LÍDERES TOP 10 -->
     <div id="tab-lideres" class="tab-content">
-        <h3>Líderes de la Temporada LIDOM</h3>
+        <h3>Top 10 Líderes de la Temporada</h3>
         <div class="sub-nav">
             <button class="sub-btn active" id="btn-sub-bateo" onclick="switchLideresSub('bateo', this)">Bateo (AVG, HR, RBI)</button>
             <button class="sub-btn" id="btn-sub-pitcheo" onclick="switchLideresSub('pitcheo', this)">Pitcheo (EFE, SO, SV)</button>
@@ -315,13 +374,12 @@
                         <th>JUGADOR</th>
                         <th>EQUIPO</th>
                         <th>AVG</th>
+                        <th>H</th>
                         <th>HR</th>
                         <th>RBI</th>
                     </tr>
                 </thead>
-                <tbody id="contenedor-lideres-bateo">
-                    <tr><td colspan="6" class="empty-msg">Cargando líderes de bateo...</td></tr>
-                </tbody>
+                <tbody id="contenedor-lideres-bateo"></tbody>
             </table>
         </div>
 
@@ -334,39 +392,36 @@
                         <th>EQUIPO</th>
                         <th>EFE</th>
                         <th>SO</th>
+                        <th>W</th>
                         <th>SV</th>
                     </tr>
                 </thead>
-                <tbody id="contenedor-lideres-pitcheo">
-                    <tr><td colspan="6" class="empty-msg">Cargando líderes de pitcheo...</td></tr>
-                </tbody>
+                <tbody id="contenedor-lideres-pitcheo"></tbody>
             </table>
         </div>
     </div>
 
     <!-- 5. BOLETOS -->
     <div id="tab-boletos" class="tab-content">
-        <h3>Mis Boletos de Apuestas</h3>
-        <div class="empty-msg">No se registran jugadas activas en tu sesión actual.</div>
+        <h3>Mis Boletos Generados</h3>
+        <div id="contenedor-boletos" style="display: flex; flex-direction: column; gap: 10px;"></div>
     </div>
 
-    <!-- 6. ADMIN CÓDIGOS -->
+    <!-- 6. ADMIN -->
     <div id="tab-admin" class="tab-content">
-        <h3>Administración y Validación de Códigos</h3>
-        <div style="max-width: 400px; display: flex; flex-direction: column; gap: 10px;">
-            <label>Ingrese Código de Billetaje / Licencia:</label>
-            <input type="text" placeholder="Ej: LIDOM-2026-X89">
-            <button class="action-btn" onclick="alert('Código validado con éxito')">Validar Código</button>
-        </div>
+        <h3>Administración de Licencias</h3>
+        <input type="text" placeholder="Código de activación" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-dark); color: white;">
+        <button class="action-btn" style="width: auto;" onclick="alert('Licencia Activa')">Validar</button>
     </div>
 
     <script>
         const socket = io();
+        let ticketJugadas = [];
+        let tipoApuesta = 'Directa';
 
         function switchTab(tabName, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(`tab-${tabName}`).classList.add('active');
             btn.classList.add('active');
         }
@@ -374,188 +429,212 @@
         function switchCarteleraSub(subType, btn) {
             document.querySelectorAll('#tab-cartelera .sub-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
-
-            if (subType === 'juegos') {
-                document.getElementById('sub-view-juegos').style.display = 'block';
-                document.getElementById('sub-view-sportsbook').style.display = 'none';
-            } else {
-                document.getElementById('sub-view-juegos').style.display = 'none';
-                document.getElementById('sub-view-sportsbook').style.display = 'block';
-            }
+            document.getElementById('sub-view-juegos').style.display = subType === 'juegos' ? 'block' : 'none';
+            document.getElementById('sub-view-sportsbook').style.display = subType === 'sportsbook' ? 'block' : 'none';
         }
 
         function switchLideresSub(subType, btn) {
             document.querySelectorAll('#tab-lideres .sub-btn').forEach(el => el.classList.remove('active'));
             btn.classList.add('active');
+            document.getElementById('sub-view-bateo').style.display = subType === 'bateo' ? 'block' : 'none';
+            document.getElementById('sub-view-pitcheo').style.display = subType === 'pitcheo' ? 'block' : 'none';
+        }
 
-            if (subType === 'bateo') {
-                document.getElementById('sub-view-bateo').style.display = 'block';
-                document.getElementById('sub-view-pitcheo').style.display = 'none';
+        function agregarAlTicket(equipo, logro, vsInfo) {
+            if (tipoApuesta === 'Directa') {
+                ticketJugadas = [{ equipo, logro, vsInfo }];
             } else {
-                document.getElementById('sub-view-bateo').style.display = 'none';
-                document.getElementById('sub-view-pitcheo').style.display = 'block';
+                if (!ticketJugadas.some(j => j.equipo === equipo)) {
+                    ticketJugadas.push({ equipo, logro, vsInfo });
+                }
+            }
+            renderTicket();
+        }
+
+        function setTipoApuesta(tipo) {
+            tipoApuesta = tipo;
+            document.getElementById('btn-tipo-ind').classList.toggle('active', tipo === 'Directa');
+            document.getElementById('btn-tipo-parlay').classList.toggle('active', tipo === 'Parlay');
+            if (tipo === 'Directa' && ticketJugadas.length > 1) {
+                ticketJugadas = [ticketJugadas[0]];
+            }
+            renderTicket();
+        }
+
+        function renderTicket() {
+            const container = document.getElementById('lista-jugadas-ticket');
+            if (ticketJugadas.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #94a3b8; padding: 15px; font-size: 0.85rem;">Haz clic en los logros de un equipo para añadirlo al ticket.</div>';
+                calcularGanancia();
+                return;
+            }
+
+            let html = '';
+            ticketJugadas.forEach((j, index) => {
+                html += `
+                    <div class="ticket-item">
+                        <div>
+                            <strong>${j.equipo}</strong> (${j.logro})
+                            <div style="font-size:0.7rem; color:#94a3b8;">${j.vsInfo}</div>
+                        </div>
+                        <span style="color:var(--accent-orange); cursor:pointer;" onclick="quitarJugada(${index})">✖</span>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            calcularGanancia();
+        }
+
+        function quitarJugada(index) {
+            ticketJugadas.splice(index, 1);
+            renderTicket();
+        }
+
+        function calcularGanancia() {
+            const monto = parseFloat(document.getElementById('monto-apuesta').value) || 0;
+            let factor = tipoApuesta === 'Directa' ? 1.90 : Math.pow(1.90, ticketJugadas.length || 1);
+            const potencial = monto * factor;
+            document.getElementById('pago-potencial').innerText = `RD$ ${potencial.toFixed(2)}`;
+        }
+
+        async function procesarBoleto() {
+            if (ticketJugadas.length === 0) {
+                alert('Añada al menos una selección al ticket.');
+                return;
+            }
+            const monto = parseFloat(document.getElementById('monto-apuesta').value) || 0;
+            const pagoPotencial = document.getElementById('pago-potencial').innerText;
+
+            const res = await fetch('/api/crear-boleto', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jugadas: ticketJugadas, tipo: tipoApuesta, monto, pagoPotencial })
+            });
+
+            if (res.ok) {
+                alert('¡Boleto generado con éxito!');
+                ticketJugadas = [];
+                renderTicket();
             }
         }
 
         function renderCartelera(games) {
-            const container = document.getElementById('contenedor-cartelera');
-            const containerSportsbook = document.getElementById('contenedor-sportsbook');
-            const containerLineups = document.getElementById('contenedor-lineups');
+            const cJuegos = document.getElementById('contenedor-cartelera');
+            const cSportsbook = document.getElementById('contenedor-sportsbook');
+            const cLineups = document.getElementById('contenedor-lineups');
 
             if (!games || games.length === 0) return;
 
-            let htmlJuegos = '';
-            let htmlSportsbook = '';
-            let htmlLineups = '';
-
+            let hJuegos = '', hSports = '', hLineups = '';
             games.forEach(g => {
-                htmlJuegos += `
+                hJuegos += `
                     <div class="game-card">
-                        <div class="game-header">
-                            <span>${g.status || 'Programado'}</span>
-                            <span>${g.venue || 'Estadio LIDOM'}</span>
-                        </div>
+                        <div class="game-header"><span>${g.status}</span><span>${g.venue}</span></div>
                         <div class="game-body">
-                            <div class="team">
-                                <span class="team-code">${g.awayTeam}</span>
-                                <span class="team-name">${g.awayName || ''}</span>
-                                <span class="team-score">${g.awayScore}</span>
-                            </div>
+                            <div class="team"><span class="team-code">${g.awayTeam}</span><span class="team-score">${g.awayScore}</span></div>
                             <div class="vs">VS</div>
-                            <div class="team">
-                                <span class="team-code">${g.homeTeam}</span>
-                                <span class="team-name">${g.homeName || ''}</span>
-                                <span class="team-score">${g.homeScore}</span>
-                            </div>
+                            <div class="team"><span class="team-code">${g.homeTeam}</span><span class="team-score">${g.homeScore}</span></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
 
-                htmlSportsbook += `
+                hSports += `
                     <div class="game-card">
-                        <div class="game-header">
-                            <span>Logros / Línea de Juego</span>
-                            <span>Total: ${g.total || '8.5'}</span>
-                        </div>
+                        <div class="game-header"><span>${g.venue}</span><span>${g.status}</span></div>
                         <div class="game-body">
                             <div class="team">
                                 <span class="team-code">${g.awayTeam}</span>
-                                <span class="odds-badge">ML: ${g.lineAway || '-110'}</span>
+                                <button class="odds-btn" onclick="agregarAlTicket('${g.awayTeam}', '${g.lineAway}', '${g.awayTeam} vs ${g.homeTeam}')">ML ${g.lineAway}</button>
                             </div>
                             <div class="vs">VS</div>
                             <div class="team">
                                 <span class="team-code">${g.homeTeam}</span>
-                                <span class="odds-badge">ML: ${g.lineHome || '-110'}</span>
+                                <button class="odds-btn" onclick="agregarAlTicket('${g.homeTeam}', '${g.lineHome}', '${g.awayTeam} vs ${g.homeTeam}')">ML ${g.lineHome}</button>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
 
-                htmlLineups += `
+                hLineups += `
                     <div class="game-card">
-                        <div class="game-header">
-                            <span>${g.venue || 'Estadio LIDOM'}</span>
-                            <span>${g.status || 'Programado'}</span>
+                        <div class="game-header"><span>${g.venue}</span></div>
+                        <div style="font-size:0.85rem; text-align:center;">
+                            <strong>${g.awayTeam}</strong> (Por Anunciar) vs <strong>${g.homeTeam}</strong> (Por Anunciar)
                         </div>
-                        <div class="game-body">
-                            <div class="team">
-                                <span class="team-code">${g.awayTeam}</span>
-                                <span class="team-name">Por anunciar</span>
-                            </div>
-                            <div class="vs">VS</div>
-                            <div class="team">
-                                <span class="team-code">${g.homeTeam}</span>
-                                <span class="team-name">Por anunciar</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                    </div>`;
             });
 
-            container.innerHTML = htmlJuegos;
-            containerSportsbook.innerHTML = htmlSportsbook;
-            containerLineups.innerHTML = htmlLineups;
+            cJuegos.innerHTML = hJuegos;
+            cSportsbook.innerHTML = hSports;
+            cLineups.innerHTML = hLineups;
         }
 
         function renderStandings(teams) {
             const container = document.getElementById('contenedor-standings');
             if (!teams || teams.length === 0) return;
-
             let html = '';
             teams.forEach(t => {
-                html += `
-                    <tr>
-                        <td><strong>${t.code}</strong> - ${t.name}</td>
-                        <td>${t.jj}</td>
-                        <td>${t.g}</td>
-                        <td>${t.p}</td>
-                        <td>${t.pct}</td>
-                        <td>${t.dif}</td>
-                        <td>${t.racha}</td>
-                    </tr>
-                `;
+                html += `<tr><td><strong>${t.code}</strong> - ${t.name}</td><td>${t.jj}</td><td>${t.g}</td><td>${t.p}</td><td>${t.pct}</td><td>${t.dif}</td><td>${t.racha}</td></tr>`;
             });
             container.innerHTML = html;
         }
 
         function renderLideres(lideres) {
-            const containerBateo = document.getElementById('contenedor-lideres-bateo');
-            const containerPitcheo = document.getElementById('contenedor-lideres-pitcheo');
-
             if (!lideres) return;
-
             if (lideres.bateo) {
-                let htmlBateo = '';
+                let html = '';
                 lideres.bateo.forEach(b => {
-                    htmlBateo += `
-                        <tr>
-                            <td>${b.pos}</td>
-                            <td><strong>${b.jugador}</strong></td>
-                            <td>${b.equipo}</td>
-                            <td>${b.avg}</td>
-                            <td>${b.hr}</td>
-                            <td>${b.rbi}</td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${b.pos}</td><td><strong>${b.jugador}</strong></td><td>${b.equipo}</td><td>${b.avg}</td><td>${b.h}</td><td>${b.hr}</td><td>${b.rbi}</td></tr>`;
                 });
-                containerBateo.innerHTML = htmlBateo;
+                document.getElementById('contenedor-lideres-bateo').innerHTML = html;
             }
-
             if (lideres.pitcheo) {
-                let htmlPitcheo = '';
+                let html = '';
                 lideres.pitcheo.forEach(p => {
-                    htmlPitcheo += `
-                        <tr>
-                            <td>${p.pos}</td>
-                            <td><strong>${p.jugador}</strong></td>
-                            <td>${p.equipo}</td>
-                            <td>${p.efe}</td>
-                            <td>${p.so}</td>
-                            <td>${p.sv}</td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${p.pos}</td><td><strong>${p.jugador}</strong></td><td>${p.equipo}</td><td>${p.efe}</td><td>${p.so}</td><td>${p.w}</td><td>${p.sv}</td></tr>`;
                 });
-                containerPitcheo.innerHTML = htmlPitcheo;
+                document.getElementById('contenedor-lideres-pitcheo').innerHTML = html;
             }
         }
 
-        socket.on('update-schedule', (data) => renderCartelera(data));
-        socket.on('update-standings', (data) => renderStandings(data));
-        socket.on('update-lideres', (data) => renderLideres(data));
+        function renderBoletos(boletos) {
+            const container = document.getElementById('contenedor-boletos');
+            document.getElementById('nav-boletos').innerText = `5. 🎫 Mis Boletos (${boletos ? boletos.length : 0})`;
+            if (!boletos || boletos.length === 0) {
+                container.innerHTML = '<div class="empty-msg">No hay boletos activos.</div>';
+                return;
+            }
+
+            let html = '';
+            boletos.forEach(b => {
+                html += `
+                    <div class="game-card">
+                        <div class="game-header"><strong>${b.id}</strong> <span>${b.fecha}</span></div>
+                        <div>Tipo: <strong>${b.tipo}</strong> | Monto: <strong>RD$ ${b.monto}</strong></div>
+                        <div style="color:var(--accent-orange);">Ganancia Potencial: <strong>${b.pagoPotencial}</strong></div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        socket.on('update-schedule', renderCartelera);
+        socket.on('update-standings', renderStandings);
+        socket.on('update-lideres', renderLideres);
+        socket.on('update-boletos', renderBoletos);
 
         async function fetchInicial() {
             try {
-                const [resSchedule, resStandings, resLideres] = await Promise.all([
+                const [resSchedule, resStandings, resLideres, resBoletos] = await Promise.all([
                     fetch('/api/schedule'),
                     fetch('/api/standings'),
-                    fetch('/api/lideres')
+                    fetch('/api/lideres'),
+                    fetch('/api/boletos')
                 ]);
-
                 if (resSchedule.ok) renderCartelera(await resSchedule.json());
                 if (resStandings.ok) renderStandings(await resStandings.json());
                 if (resLideres.ok) renderLideres(await resLideres.json());
+                if (resBoletos.ok) renderBoletos(await resBoletos.json());
             } catch (err) {
-                console.error("Error al cargar datos iniciales:", err);
+                console.error("Error inicial:", err);
             }
         }
 
